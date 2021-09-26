@@ -359,7 +359,7 @@ if arguments.platform == 'Linux' and configuration['Options']['run-gcovr']:
 if arguments.platform == 'Linux' and configuration['Options']['run-cppcheck']:
     # Determine the cppcheck command we need to run
     # Sometimes projects will want to customise things slightly so we provide for that as well
-    commandToRun = 'cppcheck --xml -i _build/ {otherArguments} "{sources}" 2> cppcheck_out.xml'
+    commandToRun = 'cppcheck --xml --library=qt -i _build/ {otherArguments} "{sources}" 2> cppcheck_out.xml'
     commandToRun = commandToRun.format( sources=sourcesPath, otherArguments=configuration['Options']['cppcheck-arguments'] )
 
     # Determine the command to run to convert the cppcheck XML report into a CodeClimate format file
