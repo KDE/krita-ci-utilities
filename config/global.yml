@@ -1,0 +1,20 @@
+Dependencies: {}
+
+Environment:
+  KDECI_BUILD: "TRUE"
+
+Options:
+  in-source-build: False
+  cmake-options: ''
+  test-before-installing: False
+  run-tests: True
+  tests-load-sensitive: False
+  per-test-timeout: 60
+  setup-x-environment: True
+  setup-dbus-session: True
+  force-inject-asan: False
+  ctest-arguments: ''
+  run-cppcheck: True
+  cppcheck-arguments: '--enable=warning,style,performance'
+  run-gcovr: True
+  gcovr-arguments: ''
