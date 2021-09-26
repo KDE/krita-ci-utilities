@@ -17,6 +17,13 @@ arguments = parser.parse_args()
 # Prepare to work
 ####
 
+# Make sure if we are running under Gitlab CI that there are no variables around that will interfere in things
+if 'CI_REPOSITORY_URL' in os.environ:
+    del os.environ['CI_REPOSITORY_URL']
+
+# Because we are a seed job it is assumed we are building a release branch
+os.environ['CI_COMMIT_REF_PROTECTED'] = "true"
+
 # Load the seed file
 # This file will contain a list of definitions of projects we should be building
 seedConfiguration = yaml.safe_load( open( arguments.seed_file ) )
