@@ -70,10 +70,15 @@ for identifier, branch in projectsToBuild.items():
         projectConfig = yaml.safe_load( open(projectConfigFile) )
         CommonUtils.recursiveUpdate( configuration, projectConfig )
 
+    # The Dependency Resolver requires the current working directory to be in the project it is resolving (due to @same)
+    # Therefore we need to switch there first
+    os.chdir( os.path.join( workingDirectory, identifier ) )
     # Resolve the dependencies for this project now
     dependencies = dependencyResolver.resolve( configuration['Dependencies'], branch )
     # And save them to our list...
     projectBuildDependencies[ identifier ] = dependencies
+    # Now that we are done we can change back
+    os.chdir( workingDirectory )
 
 ####
 # Now we can start to build these projects
