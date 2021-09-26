@@ -80,7 +80,7 @@ class Resolver(object):
     def _resolveSameBranch( self, projectBranch ):
         # First thing we do is see if we need to do anything to this branch name
         # We know it is okay if this is a protected branch (ie. we're on master or a release branch - being any branch matching the *.* convention)
-        if 'CI_COMMIT_REF_PROTECTED' in os.environ and 'CI_COMMIT_REF_PROTECTED' == "true":
+        if 'CI_COMMIT_REF_PROTECTED' in os.environ and os.environ['CI_COMMIT_REF_PROTECTED'] == "true":
             return projectBranch
 
         # Otherwise it looks like we need to do something to resolve the branch here
@@ -90,14 +90,14 @@ class Resolver(object):
         # This is done by asking Git to print a list of all refs it knows of, prefixed by the negate operator (^)
         # We then reduce that to just mainline branches prior to passing it to git rev-list
         # Finally, we run git rev-list in reverse mode so it puts the oldest commit at the top (whose parent commit will be on a release branch)
-        command = 'git for-each-ref --format="^%(refname)" | grep -E "refs/heads/(master|[0-9]\.[0-9]+)" | git rev-list --stdin --reverse HEAD | head -n1'
+        command = 'git for-each-ref --format="^%(refname)" | grep -E "refs/heads/master|refs/heads/.*[0-9]\.[0-9]+" | git rev-list --stdin --reverse HEAD | head -n1'
         process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         firstBranchCommit = process.stdout.readline().strip().decode('utf-8')
 
         # With the first branch commit now being known, we can do the second phase of this
         # This involves asking Git to print a list of all references that contain the given commit
         # Once again, we also filter this to only leave behind release branches - as that is what we are trying to resolve to
-        command = 'git for-each-ref --contains {0}^ --format="%(refname)" | grep -E "refs/heads/(master|[0-9]\.[0-9]+)" | sort -r -n'.format( firstBranchCommit )
+        command = 'git for-each-ref --contains {0}^ --format="%(refname)" | grep -E "refs/heads/master|refs/heads/.*[0-9]\.[0-9]+" | sort -r -n'.format( firstBranchCommit )
         process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         rawPotentialBranches = process.stdout.readlines()
 

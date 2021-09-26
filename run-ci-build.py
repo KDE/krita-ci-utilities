@@ -55,11 +55,12 @@ installPath = os.path.join( os.getcwd(), '_install' )
 installStagingPath = os.path.join( os.getcwd(), '_staging' )
 
 ####
-# Fetch other project sources
+# Fetch project sources
 ####
 
 # In order to resolve project dependencies later, we need to ensure all remote refs have been fetched
-subprocess.check_call("git fetch $CI_REPOSITORY_URL +refs/heads/*:refs/heads/*", shell=True)
+if 'CI_REPOSITORY_URL' in os.environ:
+    subprocess.check_call("git fetch $CI_REPOSITORY_URL +refs/heads/*:refs/heads/*", shell=True)
 
 ####
 # Resolve our project dependencies
