@@ -16,5 +16,6 @@ Options:
   ctest-arguments: ''
   run-cppcheck: True
   cppcheck-arguments: '--enable=warning,style,performance'
+  cppcheck-ignore-files: []
   run-gcovr: True
   gcovr-arguments: ''
