@@ -100,8 +100,10 @@ while len(projectsToBuild) != 0:
     for identifier, branch in workingProjectsList.items():
         # Grab the products dependencies
         projectDeps = projectBuildDependencies[ identifier ]
-        # Eliminate them against what's in our list of things to build
-        remainingDependencies = list( set(projectDeps) - set(builtProjects) )
+        # Eliminate from this any dependencies this seed file is not building
+        # For those dependencies we simply assume another seed job has built them
+        # This also has the nice side effect of telling us if there is anything left we are still waiting to build
+        remainingDependencies = list( set(projectDeps).intersection(projectsToBuild) )
 
         # Do we have anything left?
         if len(remainingDependencies) > 0:
