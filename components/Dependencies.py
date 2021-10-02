@@ -94,6 +94,12 @@ class Resolver(object):
         process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         firstBranchCommit = process.stdout.readline().strip().decode('utf-8')
 
+        # Make sure we ended up with a valid 'first branch commit'
+        # If we are on a newly formed branch or tag that is identical in commit structure to an existing protected branch then the above will return nothing
+        if firstBranchCommit == "":
+            # Fallback to HEAD
+            firstBranchCommit = "HEAD"
+
         # With the first branch commit now being known, we can do the second phase of this
         # This involves asking Git to print a list of all references that contain the given commit
         # Once again, we also filter this to only leave behind release branches - as that is what we are trying to resolve to
