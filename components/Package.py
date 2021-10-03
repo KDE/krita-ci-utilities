@@ -193,6 +193,11 @@ class Registry(object):
             # Pull the metadata out...
             packageContents, packageMetadata = fetchedPackages[ identifier ]
 
+            # Make sure we have received a usable package
+            # Otherwise throw an exception and bail
+            if packageMetadata is None:
+                raise Exception("Unable to locate requested dependency in the registry: {} (branch: {})".format( identifier, branch ))
+
             # Go over all the dependencies this package has
             # If we haven't fetched it already, then we should add it to the list to process
             for dependency, dependencyBranch in packageMetadata['dependencies'].items():
