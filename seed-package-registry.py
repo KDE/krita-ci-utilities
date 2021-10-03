@@ -122,7 +122,7 @@ while len(projectsToBuild) != 0:
         os.environ['CI_COMMIT_SHA'] = process.stdout.readline().strip().decode('utf-8')
 
         # Prepare the command needed to build the project...
-        commandToRun = "{0} {1}/run-ci-build.py --project {2} --branch {3} --platform {4} --only-build".format(
+        commandToRun = "{0} -u {1}/run-ci-build.py --project {2} --branch {3} --platform {4} --only-build".format(
             sys.executable,
             CommonUtils.scriptsBaseDirectory(),
             identifier,
