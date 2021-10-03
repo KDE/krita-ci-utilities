@@ -60,7 +60,7 @@ installStagingPath = os.path.join( os.getcwd(), '_staging' )
 
 # In order to resolve project dependencies later, we need to ensure all remote refs have been fetched
 if 'CI_REPOSITORY_URL' in os.environ:
-    subprocess.check_call("git fetch $CI_REPOSITORY_URL +refs/heads/*:refs/heads/*", shell=True)
+    subprocess.check_call("git fetch --unshallow --tags $CI_REPOSITORY_URL +refs/heads/*:refs/heads/*", shell=True)
 
 ####
 # Resolve our project dependencies
