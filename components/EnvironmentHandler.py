@@ -44,7 +44,7 @@ def generateFor( installPrefix ):
 
     # On FreeBSD LLVM gets installed to it's own separate prefix
     # Make sure that is included too
-    elif sys.platform == 'freebsd12':
+    elif sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
         # Include the necessary LLVM path then
         envChanges = changesForPrefix( "/usr/local/llvm90", envChanges, systemPrefix=True )
 
@@ -73,7 +73,7 @@ def generateFor( installPrefix ):
         clonedEnv['QT_SELECT'] = 'qt5'
 
     # If this is a Linux/FreeBSD system, making sure we're going to have a UTF-8 environment
-    if sys.platform == 'linux' or sys.platform == 'freebsd12':
+    if sys.platform == 'linux' or sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
         clonedEnv['LANG'] = 'en_US.UTF-8'
 
     # Mark ourselves as a KDE session, for things like the platform plugin, etc.
@@ -83,7 +83,7 @@ def generateFor( installPrefix ):
 
     # On FreeBSD we also want ASAN to be symbolised to aid in debugging
     # Additionally, we disable container overflow detection, as this seems to have generated false positives on FreeBSD
-    if sys.platform == 'freebsd12':
+    if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
         clonedEnv['ASAN_OPTIONS'] = "detect_leaks=0:new_delete_type_mismatch=0:detect_odr_violation=0:stack-use-after-scope=0:alloc_dealloc_mismatch=0:detect_container_overflow=0:symbolize=1"
         clonedEnv['ASAN_SYMBOLIZER_PATH'] = '/usr/local/bin/llvm-symbolizer'
 

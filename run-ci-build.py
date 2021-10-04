@@ -217,7 +217,7 @@ if sys.platform == 'win32':
     makeCommand = "ninja -j {cpuCount} -l {maximumLoad}"
 
 # FreeBSD also likes to do things slightly different
-if sys.platform == 'freebsd12':
+if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
     makeCommand = "gmake -j {cpuCount} -l {maximumLoad}"
 
 # Finalise the command we will be running
@@ -256,7 +256,7 @@ if sys.platform == 'win32':
     # We use NMake on Windows at the moment
     commandToRun = "ninja install"
 # FreeBSD also likes to do things slightly different
-if sys.platform == 'freebsd12':
+if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
     commandToRun = "gmake install"
 
 # Install the project
