@@ -16,8 +16,3 @@ android_qt515:
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
     - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Android
-  artifacts:
-    expire_in: 2 weeks
-    when: on_success
-    reports:
-      junit: JUnitTestResults.xml
