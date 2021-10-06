@@ -1,0 +1,23 @@
+freebsd_qt515:
+  stage: build
+  only:
+    - branches
+    - merge_requests
+    - tags
+  tags:
+    - FreeBSD
+  variables:
+    FF_ENABLE_JOB_CLEANUP: "true"
+    KDECI_CACHE_PATH: /var/tmp/gitlab_runner/artifacts/freebsd-qt5.15/
+    KDECI_GITLAB_SERVER: https://invent.kde.org/
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/freebsd-qt5.15
+  before_script:
+    - git clone https://invent.kde.org/sysadmin/ci-utilities
+    - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
+  script:
+    - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform FreeBSD
+  artifacts:
+    expire_in: 2 weeks
+    when: on_success
+    reports:
+      junit: JUnitTestResults.xml
