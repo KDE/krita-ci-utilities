@@ -237,7 +237,7 @@ except Exception:
 # Run tests before installation if needed
 ####
 
-if configuration['Options']['test-before-installing'] and not arguments.only_build:
+if configuration['Options']['test-before-installing'] and arguments.platform not in ['Android'] and not arguments.only_build:
     # Run the tests!
     print("## RUNNING PROJECT TESTS")
     TestHandler.run( configuration, sourcesPath, buildPath, installPath, buildEnvironment )
@@ -328,7 +328,7 @@ if arguments.only_build:
 # Run tests if we didn't do that already
 ####
 
-if not configuration['Options']['test-before-installing']:
+if not configuration['Options']['test-before-installing'] and arguments.platform not in ['Android']:
     # Run the tests!
     print("## RUNNING PROJECT TESTS")
     TestHandler.run( configuration, sourcesPath, buildPath, installPath, buildEnvironment )
