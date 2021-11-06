@@ -8,12 +8,15 @@ import subprocess
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to cleanup a Gitlab Package Registry.')
+parser.add_argument('--project', type=str, required=True)
 arguments = parser.parse_args()
 
 # Retrieve the details of the package registry we will be cleaning up
 gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN')
-packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
+
+# Grab the Gitlab project we will be working on
+packageProject = arguments.project
 
 # Connect to Gitlab
 gitlabServer = gitlab.Gitlab( gitlabInstance, private_token=gitlabToken )
