@@ -36,6 +36,11 @@ if os.path.exists( projectConfigFile ):
     projectConfig = yaml.safe_load( open(projectConfigFile) )
     CommonUtils.recursiveUpdate( configuration, projectConfig )
 
+run_tests = configuration['Options']['run-tests'] and not arguments.only_build
+# Can't run tests in cross builds
+if arguments.platform in ['Android']:
+    run_tests = False
+
 ####
 # Determine a number of paths we will need later on
 ####
@@ -237,7 +242,7 @@ except Exception:
 # Run tests before installation if needed
 ####
 
-if configuration['Options']['test-before-installing'] and arguments.platform not in ['Android'] and not arguments.only_build:
+if run_tests and configuration['Options']['test-before-installing']:
     # Run the tests!
     print("## RUNNING PROJECT TESTS")
     TestHandler.run( configuration, sourcesPath, buildPath, installPath, buildEnvironment )
@@ -328,7 +333,7 @@ if arguments.only_build:
 # Run tests if we didn't do that already
 ####
 
-if not configuration['Options']['test-before-installing'] and arguments.platform not in ['Android']:
+if run_tests and not configuration['Options']['test-before-installing']:
     # Run the tests!
     print("## RUNNING PROJECT TESTS")
     TestHandler.run( configuration, sourcesPath, buildPath, installPath, buildEnvironment )
@@ -338,7 +343,7 @@ if not configuration['Options']['test-before-installing'] and arguments.platform
 ####
 
 # If we aren't running on Linux then we skip this, as we consider that to be the canonical platform for code coverage...
-if arguments.platform == 'Linux' and configuration['Options']['run-gcovr']:
+if run_tests and arguments.platform == 'Linux' and configuration['Options']['run-gcovr']:
     # Determine the command we need to run
     # We ask GCovr to exclude the build directory by default as we don't want generated artifacts (like moc files) getting included as well
     # Sometimes projects will want to customise things slightly so we provide for that as well
