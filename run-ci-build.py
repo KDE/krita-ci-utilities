@@ -36,8 +36,10 @@ if os.path.exists( projectConfigFile ):
     projectConfig = yaml.safe_load( open(projectConfigFile) )
     CommonUtils.recursiveUpdate( configuration, projectConfig )
 
+# Determine whether we will be running tests
+# This is only done if they're enabled for this project and we haven't been asked to just build the project
 run_tests = configuration['Options']['run-tests'] and not arguments.only_build
-# Can't run tests in cross builds
+# We also Can't run tests in cross compilation environments, so don't run tests there either
 if arguments.platform in ['Android']:
     run_tests = False
 
@@ -343,6 +345,7 @@ if run_tests and not configuration['Options']['test-before-installing']:
 ####
 
 # If we aren't running on Linux then we skip this, as we consider that to be the canonical platform for code coverage...
+# Additionally, as coverage information requires tests to have been run, skip extracting coverage information if tests have been disabled
 if run_tests and arguments.platform == 'Linux' and configuration['Options']['run-gcovr']:
     # Determine the command we need to run
     # We ask GCovr to exclude the build directory by default as we don't want generated artifacts (like moc files) getting included as well
