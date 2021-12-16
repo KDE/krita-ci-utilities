@@ -303,7 +303,6 @@ for filename in filesToInclude:
     archive.add( fullPath, arcname=filename, recursive=True )
 
 # Close the archive, which will write it out to disk, finishing what we need to do here
-# This is also necessary on Windows to allow for storePackage to move it to it's final home
 archive.close()
 archiveFile.close()
 
@@ -326,6 +325,9 @@ if gitlabToken is not None:
 # While we ran 'make install' just before this didn't install it as we diverted the installation to allow us to cleanly capture it
 archive = tarfile.open( name=archiveFile.name, mode='r' )
 archive.extractall( path=installPath )
+
+# Cleanup the temporary archive file as it is no longer needed
+os.remove( archiveFile.name )
 
 # If this is a build only run then bail here
 if arguments.only_build:
