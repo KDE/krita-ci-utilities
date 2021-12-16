@@ -7,7 +7,7 @@ freebsd_qt515:
   tags:
     - FreeBSD
   variables:
-    FF_ENABLE_JOB_CLEANUP: "true"
+    FF_ENABLE_JOB_CLEANUP: 1
     KDECI_CACHE_PATH: /var/tmp/gitlab_runner/artifacts/freebsd-qt5.15/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
     KDECI_PACKAGE_PROJECT: teams/ci-artifacts/freebsd-qt5.15
