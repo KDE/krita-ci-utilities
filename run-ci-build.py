@@ -212,9 +212,6 @@ except Exception:
 
 # Determine the appropriate number of CPU cores we should use when running builds
 cpuCount = int(multiprocessing.cpu_count())
-if cpuCount >= 4:
-    # Use lower parallelism on higher core systems to avoid too much IO contention
-    cpuCount = int(cpuCount * 0.75)
 
 # Determine the build command we want to use
 # Just about all of our platforms support standard "make" so that is our default...
