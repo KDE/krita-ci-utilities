@@ -15,6 +15,7 @@ parser.add_argument('--project', type=str, required=True)
 parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--only-build', default=False, action='store_true')
+parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='extend', required=False)
 arguments = parser.parse_args()
 
 ####
@@ -191,6 +192,10 @@ if arguments.platform == 'Android':
     ecmAdditionalRoots = buildEnvironment['CMAKE_PREFIX_PATH'].replace(':', ';')
     # Then give that list to CMake
     cmakeCommand.append('-DECM_ADDITIONAL_FIND_ROOT_PATH="' + ecmAdditionalRoots + '"')
+
+# Extra CMake arguments provided by the Gitlab template
+if arguments.extra_cmake_args:
+    cmakeCommand.extend(arguments.extra_cmake_args)
 
 # Lucky last, we add the path to our sources
 cmakeCommand.append( '"' + sourcesPath + '"' )

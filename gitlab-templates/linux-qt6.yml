@@ -1,0 +1,23 @@
+suse_tumbleweed_qt62:
+  stage: build
+  image: kdeorg/ci-suse-qt62:latest
+  only:
+    - branches
+    - merge_requests
+    - tags
+  tags:
+    - Linux
+  variables:
+    KDECI_CACHE_PATH: /mnt/artifacts/suse-qt6.2/
+    KDECI_GITLAB_SERVER: https://invent.kde.org/
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/suse-qt6.2
+  before_script:
+    - git clone https://invent.kde.org/sysadmin/ci-utilities
+    - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
+  script:
+    - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Linux --extra-cmake-args=-DBUILD_WITH_QT6=ON --extra-cmake-args=-DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.90.0
+  artifacts:
+    expire_in: 2 weeks
+    when: on_success
+    reports:
+      junit: JUnitTestResults.xml
