@@ -322,6 +322,7 @@ if gitlabToken is not None:
 # While we ran 'make install' just before this didn't install it as we diverted the installation to allow us to cleanly capture it
 archive = tarfile.open( name=archiveFile.name, mode='r' )
 archive.extractall( path=installPath )
+archive.close()
 
 # Cleanup the temporary archive file as it is no longer needed
 os.remove( archiveFile.name )
