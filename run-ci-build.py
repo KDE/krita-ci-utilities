@@ -15,7 +15,7 @@ parser.add_argument('--project', type=str, required=True)
 parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--only-build', default=False, action='store_true')
-parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='extend', required=False)
+parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 arguments = parser.parse_args()
 
 ####

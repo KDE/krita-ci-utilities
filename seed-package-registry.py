@@ -11,7 +11,7 @@ from components import CommonUtils, Dependencies
 parser = argparse.ArgumentParser(description='Utility to seed a Package Registry for use with run-ci-build.py')
 parser.add_argument('--seed-file', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
-parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='extend', required=False)
+parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 arguments = parser.parse_args()
 
 ####
