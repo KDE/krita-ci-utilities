@@ -11,6 +11,7 @@ from components import CommonUtils, Dependencies
 parser = argparse.ArgumentParser(description='Utility to seed a Package Registry for use with run-ci-build.py')
 parser.add_argument('--seed-file', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
+parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='extend', required=False)
 arguments = parser.parse_args()
 
 ####
@@ -129,6 +130,8 @@ while len(projectsToBuild) != 0:
             branch,
             arguments.platform
         )
+        if arguments.extra_cmake_args:
+            commandToRun += ' ' + ' '.join(['--extra-cmake-args=' + arg for arg in arguments.extra_cmake_args])
 
         # Then run it!
         subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=projectSources )
