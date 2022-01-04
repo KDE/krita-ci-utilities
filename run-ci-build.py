@@ -195,7 +195,9 @@ if arguments.platform == 'Android':
 
 # Extra CMake arguments provided by the Gitlab template
 if arguments.extra_cmake_args:
-    cmakeCommand.extend(arguments.extra_cmake_args)
+    # necessary since we cannot use the 'extend' action for the arguments due to requiring Python < 3.8
+    flat_args = [item for sublist in arguments.extra_cmake_args for item in sublist]
+    cmakeCommand.extend(flat_args)
 
 # Lucky last, we add the path to our sources
 cmakeCommand.append( '"' + sourcesPath + '"' )
