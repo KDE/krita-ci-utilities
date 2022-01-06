@@ -131,7 +131,9 @@ while len(projectsToBuild) != 0:
             arguments.platform
         )
         if arguments.extra_cmake_args:
-            commandToRun += ' ' + ' '.join(['--extra-cmake-args=' + arg for arg in arguments.extra_cmake_args])
+            # necessary since we cannot use the 'extend' action for the arguments due to requiring Python < 3.8
+            flat_args = [item for sublist in arguments.extra_cmake_args for item in sublist]
+            commandToRun += ' ' + ' '.join(['--extra-cmake-args=' + arg for arg in flat_args])
 
         # Then run it!
         subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=projectSources )
