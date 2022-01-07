@@ -1,0 +1,9 @@
+reuse:
+  image:
+    name: fsfe/reuse:latest
+    entrypoint: [""]
+  stage: compliance
+  tags:
+    - Linux
+  script:
+    - reuse lint
