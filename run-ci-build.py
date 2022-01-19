@@ -16,6 +16,7 @@ parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--only-build', default=False, action='store_true')
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
+parser.add_argument('--no-upload', default=False, action='store_true')
 arguments = parser.parse_args()
 
 ####
@@ -311,7 +312,7 @@ archive.close()
 archiveFile.close()
 
 # Are we supposed to be publishing this particular package to the archive?
-if gitlabToken is not None:
+if gitlabToken is not None and not arguments.no_upload:
     # With the archive being generated, we can now prepare some metadata...
     packageMetadata = {
         'dependencies': projectDirectDependencies
