@@ -47,7 +47,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     # Are we being asked to ensure ASAN is forcibly injected?
     # On FreeBSD their ASAN is different - it behaves properly
     # So we only need to force inject on Linux
-    if sys.platform =='linux' and projectConfig['Options']['force-inject-asan']:
+    if sys.platform =='linux' and projectConfig['Options']['force-inject-asan'] and os.environ['KDECI_DISABLE_ASAN'] != "true":
         # Where could the ASAN library live?
         knownAsanLocations = [
                 '/lib64/',

@@ -175,6 +175,8 @@ cmakeCommand = [
 if arguments.platform == 'Linux':
     # Then we also want Coverage by default
     cmakeCommand.append('-DBUILD_COVERAGE=ON')
+
+if arguments.platform == 'Linux' and os.environ['KDECI_DISABLE_ASAN'] != 'true':
     # We also want to enable ASAN for our builds
     cmakeCommand.append("-DECM_ENABLE_SANITIZERS='address'")
 
