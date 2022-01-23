@@ -399,7 +399,7 @@ if arguments.platform == 'Linux':
     commandToRun = 'make clean'
     try:
         print("## RUNNING: " + commandToRun)
-        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, env=buildEnvironment)
+        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=buildPath, env=buildEnvironment)
     except Exception:
         pass
 
