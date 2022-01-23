@@ -394,6 +394,15 @@ if arguments.platform == 'Linux' and configuration['Options']['run-cppcheck']:
     except Exception:
         pass
 
+# If platform is linux, we do clean build and archive build directory
+if arguments.platform == 'Linux':
+    commandToRun = 'make clean'
+    try:
+        print("## RUNNING: " + commandToRun)
+        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, env=buildEnvironment)
+    except Exception:
+        pass
+
 ####
 # Run complete!
 ####
