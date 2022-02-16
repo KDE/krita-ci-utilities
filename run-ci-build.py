@@ -186,7 +186,6 @@ if sys.platform == 'win32':
 # Are we building for Android?
 if arguments.platform == 'Android':
     # We want CMake to cross compile appropriately
-    cmakeCommand.append('-DCMAKE_TOOLCHAIN_FILE="/opt/nativetooling/share/ECM/toolchain/Android.cmake"')
     cmakeCommand.append('-DKF5_HOST_TOOLING=/opt/nativetooling/lib/x86_64-linux-gnu/cmake/')
     # CMake also needs additional guidance to find things
     # First though, apply a necessary transformation to allow CMake to parse the list we pass it
