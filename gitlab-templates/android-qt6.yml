@@ -1,6 +1,6 @@
 android_qt62:
   stage: build
-  image: kdeorg/android-qt62
+  image: kdeorg/android-qt62:latest
   only:
     - branches
     - merge_requests
