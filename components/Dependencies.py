@@ -110,6 +110,11 @@ class Resolver(object):
         # The output we receive from git for-each-ref will need some cleanup before we can start examining it
         cleanedBranches = [entry.strip().decode('utf-8').replace('refs/heads/', '') for entry in rawPotentialBranches]
 
+        # Did we get anything back?
+        # If not (which can only happen in very rare edge cases) fallback to 'master'
+        if len(cleanedBranches) == 0:
+            return 'master'
+
         # Do we have master present?
         # We always prefer master if it is present on the assumption that developers are normally targeting the latest branch, not stable
         if 'master' in cleanedBranches:
