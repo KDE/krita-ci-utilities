@@ -1,9 +1,5 @@
 freebsd_qt515:
   stage: build
-  only:
-    - branches
-    - merge_requests
-    - tags
   tags:
     - FreeBSD
   variables:

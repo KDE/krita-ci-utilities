@@ -1,10 +1,6 @@
 suse_tumbleweed_qt62:
   stage: build
   image: kdeorg/ci-suse-qt62:latest
-  only:
-    - branches
-    - merge_requests
-    - tags
   tags:
     - Linux
   variables:

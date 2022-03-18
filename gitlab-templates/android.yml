@@ -1,10 +1,6 @@
 android_qt515:
   stage: build
   image: kdeorg/android-sdk:latest
-  only:
-    - branches
-    - merge_requests
-    - tags
   tags:
     - Linux
   variables:

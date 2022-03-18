@@ -1,10 +1,17 @@
+workflow:
+  rules:
+    # Prevent branch pipelines if an MR is open on the branch.
+    - if: $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE == "push" && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    # Allow merge request pipelines.
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Build tags and branches too
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
+
 suse_tumbleweed_qt515:
   stage: build
   image: kdeorg/ci-suse-qt515:latest
-  only:
-    - branches
-    - merge_requests
-    - tags
   tags:
     - Linux
   variables:
