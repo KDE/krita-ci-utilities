@@ -18,6 +18,8 @@ Options:
   setup-dbus-session: True
   force-inject-asan: False
   ctest-arguments: ''
+  # a list of platforms on which unit test failures are considered fatal
+  require-passing-tests-on: []
   run-cppcheck: True
   cppcheck-arguments: '--enable=warning,style,performance'
   cppcheck-ignore-files:

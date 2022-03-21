@@ -194,7 +194,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
         subprocess.call("killall -9 dbus-daemon kded5 kioslave klauncher kdeinit5 kiod openbox Xvfb", shell=True)
 
     # All done!
-    return True
+    return ctestProcess.returncode == 0
 
 def convertCTestResultsToJUnit( buildDirectory ):
     # Where is the base prefix for all test data for this project located?

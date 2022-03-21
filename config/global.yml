@@ -14,6 +14,7 @@ Options:
   setup-dbus-session: True
   force-inject-asan: False
   ctest-arguments: ''
+  require-passing-tests-on: []
   run-cppcheck: True
   cppcheck-arguments: '--enable=warning,style,performance'
   cppcheck-ignore-files: []
