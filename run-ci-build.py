@@ -180,8 +180,12 @@ if arguments.platform == 'Linux':
 
 # Are we on Windows?
 if sys.platform == 'win32':
-    # We want a NMake based build, rather than the default MSBuild
+    # We want a Ninja based build, rather than the default MSBuild
     cmakeCommand.append('-G "Ninja"')
+    # Switch the Debug build for a Release one
+    # We do this because building our dependencies in Debug mode is just too hard and MSVC requires everything to be in either Debug or Release (you can't mix/match)
+    cmakeCommand.remove('-DCMAKE_BUILD_TYPE=Debug')
+    cmakeCommand.append('-DCMAKE_BUILD_TYPE=Release')
 
 # Are we building for Android?
 if arguments.platform == 'Android':
