@@ -1,4 +1,5 @@
 import os
+import copy
 import yaml
 import fnmatch
 import subprocess
@@ -90,12 +91,18 @@ class Resolver(object):
             # If we are then we assume the target is reasonable and try to use that
             return os.environ['CI_MERGE_REQUEST_TARGET_BRANCH_NAME']
 
+        # Before we can begin, on Windows we don't natively have grep/sort available to us (or many other unix utilities for that matter)
+        # As Git for Windows includes them, we need to add it's path for this to our PATH if we're on Windows
+        commandEnvironment = copy.deepcopy( os.environ )
+        if sys.platform == 'win32':
+            commandEnvironment['PATH'] = 'C:\Program Files\Git\usr\bin\;' + commandEnvironment['PATH']
+
         # To do this we need to first get a list of commits that are in the branch we are building (HEAD) which aren't in any mainline branch
         # This is done by asking Git to print a list of all refs it knows of, prefixed by the negate operator (^)
         # We then reduce that to just mainline branches prior to passing it to git rev-list
         # Finally, we run git rev-list in reverse mode so it puts the oldest commit at the top (whose parent commit will be on a release branch)
         command = 'git for-each-ref --format="^%(refname)" | grep -E "refs/heads/master|refs/heads/.*[0-9]\.[0-9]+" | git rev-list --stdin --reverse HEAD | head -n1'
-        process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        process = subprocess.Popen(command, shell=True, env=commandEnvironment, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         firstBranchCommit = process.stdout.readline().strip().decode('utf-8')
 
         # Make sure we ended up with a valid 'first branch commit'
@@ -108,7 +115,7 @@ class Resolver(object):
         # This involves asking Git to print a list of all references that contain the given commit
         # Once again, we also filter this to only leave behind release branches - as that is what we are trying to resolve to
         command = 'git for-each-ref --contains {0}^ --format="%(refname)" | grep -E "refs/heads/master|refs/heads/.*[0-9]\.[0-9]+" | sort -r -n'.format( firstBranchCommit )
-        process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        process = subprocess.Popen(command, shell=True, env=commandEnvironment, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         rawPotentialBranches = process.stdout.readlines()
 
         # The output we receive from git for-each-ref will need some cleanup before we can start examining it
