@@ -95,7 +95,7 @@ class Resolver(object):
         # As Git for Windows includes them, we need to add it's path for this to our PATH if we're on Windows
         commandEnvironment = copy.deepcopy( os.environ )
         if sys.platform == 'win32':
-            commandEnvironment['PATH'] = 'C:\Program Files\Git\usr\bin\;' + commandEnvironment['PATH']
+            commandEnvironment['PATH'] = 'C:\\Program Files\\Git\\usr\\bin\\;' + commandEnvironment['PATH']
 
         # To do this we need to first get a list of commits that are in the branch we are building (HEAD) which aren't in any mainline branch
         # This is done by asking Git to print a list of all refs it knows of, prefixed by the negate operator (^)
