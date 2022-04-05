@@ -226,16 +226,16 @@ cpuCount = int(multiprocessing.cpu_count())
 
 # Determine the build command we want to use
 # Just about all of our platforms support standard "make" so that is our default...
-makeCommand = "make -j {cpuCount} -l {maximumLoad}"
+makeCommand = "make -j {cpuCount}"
 
 # Windows is a bit special though
 if sys.platform == 'win32':
     # We use NMake on Windows at the moment
-    makeCommand = "ninja -j {cpuCount} -l {maximumLoad}"
+    makeCommand = "ninja -j {cpuCount}"
 
 # FreeBSD also likes to do things slightly different
 if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
-    makeCommand = "gmake -j {cpuCount} -l {maximumLoad}"
+    makeCommand = "gmake -j {cpuCount}"
 
 # Finalise the command we will be running
 commandToRun = makeCommand.format( cpuCount=cpuCount, maximumLoad=cpuCount+1 )
