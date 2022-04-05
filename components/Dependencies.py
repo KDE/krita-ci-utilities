@@ -85,6 +85,10 @@ class Resolver(object):
 
         # Otherwise it looks like we need to do something to resolve the branch here
         # Doing this involves some Git voodoo combined with some assumptions on how KDE projects name their branches
+        # Unless we are on a merge request of course....
+        if 'CI_MERGE_REQUEST_TARGET_BRANCH_NAME' in os.environ:
+            # If we are then we assume the target is reasonable and try to use that
+            return os.environ['CI_MERGE_REQUEST_TARGET_BRANCH_NAME']
 
         # To do this we need to first get a list of commits that are in the branch we are building (HEAD) which aren't in any mainline branch
         # This is done by asking Git to print a list of all refs it knows of, prefixed by the negate operator (^)
