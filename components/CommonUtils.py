@@ -46,6 +46,26 @@ def firstPresentFileInPaths( searchRoots, filesToFind ):
     # If we failed to find anything, return blank
     return ''
 
+def recursiveDirectoryCopy(sourceDirectory, destinationDirectory):
+    # Copy a directory structure overwriting existing files
+    for root, dirs, files in os.walk(sourceDirectory):
+        # Ensure we have a relative path for root as we'll need it quite a bit shortly
+        currentDirectory = os.path.relpath( root, sourceDirectory )
+
+        # Make sure the directory exists in our destination
+        currentDestination = os.path.join( destinationDirectory, currentDirectory )
+        if not os.path.isdir(currentDestination):
+            os.makedirs(currentDestination)
+
+        # Now we can copy the various files within in turn
+        for fileToCopy in files:
+            # Determine the full path to the source file
+            fileSource = os.path.join(root, fileToCopy)
+            # Determine where to copy the file to
+            fileDestination = os.path.join(currentDestination, fileToCopy)
+            # Copy it!
+            shutil.copyfile( fileSource, fileDestination )
+
 # Converts a path to a relative one, to allow for it to be passed to os.path.join
 # This is primarily relevant on Windows, where full paths have the drive letter, and thus can be simply joined together as you can on Unix systems
 def makePathRelative(path):
