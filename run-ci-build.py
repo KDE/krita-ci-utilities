@@ -353,7 +353,8 @@ if run_tests and not configuration['Options']['test-before-installing']:
     # Run the tests!
     print("## RUNNING PROJECT TESTS")
     testResult = TestHandler.run( configuration, sourcesPath, buildPath, installPath, buildEnvironment )
-    if not testResult and arguments.platform in configuration['Options']['require-passing-tests-on']:
+    requirePassingTestsOn = configuration['Options']['require-passing-tests-on']
+    if not testResult and ( arguments.platform in requirePassingTestsOn or '@all' in requirePassingTestsOn ):
         print("## Tests failed")
         sys.exit(1)
 
