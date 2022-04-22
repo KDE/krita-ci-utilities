@@ -124,17 +124,12 @@ for key, value in configuration['Environment'].items():
     # Apply each key in turn
     buildEnvironment[ key ] = value
 
-# Do we need to make use of ccache?
+# Do we need to get ccache ready to use?
 if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment:
     # Setup the path used for the cache....
     buildEnvironment['CCACHE_DIR'] = os.path.join( buildEnvironment['KDECI_CC_CACHE'], arguments.project )
     # Ensure ccache is setup for use
     subprocess.check_call( 'ccache -M 500M', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
-    # Finally add ccache to PATH
-    if arguments.platform == 'Linux':
-        buildEnvironment['PATH'] = '/usr/lib64/ccache:' + buildEnvironment['PATH']
-    if arguments.platform == 'FreeBSD':
-        buildEnvironment['PATH'] = '/usr/local/libexec/ccache/:' + buildEnvironment['PATH']
 
 # Make sure the build directory exists
 if not os.path.exists( buildPath ):
@@ -182,6 +177,12 @@ cmakeCommand = [
     # Plus any project specific parameters
     configuration['Options']['cmake-options']
 ]
+
+# Do we need to make use of ccache?
+if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment:
+    # Then instruct CMake accordingly...
+    cmakeCommand.append('-DCMAKE_C_COMPILER_LAUNCHER=ccache')
+    cmakeCommand.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
 
 # Are we on Linux (but not Android)?
 if arguments.platform == 'Linux':
