@@ -181,7 +181,7 @@ if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironme
     if arguments.platform == 'Linux':
         buildEnvironment['PATH'] = '/usr/lib64/ccache:' + buildEnvironment['PATH']
     if arguments.platform == 'FreeBSD':
-        buildEnvironment['PATH'] = '/usr/local/lib/ccache:' + buildEnvironment['PATH']
+        buildEnvironment['PATH'] = '/usr/local/libexec/ccache/:' + buildEnvironment['PATH']
 
 # Are we on Linux (but not Android)?
 if arguments.platform == 'Linux':
