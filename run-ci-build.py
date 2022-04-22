@@ -129,7 +129,7 @@ if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironme
     # Setup the path used for the cache....
     buildEnvironment['CCACHE_DIR'] = os.path.join( buildEnvironment['KDECI_CC_CACHE'], arguments.project )
     # Ensure ccache is setup for use
-    subprocess.check_call( 'ccache -M 500M', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    subprocess.check_call( 'ccache -M 2G', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 # Make sure the build directory exists
 if not os.path.exists( buildPath ):
