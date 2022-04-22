@@ -171,6 +171,18 @@ cmakeCommand = [
     configuration['Options']['cmake-options']
 ]
 
+# Do we need to make use of ccache?
+if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment:
+    # Setup the path used for the cache....
+    buildEnvironment['CCACHE_DIR'] = os.path.join( buildEnvironment['KDECI_CC_CACHE'], arguments.project )
+    # Ensure ccache is setup for use
+    subprocess.check_call( 'ccache -M 500M', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=buildPath, env=buildEnvironment )
+    # Finally add ccache to PATH
+    if arguments.platform == 'Linux':
+        buildEnvironment['PATH'] = '/usr/lib64/ccache:' + buildEnvironment['PATH']
+    if arguments.platform == 'FreeBSD':
+        buildEnvironment['PATH'] = '/usr/local/lib/ccache:' + buildEnvironment['PATH']
+
 # Are we on Linux (but not Android)?
 if arguments.platform == 'Linux':
     # Then we also want Coverage by default
