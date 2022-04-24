@@ -44,6 +44,12 @@ for package in remoteRegistry.packages.list( as_list=False ):
         'timestamp': int(timestamp)
     }
 
+    # Is this a stale branch we can let go of?
+    if branch in ['release-21.08']:
+        # Then mark it for removal
+        packagesToRemove.append( packageData['package'] )
+        continue
+
     # Is this the first time we have seen this package key?
     if key not in knownPackages:
         # Then we can assume for now it is the newest version
