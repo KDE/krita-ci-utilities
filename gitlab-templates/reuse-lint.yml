@@ -2,6 +2,7 @@ reuse:
   image:
     name: fsfe/reuse:latest
     entrypoint: [""]
+  stage: build
   tags:
     - Linux
   script:
