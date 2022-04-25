@@ -185,7 +185,8 @@ if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironme
     cmakeCommand.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
 
 # Are we on Linux (but not Android)?
-if arguments.platform == 'Linux':
+# If we are on Linux then we also need to check to see whether we are on a MUSL based system - as ASAN does not work there
+if arguments.platform == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):
     # Then we also want Coverage by default
     cmakeCommand.append('-DBUILD_COVERAGE=ON')
     # We also want to enable ASAN for our builds
