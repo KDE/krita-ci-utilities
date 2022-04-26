@@ -6,5 +6,5 @@ reuse:
   tags:
     - Linux
   script:
-    - rm -r po/ # HACK some projects have po files committed. Those do not have SPDX markers. Ignore them for now to avoid CI noise
+    - rm -rf po/ # HACK some projects have po files committed. Those do not have SPDX markers. Ignore them for now to avoid CI noise
     - reuse lint
