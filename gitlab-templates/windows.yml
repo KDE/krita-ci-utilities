@@ -15,6 +15,7 @@ windows_qt515:
   tags:
     - Windows
   variables:
+    GIT_STRATEGY: clone
     KDECI_CACHE_PATH: C:/Gitlab/Artifacts/windows-qt5.15/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
     KDECI_PACKAGE_PROJECT: teams/ci-artifacts/windows-qt5.15
