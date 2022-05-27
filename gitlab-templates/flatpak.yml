@@ -1,0 +1,41 @@
+workflow:
+  rules:
+    # Prevent branch pipelines if an MR is open on the branch.
+    - if: $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE == "push" && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    # Allow merge request pipelines.
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Build tags and branches too
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
+
+flatpak:
+  stage: build
+  tags:
+    - Linux
+  variables:
+    KDE_FLATPAK_MODULE_NAME: ${CI_PROJECT_NAME}
+    KDE_FLATPAK_APP_ID: org.kde.${CI_PROJECT_NAME}
+  before_script:
+    - git clone --depth 1 https://invent.kde.org/sysadmin/ci-utilities.git
+    - zypper --non-interactive install flatpak flatpak-builder
+    - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    - flatpak update -y
+    - python3 -m pip install PyGObject ruamel.yaml
+  script:
+    # echo vars
+    - echo ${KDE_FLATPAK_MODULE_NAME}
+    - echo ${KDE_FLATPAK_APP_ID}
+
+    # Build and install
+    - python3 -u ci-utilities/flatpak-build.py ${KDE_FLATPAK_MODULE_NAME}
+
+    # Make Bundle
+    - flatpak build-bundle repo $MODULE_NAME.flatpak $APP_ID ${BRANCH}
+  artifacts:
+    name: Flatpak artifacts
+    expose_as: Get Flatpak bundle here
+    when: on_success
+    paths:
+      - "${MODULE_NAME}.flatpak"
+    expire_in: 14 days
