@@ -25,11 +25,11 @@ flatpak:
     # Build and install
     - python3 -u ci-utilities/flatpak-build.py ${KDE_FLATPAK_MODULE_NAME}
     # Make Bundle
-    - flatpak build-bundle repo $MODULE_NAME.flatpak $APP_ID ${BRANCH}
+    - flatpak build-bundle repo ${KDE_FLATPAK_MODULE_NAME}.flatpak ${KDE_FLATPAK_APP_ID} ${CI_COMMIT_REF_NAME}
   artifacts:
     name: Flatpak artifacts
     expose_as: Flatpak Bundle
     when: on_success
     paths:
-      - "${MODULE_NAME}.flatpak"
+      - "${KDE_FLATPAK_MODULE_NAME}.flatpak"
     expire_in: 14 days
