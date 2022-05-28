@@ -116,4 +116,4 @@ if __name__ == '__main__':
     subprocess.call(["flatpak", "info", "org.kde.Platform"])
 
     # finally, build and install
-    subprocess.call(["flatpak-builder", "--repo=repo", "--force-clean", "build-dir", "--disable-rofiles-fuse", "--install", "--user", manifestfile])
+    subprocess.call(["flatpak-builder", "--repo=repo", "--install-deps-from=flathub", "--force-clean", "build-dir", "--disable-rofiles-fuse", "--user", manifestfile])
