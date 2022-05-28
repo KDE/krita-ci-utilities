@@ -11,7 +11,7 @@ workflow:
 
 flatpak:
   stage: build
-  image: kdeorg/flatpak-builder
+  image: kdeorg/flatpak-builder:latest
   tags:
     - Linux
   variables:
