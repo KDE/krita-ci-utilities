@@ -19,8 +19,8 @@ def process_json_manifest(filename, config):
     runtime_version = data.get_object().get_string_member('runtime-version')
     sdk = data.get_object().get_string_member('sdk')
     # install platform and sdk
-    subprocess.call(["flatpak", "install", "-y", f"{runtime}//{runtime_version}"])
-    subprocess.call(["flatpak", "install", "-y", f"{sdk}//{runtime_version}"])
+    subprocess.call(["flatpak", "--user", "install", "-y", f"{runtime}//{runtime_version}"])
+    subprocess.call(["flatpak", "--user", "install", "-y", f"{sdk}//{runtime_version}"])
 
     mods = data.get_object().get_array_member('modules')
     # loop through modules
