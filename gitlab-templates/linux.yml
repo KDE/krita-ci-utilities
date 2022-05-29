@@ -28,6 +28,8 @@ suse_tumbleweed_qt515:
     expire_in: 2 weeks
     when: on_success
     reports:
-      cobertura: CoberturaLcovResults.xml
       junit: JUnitTestResults.xml
       codequality: cppcheck.json
+      coverage_report:
+        coverage_format: cobertura
+        path: CoberturaLcovResults.xml
