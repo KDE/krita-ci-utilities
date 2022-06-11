@@ -11,4 +11,5 @@ android_qt515:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
     - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Android --extra-cmake-args=-DCMAKE_TOOLCHAIN_FILE=/opt/nativetooling/share/ECM/toolchain/Android.cmake
