@@ -402,8 +402,9 @@ if arguments.platform == 'Linux' and configuration['Options']['run-cppcheck']:
     # Determine the cppcheck command we need to run
     # Sometimes projects will want to customise things slightly so we provide for that as well
     ignores = ' '.join(['-i ' + s for s in configuration['Options']['cppcheck-ignore-files']])
-    commandToRun = 'cppcheck --xml --relative-paths --library=qt -i _build/ {otherArguments} {ignoreArgs} "{sources}" 2> cppcheck_out.xml'
-    commandToRun = commandToRun.format( sources=sourcesPath, otherArguments=configuration['Options']['cppcheck-arguments'], ignoreArgs=ignores )
+    localDefinitions = os.path.join(CommonUtils.scriptsBaseDirectory(), 'resources', 'cppcheck-kde-definitions.cfg')
+    commandToRun = 'cppcheck --xml --relative-paths --library=qt --library={localDefinitions} -i _build/ {otherArguments} {ignoreArgs} "{sources}" 2> cppcheck_out.xml'
+    commandToRun = commandToRun.format( sources=sourcesPath, otherArguments=configuration['Options']['cppcheck-arguments'], ignoreArgs=ignores, localDefinitions=localDefinitions )
 
     # Determine the command to run to convert the cppcheck XML report into a CodeClimate format file
     conversionCommand = 'cppcheck-codequality --input-file=cppcheck_out.xml --output-file=cppcheck.json'
