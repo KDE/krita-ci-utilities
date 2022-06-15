@@ -186,7 +186,11 @@ class Registry(object):
                 continue
 
             # Given we have not previously fetched this dependency, we should do so...
-            fetchedPackages[ identifier ] = self.retrieve( identifier, branch )
+            try:
+                fetchedPackages[ identifier ] = self.retrieve( identifier, branch )
+            except:
+                raise Exception("Unable to locate requested dependency in the registry: {} (branch: {})".format( identifier, branch ))
+
             # We should also register the branch we have fetched
             packageBranches[ identifier ] = branch
 
