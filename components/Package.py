@@ -256,12 +256,12 @@ class Registry(object):
         latestMetadata.close()
 
         # Start by uploading the archive to Gitlab
-        package = self.remoteRegistry.generic_packages.upload(
-            package_name=identifier,
-            package_version=versionForGitlab,
-            file_name="archive.tar",
-            path=archivePath 
-        )
+        # For the Tarball we cannot use the python-gitlab method as it reads the whole thing into memory
+        # We therefore reach into the innards of python-gitlab and do it ourselves directly - bit of a pity that it tries to read it into memory as in theory it should work fine if it did not
+        tarballFile = open( archivePath, 'rb' )
+        tarballUploadUrl = f"{self.remoteRegistry.generic_packages._computed_path}/{identifier}/{versionForGitlab}/archive.tar"
+        package = self.remoteRegistry.manager.gitlab.http_put(tarballUploadUrl, post_data=tarballFile, raw=True)
+
         # Then upload the metadata
         package = self.remoteRegistry.generic_packages.upload(
             package_name=identifier,
