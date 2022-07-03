@@ -5,6 +5,7 @@ reuse:
   stage: build
   tags:
     - Linux
+  interruptible: true
   script:
     - rm -rf po/ # HACK some projects have po files committed. Those do not have SPDX markers. Ignore them for now to avoid CI noise
     - reuse lint

@@ -22,6 +22,7 @@ windows_qt515:
     CXX: cl.exe
     CC: cl.exe
     PYTHONUTF8: 1
+  interruptible: true
   before_script:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/

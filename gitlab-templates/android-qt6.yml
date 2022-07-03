@@ -7,6 +7,7 @@ android_qt62:
     KDECI_CACHE_PATH: /mnt/artifacts/android-qt6.2/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
     KDECI_PACKAGE_PROJECT: teams/ci-artifacts/android-qt6.2
+  interruptible: true
   before_script:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/

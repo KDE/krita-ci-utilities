@@ -17,6 +17,7 @@ flatpak:
   variables:
     KDE_FLATPAK_MODULE_NAME: ${CI_PROJECT_NAME}
     KDE_FLATPAK_APP_ID: org.kde.${CI_PROJECT_NAME}
+  interruptible: true
   before_script:
     - git clone https://invent.kde.org/sysadmin/ci-utilities.git
   script:
