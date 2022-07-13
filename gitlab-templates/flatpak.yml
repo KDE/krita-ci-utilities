@@ -26,7 +26,7 @@ flatpak:
     # Build and install
     - python3 -u ci-utilities/flatpak-build.py ${KDE_FLATPAK_MODULE_NAME}
     # Make Bundle
-    - flatpak build-bundle repo ${KDE_FLATPAK_MODULE_NAME}.flatpak ${KDE_FLATPAK_APP_ID} ${CI_COMMIT_REF_NAME}
+    - flatpak build-bundle repo ${KDE_FLATPAK_MODULE_NAME}.flatpak ${KDE_FLATPAK_APP_ID} master
   artifacts:
     name: Flatpak artifacts
     expose_as: Flatpak Bundle
