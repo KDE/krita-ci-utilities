@@ -45,7 +45,7 @@ for package in remoteRegistry.packages.list( as_list=False ):
     }
 
     # Is this a stale branch we can let go of?
-    if branch in ['release-21.08']:
+    if branch in ['release-21.08', 'release-21.12', 'Plasma-5.24']:
         # Then mark it for removal
         packagesToRemove.append( packageData['package'] )
         continue
