@@ -22,39 +22,6 @@ def process_json_manifest(filename, config):
     subprocess.call(["flatpak", "--user", "install", "-y", f"{runtime}//{runtime_version}"])
     subprocess.call(["flatpak", "--user", "install", "-y", f"{sdk}//{runtime_version}"])
 
-    mods = data.get_object().get_array_member('modules')
-    # loop through modules
-    for i in range(mods.get_length()):
-        mod = mods.get_element(i)
-        if mod.get_node_type() != Json.NodeType.OBJECT:
-            continue
-        mod = mod.get_object()
-
-        # we find the module whose source we need to update
-        if mod.get_string_member('name') == modulename:
-            sources = mod.get_array_member('sources')
-            new_sources = Json.Array()
-            for i in range(sources.get_length()):
-                if sources.get_object_element(i).get_string_member('type') != 'git':
-                    new_sources.add_object_element(sources.get_object_element(i))
-                    continue
-
-                path = os.path.relpath('.', os.path.dirname(manifestfile))
-                new_sources.add_element(Json.from_string('{"type": "dir", "path": "%s"}' % path))
-
-            mod.set_array_member('sources', new_sources)
-
-            # add any extra config opts
-            if config:
-                newconfig = Json.Array.sized_new(len(config))
-                for arg in config:
-                    newconfig.add_string_element(arg)
-                mod.set_array_member('config-opts', newconfig)
-
-    # write out updated manifest
-    with open(filename, 'w') as f:
-        f.write(Json.to_string(data, True))
-
 def process_yaml_manifest(filename, config):
     # open manifest
     with open(filename) as f:
@@ -67,26 +34,6 @@ def process_yaml_manifest(filename, config):
     # install platform and sdk
     subprocess.call(["flatpak", "install", "-y", f"{runtime}//{runtime_version}"])
     subprocess.call(["flatpak", "install", "-y", f"{sdk}//{runtime_version}"])
-
-    # loop through modules
-    for mod in data['modules']:
-        if not isinstance(mod, dict):
-            continue
-        # we find the module whose source we need to update
-        if mod['name'] == modulename:
-            for i in range(len(mod['sources'])):
-                if mod['sources'][i]['type'] != 'git':
-                    continue
-                path = os.path.relpath('.', os.path.dirname(manifestfile))
-                mod['sources'][i] = {'type': 'dir', 'path': path}
-
-                # add any extra config opts
-                if config:
-                    mod['config-opts'] = config
-
-    # write out updated manifest
-    with open(filename, 'w') as f:
-        yaml.round_trip_dump(data, f)
 
 if __name__ == '__main__':
     try:
