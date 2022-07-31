@@ -1,39 +1,7 @@
 #!/usr/bin/env python3
 
-import gi
-gi.require_version('Json', '1.0')
-
-from gi.repository import Json
-from ruamel import yaml
 import os, sys, subprocess
-from pathlib import Path
 
-
-def process_json_manifest(filename, config):
-    # open manifest
-    with open(filename) as f:
-        data = Json.from_string(f.read())
-
-    # get platfom and sdk info
-    runtime = data.get_object().get_string_member('runtime')
-    runtime_version = data.get_object().get_string_member('runtime-version')
-    sdk = data.get_object().get_string_member('sdk')
-    # install platform and sdk
-    subprocess.call(["flatpak", "--user", "install", "-y", f"{runtime}//{runtime_version}"])
-    subprocess.call(["flatpak", "--user", "install", "-y", f"{sdk}//{runtime_version}"])
-
-def process_yaml_manifest(filename, config):
-    # open manifest
-    with open(filename) as f:
-        data = yaml.round_trip_load(f, preserve_quotes=True)
-    
-    # get platform and sdk info
-    runtime = data['runtime']
-    runtime_version = data['runtime-version']
-    sdk = data['sdk']
-    # install platform and sdk
-    subprocess.call(["flatpak", "install", "-y", f"{runtime}//{runtime_version}"])
-    subprocess.call(["flatpak", "install", "-y", f"{sdk}//{runtime_version}"])
 
 if __name__ == '__main__':
     try:
@@ -51,12 +19,6 @@ if __name__ == '__main__':
         manifestfile = f"{manifestfile}.yaml"
     else:
         manifestfile = f"{manifestfile}.json"
-
-    # install platform and sdk and update module source
-    if manifestfile.endswith('.json'):
-        process_json_manifest(manifestfile, config)
-    else:
-        process_yaml_manifest(manifestfile, config)
 
     # might be useful for debugging
     subprocess.call(["flatpak", "info", "org.kde.Sdk"])
