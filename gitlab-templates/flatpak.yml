@@ -29,7 +29,7 @@ flatpak:
     - flatpak build-bundle repo ${KDE_FLATPAK_MODULE_NAME}.flatpak ${KDE_FLATPAK_APP_ID} master
   artifacts:
     name: Flatpak artifacts
-    expose_as: Flatpak Bundle
+    expose_as: 'Flatpak Bundle'
     when: on_success
     paths:
       - "${KDE_FLATPAK_MODULE_NAME}.flatpak"
