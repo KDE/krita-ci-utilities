@@ -17,3 +17,5 @@ android_qt62:
   except:
     # exlcude Qt6 builds for release branches until we actually have Qt6-based releases
     - /^release\/.*/
+    variables:
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*/

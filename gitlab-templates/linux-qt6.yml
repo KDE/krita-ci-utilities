@@ -18,6 +18,8 @@ suse_tumbleweed_qt62:
     # exlcude Qt6 builds for release branches until we actually have Qt6-based releases
     - /^release\/.*/
     - /^Plasma\/.*/
+    variables:
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*/ || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^Plasma\/.*/
   artifacts:
     expire_in: 2 weeks
     when: on_success
