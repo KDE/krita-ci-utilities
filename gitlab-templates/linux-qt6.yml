@@ -15,9 +15,10 @@ suse_tumbleweed_qt62:
   script:
     - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Linux --extra-cmake-args=-DBUILD_WITH_QT6=ON --extra-cmake-args=-DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.94.0 --extra-cmake-args=-DQT_MAJOR_VERSION=6
   except:
-    # exlcude Qt6 builds for release branches until we actually have Qt6-based releases
-    - /^release\/.*/
-    - /^Plasma\/.*/
+    refs: 
+      # exclude Qt6 builds for release branches until we actually have Qt6-based releases
+      - /^release\/.*/
+      - /^Plasma\/.*/
     variables:
       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*/ || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^Plasma\/.*/
   artifacts:
