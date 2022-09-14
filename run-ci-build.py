@@ -73,6 +73,10 @@ if 'CI_REPOSITORY_URL' in os.environ and os.path.exists('.git/shallow'):
 elif 'CI_REPOSITORY_URL' in os.environ:
     subprocess.check_call("git fetch --quiet --tags {0} +refs/heads/*:refs/heads/*".format(os.environ['CI_REPOSITORY_URL']), shell=True)
 
+# Cleanup the Git repository if necessary....
+if os.path.exists('.git/HEAD') and (sys.platform == 'freebsd12' or sys.platform == 'freebsd13'):
+    subprocess.check_call("git gc --aggressive")
+
 ####
 # Resolve our project dependencies
 ####
