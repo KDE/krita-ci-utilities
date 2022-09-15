@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-
 import os, sys, subprocess
-
 
 if __name__ == '__main__':
     try:
