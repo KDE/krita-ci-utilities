@@ -9,7 +9,7 @@ workflow:
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH
 
-windows_qt515:
+windows_qt63:
   stage: build
   image: kdeorg/ci-windows-qt63:latest
   tags:
