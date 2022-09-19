@@ -25,3 +25,12 @@ suse_tumbleweed_qt515_static:
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
     - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --extra-cmake-args=-DBUILD_SHARED_LIBS=OFF --platform Linux
+  artifacts:
+    expire_in: 2 weeks
+    when: on_success
+    reports:
+      junit: JUnitTestResults.xml
+      codequality: cppcheck.json
+      coverage_report:
+        coverage_format: cobertura
+        path: CoberturaLcovResults.xml

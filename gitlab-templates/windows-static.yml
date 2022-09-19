@@ -1,3 +1,14 @@
+workflow:
+  rules:
+    # Prevent branch pipelines if an MR is open on the branch.
+    - if: $CI_COMMIT_BRANCH && $CI_PIPELINE_SOURCE == "push" && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    # Allow merge request pipelines.
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Build tags and branches too
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
+
 windows_qt515_static:
   stage: build
   image: kdeorg/ci-windows-qt515:latest
@@ -18,3 +29,8 @@ windows_qt515_static:
   script:
     - . ci-utilities/resources/setup-msvc-env.ps1
     - python -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --extra-cmake-args=-DBUILD_SHARED_LIBS=OFF --platform Windows
+  artifacts:
+    expire_in: 2 weeks
+    when: on_success
+    reports:
+      junit: JUnitTestResults.xml
