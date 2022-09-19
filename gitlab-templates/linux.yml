@@ -30,7 +30,22 @@ suse_tumbleweed_qt515:
     when: on_success
     reports:
       junit: JUnitTestResults.xml
-      codequality: cppcheck.json
       coverage_report:
         coverage_format: cobertura
         path: CoberturaLcovResults.xml
+
+cppcheck:
+  stage: build
+  image: kdeorg/ci-suse-qt515:latest
+  tags:
+    - Linux
+  interruptible: true
+  before_script:
+    - git clone https://invent.kde.org/sysadmin/ci-utilities
+  script:
+    - python3 -u ci-utilities/run-cppcheck.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME
+  artifacts:
+    expire_in: 1 week
+    when: on_success
+    reports:
+      codequality: cppcheck.json

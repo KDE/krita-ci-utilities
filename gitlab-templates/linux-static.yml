@@ -30,7 +30,6 @@ suse_tumbleweed_qt515_static:
     when: on_success
     reports:
       junit: JUnitTestResults.xml
-      codequality: cppcheck.json
       coverage_report:
         coverage_format: cobertura
         path: CoberturaLcovResults.xml
