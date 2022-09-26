@@ -114,7 +114,7 @@ def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
             envChanges['PKG_CONFIG_PATH'].append(extraLocation)
 
         # Next up is QT_PLUGIN_PATH
-        for pluginDirName in ['plugins', 'qca-qt5']:
+        for pluginDirName in ['plugins', 'qca-qt5', 'qt6/plugins']:
             extraLocation = os.path.join( installPrefix, libraryDirName, pluginDirName )
             if os.path.exists( extraLocation ):
                 envChanges['QT_PLUGIN_PATH'].append(extraLocation)
