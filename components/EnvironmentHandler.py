@@ -102,7 +102,7 @@ def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
         envChanges['PATH'].append(extraLocation)
 
     # Handle those paths which involve $prefix/lib*
-    for libraryDirName in ['lib', 'lib32', 'lib64', 'lib/x86_64-linux-gnu', 'libdata']:
+    for libraryDirName in ['lib', 'lib32', 'lib64', 'lib/x86_64-linux-gnu', 'libdata', 'lib/qt6']:
         # Do LD_LIBRARY_PATH
         extraLocation = os.path.join( installPrefix, libraryDirName )
         if os.path.exists( extraLocation ) and not systemPrefix:
@@ -114,7 +114,7 @@ def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
             envChanges['PKG_CONFIG_PATH'].append(extraLocation)
 
         # Next up is QT_PLUGIN_PATH
-        for pluginDirName in ['plugins', 'qca-qt5', 'qt6/plugins']:
+        for pluginDirName in ['plugins', 'qca-qt5']:
             extraLocation = os.path.join( installPrefix, libraryDirName, pluginDirName )
             if os.path.exists( extraLocation ):
                 envChanges['QT_PLUGIN_PATH'].append(extraLocation)
