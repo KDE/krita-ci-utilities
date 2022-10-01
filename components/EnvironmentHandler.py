@@ -33,6 +33,7 @@ def generateFor( installPrefix ):
         # We also need to include other dependencies which are shipped in the Docker SDK image
         envChanges = changesForPrefix( '/opt/kdeandroid-arm', envChanges )
         envChanges = changesForPrefix( '/opt/kdeandroid-arm64', envChanges )
+        envChanges = changesForPrefix( '/home/user/android-arm-clang', envChanges )
 
     # Otherwise are we on a Non-Windows / Mac platform?
     elif sys.platform != 'win32' and sys.platform != 'darwin':
