@@ -13,6 +13,7 @@ suse_tumbleweed_qt62:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
     - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Linux --extra-cmake-args=-DBUILD_WITH_QT6=ON --extra-cmake-args=-DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.94.0 --extra-cmake-args=-DQT_MAJOR_VERSION=6
   except:
     refs: 
