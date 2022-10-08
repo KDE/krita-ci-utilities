@@ -11,13 +11,13 @@ workflow:
 
 windows_qt63:
   stage: build
-  image: kdeorg/ci-windows-qt63:latest
+  image: kdeorg/ci-windows-qt64:latest
   tags:
     - Windows
   variables:
-    KDECI_CACHE_PATH: C:/Gitlab/Artifacts/windows-qt6.3/
+    KDECI_CACHE_PATH: C:/Gitlab/Artifacts/windows-qt6.4/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
-    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/windows-qt6.3
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/windows-qt6.4
     CRAFT_ROOT: C:/Craft/windows-msvc2019_64-cl/
     CXX: cl.exe
     CC: cl.exe
