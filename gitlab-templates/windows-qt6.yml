@@ -34,11 +34,3 @@ windows_qt64:
     when: on_success
     reports:
       junit: JUnitTestResults.xml
-
-windows_qt63:
-  stage: build
-  image: kdeorg/ci-suse-qt515:latest
-  tags:
-    - Linux
-  script:
-    - /usr/bin/true
