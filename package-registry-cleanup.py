@@ -81,9 +81,9 @@ for package in packagesToRemove:
     time.sleep(1)
 
 # For good user feedback, print a list of what we are retaining
-for key, packageData in knownPackages.items():
+#for key, packageData in knownPackages.items():
     # Print the details
-    print("Kept: " + packageData['identifier'] + " - " + packageData['branch'] + " - " + str(packageData['timestamp']))
+    #print("Kept: " + packageData['identifier'] + " - " + packageData['branch'] + " - " + str(packageData['timestamp']))
 
 # All done!
 sys.exit(0)
