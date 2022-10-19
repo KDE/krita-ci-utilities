@@ -27,3 +27,12 @@ suse_tumbleweed_qt64:
     when: on_success
     reports:
       junit: JUnitTestResults.xml
+
+suse_tumbleweed_qt62:
+  stage: build
+  image: kdeorg/ci-suse-qt64:latest
+  tags:
+    - Linux
+  interruptible: true
+  script:
+    - /usr/bin/true
