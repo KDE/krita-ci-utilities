@@ -27,3 +27,11 @@ freebsd_qt64:
     when: on_success
     reports:
       junit: JUnitTestResults.xml
+
+freebsd_qt64:
+  stage: build
+  tags:
+    - FreeBSD
+  interruptible: true
+  script:
+    - /usr/bin/true
