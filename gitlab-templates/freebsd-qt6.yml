@@ -28,7 +28,7 @@ freebsd_qt64:
     reports:
       junit: JUnitTestResults.xml
 
-freebsd_qt64:
+freebsd_qt63:
   stage: build
   tags:
     - FreeBSD
