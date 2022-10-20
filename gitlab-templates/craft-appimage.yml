@@ -35,7 +35,5 @@ craft_appimage_x86_64:
     when: on_success
     expose_as: "Appimage"
     paths:
-     - ".kde-ci-packages/*.AppImage"
-     - ".kde-ci-packages/*.appimage"
-     - ".kde-ci-packages/*.sha256"
+     - ".kde-ci-packages/"
     
