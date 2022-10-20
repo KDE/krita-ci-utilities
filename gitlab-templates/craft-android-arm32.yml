@@ -27,7 +27,7 @@ craft_android_arm32:
     # Save our package
     - packageDir=$(python3 "craftmaster/CraftMaster.py" --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base)
     - mkdir $CI_PROJECT_DIR/.kde-ci-packages/
-    - cp -vf $packageDir/* $CI_PROJECT_DIR/.kde-ci-packages/
+    - cp -vrf $packageDir/* $CI_PROJECT_DIR/.kde-ci-packages/
   artifacts:
     expire_in: 3 days
     when: on_success
