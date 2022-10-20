@@ -22,8 +22,6 @@ craft_android_arm32:
     - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --install-deps $CI_PROJECT_NAME
     # Build the actual application
     - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --no-cache --target master --src-dir $CI_PROJECT_DIR/src/ $CI_PROJECT_NAME
-    # Ensure the tools needed to conduct packaging are installed
-    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -i --update linuxdeploy
     # Package it up!
     - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $CI_PROJECT_DIR/src/ $CI_PROJECT_NAME
     # Save our package
