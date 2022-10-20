@@ -2,7 +2,7 @@ craft_appimage_x86_64:
   stage: deploy
   when: manual
   image: kdeorg/centos7-craft:latest
-  needs: ["suse_tumbleweed_qt515"]
+  #needs: ["suse_tumbleweed_qt515"]
   tags:
     - Linux
   variables:
