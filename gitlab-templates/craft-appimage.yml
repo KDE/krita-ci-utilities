@@ -25,7 +25,7 @@ craft_appimage_x86_64:
     # Ensure the tools needed to conduct packaging are installed
     - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -i --update linuxdeploy
     # Package it up!
-    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --package $CI_PROJECT_NAME
+    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --package --target master $CI_PROJECT_NAME
     # Save our package
     - packageDir=\$(python3 "craftmaster/CraftMaster.py" --config $KDECI_CRAFT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base)
     - mkdir $CI_PROJECT_DIR/.kde-ci-packages/
