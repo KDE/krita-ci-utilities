@@ -33,6 +33,6 @@ craft_android_arm32:
   artifacts:
     expire_in: 3 days
     when: on_success
-    expose_as: "Android (arm32)"
+    expose_as: "Android arm32"
     paths:
      - ".kde-ci-packages/"
