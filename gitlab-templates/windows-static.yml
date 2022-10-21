@@ -28,7 +28,7 @@ windows_qt515_static:
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
     - . ci-utilities/resources/setup-msvc-env.ps1
-    - python -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --extra-cmake-args=-DBUILD_SHARED_LIBS=OFF --platform Windows
+    - python -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --extra-cmake-args=-DBUILD_SHARED_LIBS=OFF --platform Windows/Qt5/Static
   artifacts:
     expire_in: 2 weeks
     when: on_success
