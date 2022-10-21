@@ -1,10 +1,10 @@
 craft_windows_x86_64:
   stage: deploy
   when: manual
-  image: kdeorg/centos7-craft:latest
-  #needs: ["suse_tumbleweed_qt515"]
+  image: kdeorg/ci-windows-qt515:latest
+  #needs: ["windows_qt515"]
   tags:
-    - Linux
+    - Windows
   variables:
     GIT_STRATEGY: none
     KDECI_CRAFT_PLATFORM: windows-msvc2019_64-cl
