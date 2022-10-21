@@ -1,0 +1,39 @@
+craft_appimage_x86_64:
+  stage: deploy
+  when: manual
+  image: kdeorg/centos7-craft:latest
+  #needs: ["suse_tumbleweed_qt515"]
+  tags:
+    - Linux
+  variables:
+    GIT_STRATEGY: none
+    KDECI_CRAFT_PLATFORM: windows-msvc2019_64-cl
+    KDECI_CRAFT_CACHE: C:/Gitlab/Craft-Cache/$KDECI_CRAFT_PLATFORM/
+    KDECI_CRAFT_CONFIG: ci-utilities/resources/CraftConfig.ini
+  interruptible: true
+  before_script:
+    - git clone $env:CI_REPOSITORY_URL --branch=$env:CI_COMMIT_REF_NAME src/
+    - git clone https://invent.kde.org/packaging/craftmaster --branch=master
+    - git clone https://invent.kde.org/sysadmin/ci-utilities
+  script:
+    # Get Craft itself ready
+    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --options virtual.ignored=True --update craft
+    # Install all of our dependencies
+    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --install-deps $env:CI_PROJECT_NAME
+    # Build the actual application
+    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    # Ensure the tools needed to conduct packaging are installed
+    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --update nsis
+    # Package it up!
+    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    # Save our package
+    - $packageDir=python3 "craftmaster/CraftMaster.py" --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base
+    - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages/
+    - Copy-Item $packageDir/* -Destination $env:CI_PROJECT_DIR/.kde-ci-packages/ -Recurse
+  artifacts:
+    expire_in: 3 days
+    when: on_success
+    expose_as: "Appimage"
+    paths:
+     - ".kde-ci-packages/"
+    
