@@ -45,6 +45,13 @@ cppcheck:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
   script:
     - python3 -u ci-utilities/run-cppcheck.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME
+  rules:
+    - changes:
+      - "**/*.c"
+      - "**/*.h"
+      - "**/*.cpp"
+      - "**/*.hpp"
+      - "**/*.ipp"
   artifacts:
     expire_in: 1 week
     when: on_success
