@@ -6,6 +6,7 @@ craft_windows_x86_64:
   tags:
     - Windows
   variables:
+    PYTHONUTF8: 1
     GIT_STRATEGY: none
     KDECI_CRAFT_PLATFORM: windows-msvc2019_64-cl
     KDECI_CRAFT_CACHE: C:/Gitlab/Craft-Cache/$KDECI_CRAFT_PLATFORM/
@@ -17,15 +18,15 @@ craft_windows_x86_64:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
   script:
     # Get Craft itself ready
-    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --options virtual.ignored=True --update craft
+    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --options virtual.ignored=True --update craft
     # Install all of our dependencies
-    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --install-deps $env:CI_PROJECT_NAME
+    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --install-deps $env:CI_PROJECT_NAME
     # Build the actual application
-    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
     # Ensure the tools needed to conduct packaging are installed
-    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --update nsis
+    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --update nsis
     # Package it up!
-    - python3 craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
     # Save our package
     - $packageDir=python3 "craftmaster/CraftMaster.py" --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base
     - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages/
