@@ -1,7 +1,7 @@
 craft_windows_x86_64:
   stage: deploy
   when: manual
-  image: kdeorg/ci-windows-qt515:latest
+  image: kdeorg/windows-msvc2019:latest
   #needs: ["windows_qt515"]
   tags:
     - Windows
