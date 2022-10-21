@@ -145,7 +145,7 @@ class Resolver(object):
         for dependencyRuleset in rules:
             # Check to make sure our platform is covered by this ruleset
             # Our platform is covered if it is mentioned specifically or if '@all' is mentioned as a platform to cover
-            if '@all' not in dependencyRuleset['on'] and '@everything' not in dependencyRuleset['on'] and self.platform not in dependencyRuleset['on']:
+            if not self.platform.matches(dependencyRuleset['on']):
                 continue
         
             # Now that we have that sorted, start going over the actual project specifications...

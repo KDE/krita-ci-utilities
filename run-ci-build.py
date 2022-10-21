@@ -7,7 +7,7 @@ import tempfile
 import argparse
 import subprocess
 import multiprocessing
-from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler
+from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler, PlatformFlavor
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
@@ -18,6 +18,7 @@ parser.add_argument('--only-build', default=False, action='store_true')
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-publishing', default=False, action='store_true')
 arguments = parser.parse_args()
+platform = PlatformFlavor.PlatformFlavor(arguments.platform)
 
 ####
 # Load the project configuration
@@ -42,7 +43,7 @@ if os.path.exists( projectConfigFile ):
 # This is only done if they're enabled for this project and we haven't been asked to just build the project
 run_tests = configuration['Options']['run-tests'] and not arguments.only_build
 # We also Can't run tests in cross compilation environments, so don't run tests there either
-if arguments.platform in ['Android']:
+if platform.os in ['Android']:
     run_tests = False
 
 ####
@@ -86,7 +87,7 @@ projectsMetadataPath = os.path.join( CommonUtils.scriptsBaseDirectory(), 'repo-m
 branchRulesPath = os.path.join( CommonUtils.scriptsBaseDirectory(), 'repo-metadata', 'branch-rules.yml' )
 
 # Bring our dependency resolver online...
-dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPath, arguments.platform )
+dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPath, platform )
 # And use it to resolve the dependencies of this project
 projectDirectDependencies = dependencyResolver.resolve( configuration['Dependencies'], arguments.branch )
 
@@ -190,7 +191,7 @@ if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironme
 
 # Are we on Linux (but not Android)?
 # If we are on Linux then we also need to check to see whether we are on a MUSL based system - as ASAN does not work there
-if arguments.platform == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):
+if platform.os == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):
     # Then we also want Coverage by default
     cmakeCommand.append('-DBUILD_COVERAGE=ON')
     # We also want to enable ASAN for our builds
@@ -206,7 +207,7 @@ if sys.platform == 'win32':
     cmakeCommand.append('-DCMAKE_BUILD_TYPE=Release')
 
 # Are we building for Android?
-if arguments.platform == 'Android':
+if platform.os == 'Android':
     # We want CMake to cross compile appropriately
     cmakeCommand.append('-DKF5_HOST_TOOLING=/opt/nativetooling/lib/x86_64-linux-gnu/cmake/')
     # CMake also needs additional guidance to find things
@@ -274,7 +275,7 @@ if run_tests and configuration['Options']['test-before-installing']:
     # Run the tests!
     print("## RUNNING PROJECT TESTS")
     testResult = TestHandler.run( configuration, sourcesPath, buildPath, installPath, buildEnvironment )
-    if not testResult and arguments.platform in configuration['Options']['require-passing-tests-on']:
+    if not testResult and platform.matches(configuration['Options']['require-passing-tests-on']):
         print("## Tests failed")
         sys.exit(1)
 
@@ -372,7 +373,7 @@ if run_tests and not configuration['Options']['test-before-installing']:
     print("## RUNNING PROJECT TESTS")
     testResult = TestHandler.run( configuration, sourcesPath, buildPath, installPath, buildEnvironment )
     requirePassingTestsOn = configuration['Options']['require-passing-tests-on']
-    if not testResult and ( arguments.platform in requirePassingTestsOn or '@all' in requirePassingTestsOn ):
+    if not testResult and platform.matches(requirePassingTestsOn):
         print("## Tests failed")
         sys.exit(1)
 
@@ -382,7 +383,7 @@ if run_tests and not configuration['Options']['test-before-installing']:
 
 # If we aren't running on Linux then we skip this, as we consider that to be the canonical platform for code coverage...
 # Additionally, as coverage information requires tests to have been run, skip extracting coverage information if tests have been disabled
-if run_tests and arguments.platform == 'Linux' and configuration['Options']['run-gcovr']:
+if run_tests and platform.os == 'Linux' and configuration['Options']['run-gcovr']:
     # Determine the command we need to run
     # We ask GCovr to exclude the build directory by default as we don't want generated artifacts (like moc files) getting included as well
     # Sometimes projects will want to customise things slightly so we provide for that as well
