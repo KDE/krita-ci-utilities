@@ -163,6 +163,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     )
 
     # And run it!
+    print( "## RUNNING: " + commandToRun )
     ctestProcess = subprocess.Popen( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=buildPath, env=buildEnvironment )
     ctestProcess.wait()
 
