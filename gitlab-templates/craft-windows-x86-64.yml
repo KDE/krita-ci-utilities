@@ -1,4 +1,4 @@
-craft_appimage_x86_64:
+craft_windows_x86_64:
   stage: deploy
   when: manual
   image: kdeorg/centos7-craft:latest
@@ -33,7 +33,7 @@ craft_appimage_x86_64:
   artifacts:
     expire_in: 3 days
     when: on_success
-    expose_as: "Appimage"
+    expose_as: "Windows"
     paths:
      - ".kde-ci-packages/"
     
