@@ -15,7 +15,7 @@ craft_windows_x86_64:
   before_script:
     - git clone $env:CI_REPOSITORY_URL --branch=$env:CI_COMMIT_REF_NAME src/
     - cd C:\Gitlab\Craft\
-    - Remove-Item @( 'craftmaster', 'ci-utilities' ) -Force -Recurse -ErrorAction SilentlyContinue
+    - if ( Test-Path C:\Gitlab\Craft\craftmaster ) { Remove-Item @( 'craftmaster', 'ci-utilities' ) -Force -Recurse }
     - git clone https://invent.kde.org/packaging/craftmaster --branch=master
     - git clone https://invent.kde.org/sysadmin/ci-utilities
   script:
