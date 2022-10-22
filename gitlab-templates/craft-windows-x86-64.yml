@@ -10,7 +10,7 @@ craft_windows_x86_64:
     GIT_STRATEGY: none
     KDECI_CRAFT_PLATFORM: windows-msvc2019_64-cl
     KDECI_CRAFT_CACHE: C:/Gitlab/Craft/download/
-    KDECI_CRAFT_CONFIG: ci-utilities/resources/CraftConfig.ini
+    KDECI_CRAFT_CONFIG: $CI_PROJECT_DIR/ci-utilities/resources/CraftConfig.ini
   interruptible: true
   before_script:
     - git clone $env:CI_REPOSITORY_URL --branch=$env:CI_COMMIT_REF_NAME src/
