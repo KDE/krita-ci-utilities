@@ -11,7 +11,7 @@ workflow:
 
 windows_qt515_static:
   stage: build
-  image: kdeorg/ci-windows-qt515:latest
+  image: kdeorg/windows-msvc2019-qt515:latest
   tags:
     - Windows
   variables:

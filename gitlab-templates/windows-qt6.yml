@@ -11,7 +11,7 @@ workflow:
 
 windows_qt64:
   stage: build
-  image: kdeorg/ci-windows-qt64:latest
+  image: kdeorg/windows-msvc2019-qt64:latest
   tags:
     - Windows
   variables:
