@@ -15,7 +15,7 @@ craft_windows_x86_64:
   before_script:
     - git clone $env:CI_REPOSITORY_URL --branch=$env:CI_COMMIT_REF_NAME src/
     - cd C:\Gitlab\Craft\
-    - if ( Test-Path C:\Gitlab\Craft\craftmaster ) { Remove-Item @( 'craftmaster', 'ci-utilities' ) -Force -Recurse }
+    - Get-ChildItem C:\Gitlab\Craft\ | Remove-Item -Recurse -Force
     - git clone https://invent.kde.org/packaging/craftmaster --branch=master
     - git clone https://invent.kde.org/sysadmin/ci-utilities
   script:
@@ -23,8 +23,6 @@ craft_windows_x86_64:
     - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --options virtual.ignored=True --update craft
     # Install all of our dependencies
     - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --install-deps $env:CI_PROJECT_NAME
-    # Clean out any existing build of the application
-    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --unmerge $env:CI_PROJECT_NAME
     # Build the actual application
     - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
     # Ensure the tools needed to conduct packaging are installed
