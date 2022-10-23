@@ -49,9 +49,15 @@ cppcheck:
     - changes:
       - "**/*.c"
       - "**/*.h"
+      - "**/*.cc"
+      - "**/*.hh"
       - "**/*.cpp"
       - "**/*.hpp"
+      - "**/*.cxx"
+      - "**/*.hxx"
+      - "**/*.ii"
       - "**/*.ipp"
+      - "**/*.ixx"
   artifacts:
     expire_in: 1 week
     when: on_success
