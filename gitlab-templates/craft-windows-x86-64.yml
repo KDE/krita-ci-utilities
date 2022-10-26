@@ -32,6 +32,8 @@ craft_windows_x86_64:
     - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --update nsis
     # Package it up!
     - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    - $packageAppx = python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --get subinfo.options.dynamic.packageAppx $env:CI_PROJECT_NAME
+    - if ($packageAppx -eq "True") { python craftmaster/Craftmaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --options "[Packager]PackageType=AppxPackager" --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME }
     # Save our package
     - $packageDir=python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base
     - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages
