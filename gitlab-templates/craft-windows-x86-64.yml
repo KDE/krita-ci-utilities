@@ -31,12 +31,12 @@ craft_windows_x86_64:
     - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
     # Save our package
     - $packageDir=python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base
-    - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages/
-    - Copy-Item $packageDir/* -Destination $env:CI_PROJECT_DIR/.kde-ci-packages/ -Recurse
+    - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages
+    - cd $env:CI_PROJECT_DIR/.kde-ci-packages
+    - Get-ChildItem -Path $packageDir -Recurse -Include *.appx, *.appxupload, *.exe, *.7z, *.sha256 | Copy-Item
   artifacts:
     expire_in: 3 days
     when: on_success
     expose_as: "Windows"
     paths:
      - ".kde-ci-packages/"
-    
