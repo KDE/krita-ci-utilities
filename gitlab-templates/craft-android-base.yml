@@ -20,7 +20,7 @@
     - git clone https://invent.kde.org/sysadmin/ci-utilities
   script:
     # Get Craft itself ready
-    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -i --options virtual.ignored=True --update craft
+    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -i craft
     # Install all of our dependencies
     - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --install-deps $CI_PROJECT_NAME
     # Build the actual application
