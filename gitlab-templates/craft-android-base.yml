@@ -30,4 +30,4 @@
     # Save our package
     - packageDir=$(python3 "craftmaster/CraftMaster.py" --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base)
     - mkdir $CI_PROJECT_DIR/.kde-ci-packages/
-    - cp -vrf $packageDir/* $CI_PROJECT_DIR/.kde-ci-packages/
+    - cp -vrf $packageDir/*.apk $packageDir/metadata/*.zip $CI_PROJECT_DIR/.kde-ci-packages/
