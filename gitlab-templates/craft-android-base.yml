@@ -21,6 +21,8 @@
     # Define a short cut for the lengthy CraftMaster command line
     - function craftmaster { python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM $@; }
   script:
+    # Set up craft settings and blueprint settings
+    - craftmaster --setup
     # Get Craft itself ready
     - craftmaster -c -i craft
     # Install all of our dependencies
