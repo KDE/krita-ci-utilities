@@ -36,11 +36,10 @@ craft_appimage_x86_64:
     # Save our package
     - packageDir=$(craftmaster -c -q --get "packageDestinationDir()" virtual/base)
     - mkdir $CI_PROJECT_DIR/.kde-ci-packages/
-    - cp -vrf $packageDir/* $CI_PROJECT_DIR/.kde-ci-packages/
+    - cp -vf $packageDir/*.AppImage $CI_PROJECT_DIR/.kde-ci-packages/
   artifacts:
     expire_in: 3 days
     when: on_success
     expose_as: "Appimage"
     paths:
      - ".kde-ci-packages/"
-    
