@@ -24,6 +24,8 @@ craft_windows_x86_64:
     # Define a short cut for the lengthy CraftMaster command line
     - function Run-CraftMaster { python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM $args }
   script:
+    # Set up craft settings and blueprint settings
+    - Run-CraftMaster --setup
     # Get Craft itself ready
     - Run-CraftMaster -c -i --options virtual.ignored=True --update craft
     # Install all of our dependencies
