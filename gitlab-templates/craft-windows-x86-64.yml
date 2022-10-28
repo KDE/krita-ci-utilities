@@ -21,21 +21,23 @@ craft_windows_x86_64:
     - Get-ChildItem C:\Gitlab\Craft\ | Remove-Item -Recurse -Force
     - git clone https://invent.kde.org/packaging/craftmaster --branch=master
     - git clone https://invent.kde.org/sysadmin/ci-utilities
+    # Define a short cut for the lengthy CraftMaster command line
+    - function Run-CraftMaster { python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM $args }
   script:
     # Get Craft itself ready
-    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --options virtual.ignored=True --update craft
+    - Run-CraftMaster -c -i --options virtual.ignored=True --update craft
     # Install all of our dependencies
-    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --install-deps $env:CI_PROJECT_NAME
+    - Run-CraftMaster -c --install-deps $env:CI_PROJECT_NAME
     # Build the actual application
-    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    - Run-CraftMaster -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
     # Ensure the tools needed to conduct packaging are installed
-    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -i --update nsis
+    - Run-CraftMaster -c -i --update nsis
     # Package it up!
-    - python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
-    - $packageAppx = python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --get subinfo.options.dynamic.packageAppx $env:CI_PROJECT_NAME
-    - if ($packageAppx -eq "True") { python craftmaster/Craftmaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c --package --options "[Packager]PackageType=AppxPackager" --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME }
+    - Run-CraftMaster -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    - $packageAppx = Run-CraftMaster -c --get subinfo.options.dynamic.packageAppx $env:CI_PROJECT_NAME
+    - if ($packageAppx -eq "True") { Run-CraftMaster -c --package --options "[Packager]PackageType=AppxPackager" --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME }
     # Save our package
-    - $packageDir=python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base
+    - $packageDir = Run-CraftMaster -c -q --get "packageDestinationDir()" virtual/base
     - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages
     - cd $env:CI_PROJECT_DIR/.kde-ci-packages
     - Get-ChildItem -Path $packageDir -Recurse -Include *.appx, *.appxupload, *.exe, *.7z, *.sha256 | Copy-Item
