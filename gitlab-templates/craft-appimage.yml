@@ -13,6 +13,7 @@ craft_appimage_x86_64:
     KDECI_CRAFT_PROJECT_CONFIG: $CI_PROJECT_DIR/src/.craft.ini
   interruptible: true
   before_script:
+    - export LANG=en_US.UTF-8
     - git clone $CI_REPOSITORY_URL --branch=$CI_COMMIT_REF_NAME src/
     # Create empty .craft.ini if none exists
     - touch $KDECI_CRAFT_PROJECT_CONFIG
