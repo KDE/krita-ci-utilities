@@ -18,16 +18,18 @@
     - touch $KDECI_CRAFT_PROJECT_CONFIG
     - git clone https://invent.kde.org/packaging/craftmaster --branch=master
     - git clone https://invent.kde.org/sysadmin/ci-utilities
+    # Define a short cut for the lengthy CraftMaster command line
+    - function craftmaster { python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM $@; }
   script:
     # Get Craft itself ready
-    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -i craft
+    - craftmaster -c -i craft
     # Install all of our dependencies
-    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --install-deps $CI_PROJECT_NAME
+    - craftmaster -c --install-deps $CI_PROJECT_NAME
     # Build the actual application
-    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --no-cache --target master --src-dir $CI_PROJECT_DIR/src/ $CI_PROJECT_NAME
+    - craftmaster -c --no-cache --target master --src-dir $CI_PROJECT_DIR/src/ $CI_PROJECT_NAME
     # Package it up!
-    - python3 craftmaster/CraftMaster.py --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c --package --target master --src-dir $CI_PROJECT_DIR/src/ $CI_PROJECT_NAME
+    - craftmaster -c --package --target master --src-dir $CI_PROJECT_DIR/src/ $CI_PROJECT_NAME
     # Save our package
-    - packageDir=$(python3 "craftmaster/CraftMaster.py" --config $KDECI_CRAFT_CONFIG --config-override $KDECI_CRAFT_PROJECT_CONFIG --target $KDECI_CRAFT_PLATFORM -c -q --get "packageDestinationDir()" virtual/base)
+    - packageDir=$(craftmaster -c -q --get "packageDestinationDir()" virtual/base)
     - mkdir $CI_PROJECT_DIR/.kde-ci-packages/
     - cp -vrf $packageDir/*.apk $packageDir/metadata/*.zip $CI_PROJECT_DIR/.kde-ci-packages/
