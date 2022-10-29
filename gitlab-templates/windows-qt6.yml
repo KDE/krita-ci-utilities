@@ -28,7 +28,7 @@ windows_qt64:
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
     - . ci-utilities/resources/setup-msvc-env.ps1
-    - python -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Windows/Qt6/Shared --extra-cmake-args=-DBUILD_WITH_QT6=ON --extra-cmake-args=-DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.94.0 --extra-cmake-args=-DQT_MAJOR_VERSION=6
+    - python -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Windows/Qt6/Shared --extra-cmake-args=-DBUILD_WITH_QT6=ON --extra-cmake-args=-DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.99.0 --extra-cmake-args=-DQT_MAJOR_VERSION=6
   artifacts:
     expire_in: 2 weeks
     when: on_success
