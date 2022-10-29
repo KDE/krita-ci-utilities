@@ -5,7 +5,7 @@ import copy
 import yaml
 import argparse
 import subprocess
-from components import CommonUtils, Dependencies
+from components import CommonUtils, Dependencies, PlatformFlavor
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to seed a Package Registry for use with run-ci-build.py')
@@ -13,6 +13,7 @@ parser.add_argument('--seed-file', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 arguments = parser.parse_args()
+platform = PlatformFlavor.PlatformFlavor(arguments.platform)
 
 ####
 # Prepare to work
@@ -37,7 +38,7 @@ projectsMetadataPath = os.path.join( CommonUtils.scriptsBaseDirectory(), 'repo-m
 branchRulesPath = os.path.join( CommonUtils.scriptsBaseDirectory(), 'repo-metadata', 'branch-rules.yml' )
 
 # Bring our dependency resolver online...
-dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPath, arguments.platform )
+dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPath, platform )
 # And use it to determine the projects we will be building
 # The seed file uses the same definition format as the project dependencies, so we can reuse that logic
 # In this case the branch name is only used to resolve @same and that is unsupported in a seed file, so a dummy value of None is sufficient here
@@ -128,7 +129,7 @@ while len(projectsToBuild) != 0:
             CommonUtils.scriptsBaseDirectory(),
             identifier,
             branch,
-            arguments.platform
+            platform
         )
         if arguments.extra_cmake_args:
             # necessary since we cannot use the 'extend' action for the arguments due to requiring Python < 3.8

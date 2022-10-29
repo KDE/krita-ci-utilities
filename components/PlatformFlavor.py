@@ -28,3 +28,6 @@ class PlatformFlavor:
             if f == self.flavor[0:len(f)]:
                 return True
         return False
+
+    def __str__(self):
+        return '/'.join(self.flavor)
