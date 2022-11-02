@@ -65,7 +65,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
 
     # We want Qt to be noisy about debug output to make debugging tests easier
     # Some stuff is so verbose it hits the testlib maxwarnings limits though
-    buildEnvironment['QT_LOGGING_RULES'] = "*.debug=true;qt.text.font.db=false;kf.globalaccel.kglobalacceld=false"
+    buildEnvironment['QT_LOGGING_RULES'] = "*.debug=true;qt.text.font.db=false;kf.globalaccel.kglobalacceld=false;kf.wayland.client=false"
     # We want to force Qt to print to stderr, even on Windows
     buildEnvironment['QT_LOGGING_TO_CONSOLE'] = '1'
     buildEnvironment['QT_FORCE_STDERR_LOGGING'] = '1'
