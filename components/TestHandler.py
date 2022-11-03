@@ -35,7 +35,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     # On Linux/*BSD systems we need to make sure XDG_RUNTIME_DIR is set as lots of tools are reliant on it being set and existing
     if sys.platform != 'win32' and sys.platform != 'darwin':
         # Set it in the environment
-        buildEnvironment['XDG_RUNTIME_DIR'] = os.path.join( sourcesPath, '_runtime' )
+        buildEnvironment['XDG_RUNTIME_DIR'] = '/tmp/runtime-kdeci/'
         # And make sure it exists
         if not os.path.exists( buildEnvironment['XDG_RUNTIME_DIR'] ):
             # Create it!
