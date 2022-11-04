@@ -1,12 +1,12 @@
-android_qt62:
+android_qt64:
   stage: build
-  image: kdeorg/android-qt62:latest
+  image: kdeorg/android-qt64:latest
   tags:
     - Linux
   variables:
-    KDECI_CACHE_PATH: /mnt/artifacts/android-qt6.2/
+    KDECI_CACHE_PATH: /mnt/artifacts/android-qt6.4/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
-    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/android-qt6.2
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/android-qt6.4
   interruptible: true
   before_script:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
