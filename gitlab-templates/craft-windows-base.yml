@@ -1,0 +1,45 @@
+.craft_windows_base:
+  stage: deploy
+  when: manual
+  image: kdeorg/windows-msvc2019-qt515:latest
+  #needs: ["windows_qt515"]
+  tags:
+    - Windows
+  variables:
+    PYTHONUTF8: 1
+    GIT_STRATEGY: none
+    # KDECI_CRAFT_PLATFORM is specified in the derived jobs
+    KDECI_CRAFT_CACHE: C:/Gitlab/Craft/download/
+    KDECI_CRAFT_CONFIG: ci-utilities/resources/CraftConfig.ini
+    KDECI_CRAFT_PROJECT_CONFIG: $CI_PROJECT_DIR/src/.craft.ini
+  interruptible: true
+  before_script:
+    - git clone $env:CI_REPOSITORY_URL --branch=$env:CI_COMMIT_REF_NAME src/
+    # Create empty .craft.ini if none exists
+    - if (!(Test-Path $env:KDECI_CRAFT_PROJECT_CONFIG)) { New-Item $env:KDECI_CRAFT_PROJECT_CONFIG -ItemType file }
+    - cd C:\Gitlab\Craft\
+    - Get-ChildItem C:\Gitlab\Craft\ | Remove-Item -Recurse -Force
+    - git clone https://invent.kde.org/packaging/craftmaster --branch=master
+    - git clone https://invent.kde.org/sysadmin/ci-utilities
+    # Define a short cut for the lengthy CraftMaster command line
+    - function Run-CraftMaster { python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM $args }
+  script:
+    # Set up craft settings and blueprint settings
+    - Run-CraftMaster --setup
+    # Get Craft itself ready
+    - Run-CraftMaster -c -i --options virtual.ignored=True --update craft
+    # Install all of our dependencies
+    - Run-CraftMaster -c --install-deps $env:CI_PROJECT_NAME
+    # Build the actual application
+    - Run-CraftMaster -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    # Ensure the tools needed to conduct packaging are installed
+    - Run-CraftMaster -c -i --update nsis
+    # Package it up!
+    - Run-CraftMaster -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    - $packageAppx = Run-CraftMaster -c --get subinfo.options.dynamic.packageAppx $env:CI_PROJECT_NAME
+    - if ($packageAppx -eq "True") { Run-CraftMaster -c --package --options "[Packager]PackageType=AppxPackager" --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME }
+    # Save our package
+    - $packageDir = Run-CraftMaster -c -q --get "packageDestinationDir()" virtual/base
+    - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages
+    - cd $env:CI_PROJECT_DIR/.kde-ci-packages
+    - Get-ChildItem -Path $packageDir -Recurse -Include *.appx, *.appxupload, *.exe, *.7z, *.sha256 | Copy-Item

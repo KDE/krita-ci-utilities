@@ -1,12 +1,12 @@
 include: /gitlab-templates/craft-windows-base.yml
 
-craft_windows_x86_64:
+craft_windows_mingw64:
   extends: .craft_windows_base
   variables:
-    KDECI_CRAFT_PLATFORM: windows-msvc2019_64-cl
+    KDECI_CRAFT_PLATFORM: windows-mingw_64-gcc
   artifacts:
     expire_in: 3 days
     when: on_success
-    expose_as: "Windows"
+    expose_as: "Windows MinGW"
     paths:
      - ".kde-ci-packages/"
