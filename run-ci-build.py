@@ -387,7 +387,7 @@ if run_tests and platform.os == 'Linux' and configuration['Options']['run-gcovr'
     # Determine the command we need to run
     # We ask GCovr to exclude the build directory by default as we don't want generated artifacts (like moc files) getting included as well
     # Sometimes projects will want to customise things slightly so we provide for that as well
-    commandToRun = 'gcovr -x --output="CoberturaLcovResults.xml" -e "_build/.*" -r "{sources}" {otherArguments}'
+    commandToRun = 'gcovr --print-summary --xml --output="CoberturaLcovResults.xml" --exclude "_build/.*" --root "{sources}" {otherArguments}'
     commandToRun = commandToRun.format( sources=sourcesPath, otherArguments=configuration['Options']['gcovr-arguments'] )
 
     # Now run it!
