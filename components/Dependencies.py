@@ -155,10 +155,16 @@ class Resolver(object):
                 # Next we need to resolve the branch for each of the dependencies we have found
                 # This will be needed later to fetch the appropriate build
                 for requirementProject in matchingProjects:
-                    # Determine the branch to use
-                    resolvedBranch = self._resolveDependencyBranch( requirementProject, requirementBranch, currentBranch )
                     # Extract the project identifier...
                     identifier = requirementProject['identifier']
+
+                    # qca is special and already provided by the base image, ignore it
+                    if identifier == "libraries/qca":
+                        continue
+
+                    # Determine the branch to use
+                    resolvedBranch = self._resolveDependencyBranch( requirementProject, requirementBranch, currentBranch )
+
                     # Add it to the list of found dependencies
                     foundDependencies[ identifier ] = resolvedBranch
 
