@@ -29,7 +29,9 @@ suse_tumbleweed_qt515:
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   artifacts:
     expire_in: 2 weeks
-    when: on_success
+    when: always
+    paths:
+      - "**/failed_test_shot_*.png"
     reports:
       junit: JUnitTestResults.xml
       coverage_report:
