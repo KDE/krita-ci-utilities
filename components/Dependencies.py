@@ -158,8 +158,9 @@ class Resolver(object):
                     # Extract the project identifier...
                     identifier = requirementProject['identifier']
 
-                    # qca is special and already provided by the base image, ignore it
-                    if identifier == "libraries/qca":
+                    # Some dependencies are special so we should ignore them
+                    # QCA is included in the base system image for instance
+                    if identifier in ['qca']:
                         continue
 
                     # Determine the branch to use
