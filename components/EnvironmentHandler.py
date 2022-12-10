@@ -36,7 +36,7 @@ def generateFor( installPrefix ):
         envChanges = changesForPrefix( '/home/user/android-arm-clang', envChanges )
 
     # Otherwise are we on a Non-Windows / Mac platform?
-    elif sys.platform != 'win32' and sys.platform != 'darwin':
+    if sys.platform != 'win32' and sys.platform != 'darwin':
         # The we need to consider the system install prefix
         # Normally these would be setup for us, but this is just to be absolutely sure everything is right
         envChanges = changesForPrefix( "/usr/", envChanges, systemPrefix=True )
@@ -45,7 +45,7 @@ def generateFor( installPrefix ):
 
     # On FreeBSD LLVM gets installed to it's own separate prefix
     # Make sure that is included too
-    elif sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
+    if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
         # Include the necessary LLVM path then
         envChanges = changesForPrefix( "/usr/local/llvm13", envChanges, systemPrefix=True )
 
