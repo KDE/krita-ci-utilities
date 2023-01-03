@@ -41,3 +41,20 @@ windows_qt64:
     when: on_success
     reports:
       junit: JUnitTestResults.xml
+
+windows_qt64:
+  stage: build
+  image: kdeorg/ci-suse-qt515:latest
+  tags:
+    - Linux
+  interruptible: true
+  before_script:
+  script:
+    - /usr/bin/true
+  only:
+    refs: 
+      # exclude Qt6 builds for release branches until we actually have Qt6-based releases
+      - /^release\/.*/
+      - /^Plasma\/.*/
+    variables:
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*/ || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^Plasma\/.*/
