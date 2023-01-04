@@ -1,0 +1,5 @@
+azure-storage-blob
+markdownify
+requests
+
+git+https://invent.kde.org/kloecker/microstore.git
