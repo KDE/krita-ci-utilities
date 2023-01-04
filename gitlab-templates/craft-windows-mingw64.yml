@@ -1,4 +1,6 @@
-include: https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/craft-windows-base.yml
+include:
+  - project: sysadmin/ci-utilities
+    file: /gitlab-templates/craft-windows-base.yml
 
 craft_windows_mingw64:
   extends: .craft_windows_base
