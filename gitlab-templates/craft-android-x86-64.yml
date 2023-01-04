@@ -1,4 +1,4 @@
-include: /gitlab-templates/craft-android-base.yml
+include: https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/craft-android-base.yml
 
 craft_android_x86_64:
   extends: .craft_android_base
