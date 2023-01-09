@@ -1,0 +1,8 @@
+windows_qt64:
+  stage: build
+  image: kdeorg/ci-suse-qt515:latest
+  tags:
+    - Linux
+  interruptible: true
+  script:
+    - /usr/bin/true
