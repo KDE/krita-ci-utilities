@@ -1,3 +1,6 @@
+variables:
+  ANDROID_TOOLCHAIN_FILE: /builds/$CI_PROJECT_PATH/_install/share/ECM/toolchain/Android.cmake
+
 android_qt515:
   stage: build
   image: kdeorg/android-qt515:latest
@@ -13,4 +16,4 @@ android_qt515:
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
     - git config --global --add safe.directory $CI_PROJECT_DIR
-    - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Android/Qt5/Shared --extra-cmake-args=-DCMAKE_TOOLCHAIN_FILE=/opt/nativetooling/share/ECM/toolchain/Android.cmake
+    - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Android/Qt5/Shared --extra-cmake-args=-DCMAKE_TOOLCHAIN_FILE=$ANDROID_TOOLCHAIN_FILE
