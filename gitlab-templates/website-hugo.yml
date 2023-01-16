@@ -1,0 +1,36 @@
+include:
+  - project: sysadmin/ci-utilities
+    file: /gitlab-templates/website-base.yml
+
+variables:
+  # WEBSITE_DOMAIN: www.kde.org (needs to be set where ever this template gets included)
+  DEPLOY_PATH: '/srv/www/generated/"$WEBSITE_DOMAIN"'
+  DEPLOY_USER: sitedeployer
+  DEPLOY_HOST: nicoda.kde.org
+
+build_hugo_website:
+  tags:
+    - Linux
+  stage: build
+  before_script:
+    - |
+      export LANG=en_US.UTF-8
+      if [ -f "scripts/custom_generation.py" ]; then
+          echo "Found custom generation script"
+          python3 scripts/custom_generation.py
+      elif [ -d "po" ]; then
+          echo "Found po folder"
+          export PACKAGE="$CI_PROJECT_PATH_SLUG"
+          hugoi18n compile po
+          hugoi18n generate
+      else
+          echo "No data processing"
+      fi
+    - hugo mod npm pack
+    - npm install
+  script:
+    - hugo --minify
+  artifacts:
+    expire_in: 2 weeks
+    paths:
+      - public/

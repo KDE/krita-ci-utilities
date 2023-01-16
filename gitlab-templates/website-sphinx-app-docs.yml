@@ -1,0 +1,38 @@
+include:
+  - project: sysadmin/ci-utilities
+    file: /gitlab-templates/website-base.yml
+
+variables:
+    # EPUB_NAME: KdenliveManual (needs to be set where ever this template gets included)
+    # WEBSITE_DOMAIN: docs.kdenlive.org (needs to be set where ever this template gets included)
+    DEPLOY_PATH: '/srv/www/generated/"$WEBSITE_DOMAIN"'
+    DEPLOY_USER: sitedeployer
+    DEPLOY_HOST: nicoda.kde.org
+
+.build_sphinx_app_docs:
+    tags:
+      - Linux
+    stage: build
+    variables:
+      BUILD_LANGUAGE: en
+    before_script:
+      # prepare environment and dependencies
+      - pip install virtualenv
+      - virtualenv venv
+      - source venv/bin/activate
+    script:
+      # build
+      - sphinx-build -M html . _staging/$BUILD_LANGUAGE -D language="$BUILD_LANGUAGE" -w _logs/warnings-$BUILD_LANGUAGE-html.log
+      - mkdir -p public/$BUILD_LANGUAGE/
+      - mv _staging/$BUILD_LANGUAGE/html/* public/$BUILD_LANGUAGE/
+      - sphinx-build -M epub . _staging/$BUILD_LANGUAGE -D language="$BUILD_LANGUAGE"
+      - mkdir public/$BUILD_LANGUAGE/epub/
+      - mv _staging/$BUILD_LANGUAGE/epub/$EPUB_NAME.epub public/$BUILD_LANGUAGE/epub/
+    artifacts:
+        expire_in: 2 weeks
+        paths:
+          - _logs/
+          - public/$BUILD_LANGUAGE
+
+build_english_docs:
+    extends: .build_sphinx_app_docs
