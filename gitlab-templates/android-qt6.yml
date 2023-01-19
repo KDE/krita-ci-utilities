@@ -13,7 +13,7 @@ android_qt64:
     - git clone https://invent.kde.org/sysadmin/repo-metadata ci-utilities/repo-metadata/
   script:
     - git config --global --add safe.directory $CI_PROJECT_DIR
-    - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Android/Qt6/Shared --extra-cmake-args=-DCMAKE_TOOLCHAIN_FILE=/opt/Qt/lib/cmake/Qt6/qt.toolchain.cmake --extra-cmake-args=-DQT_CHAINLOAD_TOOLCHAIN_FILE=/opt/nativetooling/share/ECM/toolchain/Android.cmake --extra-cmake-args=-DBUILD_WITH_QT6=ON --extra-cmake-args=-DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.99.0
+    - python3 -u ci-utilities/run-ci-build.py --project $CI_PROJECT_NAME --branch $CI_COMMIT_REF_NAME --platform Android/Qt6/Shared --extra-cmake-args=-DBUILD_WITH_QT6=ON --extra-cmake-args=-DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.99.0
   except:
     refs:
       # exclude Qt6 builds for release branches until we actually have Qt6-based releases

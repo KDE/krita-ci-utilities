@@ -216,6 +216,31 @@ if platform.os == 'Android':
     # Then give that list to CMake
     cmakeCommand.append('-DECM_ADDITIONAL_FIND_ROOT_PATH="' + ecmAdditionalRoots + '"')
 
+    # Next we need to set the appropriate toolchain
+    ecmToolchainLocations = [
+        # First we should prefer toolchains shipped with this project
+        os.path.join( sourcesPath, "toolchain/Android.cmake" ),
+        # Next we  prefer a toolchain provided by the project dependencies
+        os.path.join( installPrefix, "share/ECM/toolchain/Android.cmake" ),
+        # As a final fallback use a toolchain baked into our SDK/Image
+        "/opt/nativetooling/share/ECM/toolchain/Android.cmake",
+    ]
+    ecmToolchain = CommonUtils.firstPresentFile("/", ecmToolchainLocations)
+    qt6Toolchain = "/opt/Qt/lib/cmake/Qt6/qt.toolchain.cmake"
+
+    # Now we make sure we found something (this should never happen)
+    if ecmToolchain == "":
+        print("## Unable to locate a suitable toolchain for this build!")
+        print("## Aborting build - Android compilation requires use of an appropriate CMake toolchain to enable cross-compilation (please add a dependency on extra-cmake-modules)")
+        sys.exit(1)
+
+    # Determine whether we are in a Qt 6 or Qt 5 environment
+    if os.path.exists( qt6Toolchain ):
+        cmakeCommand.append("-DCMAKE_TOOLCHAIN_FILE=" + qt6Toolchain)
+        cmakeCommand.append("-DQT_CHAINLOAD_TOOLCHAIN_FILE=" + ecmToolchain)
+    else:
+        cmakeCommand.append("-DCMAKE_TOOLCHAIN_FILE=" + ecmToolchain)
+
 # Extra CMake arguments provided by the Gitlab template
 if arguments.extra_cmake_args:
     # necessary since we cannot use the 'extend' action for the arguments due to requiring Python < 3.8
