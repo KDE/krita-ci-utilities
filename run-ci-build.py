@@ -221,7 +221,7 @@ if platform.os == 'Android':
         # First we should prefer toolchains shipped with this project
         os.path.join( sourcesPath, "toolchain/Android.cmake" ),
         # Next we  prefer a toolchain provided by the project dependencies
-        os.path.join( installPrefix, "share/ECM/toolchain/Android.cmake" ),
+        os.path.join( installPath, "share/ECM/toolchain/Android.cmake" ),
         # As a final fallback use a toolchain baked into our SDK/Image
         "/opt/nativetooling/share/ECM/toolchain/Android.cmake",
     ]
