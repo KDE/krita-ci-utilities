@@ -210,6 +210,7 @@ if sys.platform == 'win32':
 if platform.os == 'Android':
     # We want CMake to cross compile appropriately
     cmakeCommand.append('-DKF5_HOST_TOOLING=/opt/nativetooling/lib/x86_64-linux-gnu/cmake/')
+    cmakeCommand.append('-DKF6_HOST_TOOLING=/opt/nativetooling/lib/x86_64-linux-gnu/cmake/')
     # CMake also needs additional guidance to find things
     # First though, apply a necessary transformation to allow CMake to parse the list we pass it
     ecmAdditionalRoots = buildEnvironment['CMAKE_PREFIX_PATH'].replace(':', ';')
