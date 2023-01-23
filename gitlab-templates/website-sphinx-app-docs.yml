@@ -15,17 +15,13 @@ variables:
     stage: build
     variables:
       BUILD_LANGUAGE: en
-    before_script:
-      # prepare environment and dependencies
-      - pip install virtualenv
-      - virtualenv venv
-      - source venv/bin/activate
     script:
-      # build
+      # build html
       - sphinx-build -M html . _staging/$BUILD_LANGUAGE -D language="$BUILD_LANGUAGE" -w _logs/warnings-$BUILD_LANGUAGE-html.log
       - mkdir -p public/$BUILD_LANGUAGE/
       - mv _staging/$BUILD_LANGUAGE/html/* public/$BUILD_LANGUAGE/
-      - sphinx-build -M epub . _staging/$BUILD_LANGUAGE -D language="$BUILD_LANGUAGE"
+      # build epub
+      - sphinx-build -M epub . _staging/$BUILD_LANGUAGE -D language="$BUILD_LANGUAGE" -w _logs/warnings-$BUILD_LANGUAGE-epub.log
       - mkdir public/$BUILD_LANGUAGE/epub/
       - mv _staging/$BUILD_LANGUAGE/epub/$EPUB_NAME.epub public/$BUILD_LANGUAGE/epub/
     artifacts:
