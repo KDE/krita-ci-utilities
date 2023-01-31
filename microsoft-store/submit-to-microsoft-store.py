@@ -511,6 +511,9 @@ def parseCommandLine():
     # debug options
     parser.add_argument("-v", "--verbose", action="count", default=0, help="increase the verbosity")
     parser.add_argument(
+        "--skip-commit", dest="skipCommit", action="store_true", help="submit the changes, but skip the final commit"
+    )
+    parser.add_argument(
         "--dry-run", dest="dryRun", action="store_true", help="perform a trial run without submitting any changes"
     )
     parser.add_argument(
@@ -765,7 +768,7 @@ def uploadPackagesFiles(zipFilePath, fileUploadUrl):
         logger.debug("Upload result: %s", result)
 
 
-def submitApp(client, *, appstreamId, appxuploadFile, storeId, keep, dryRun, **kwargs):
+def submitApp(client, *, appstreamId, appxuploadFile, storeId, keep, dryRun, skipCommit, **kwargs):
     if not os.path.isfile(appxuploadFile):
         raise Error(f"File not found: {appxuploadFile}")
 
@@ -865,9 +868,12 @@ def submitApp(client, *, appstreamId, appxuploadFile, storeId, keep, dryRun, **k
             uploadPackagesFiles(zipFilePath, fileUploadUrl)
 
     # commit the submission
-    logger.info("Committing submission")
-    if not dryRun:
-        client.commitSubmission(storeId, submissionId, waitUntilCommitIsCompleted=True)
+    if not skipCommit:
+        logger.info("Committing submission")
+        if not dryRun:
+            client.commitSubmission(storeId, submissionId, waitUntilCommitIsCompleted=True)
+    else:
+        logger.info("Skipped committing the submission")
 
 
 def main():

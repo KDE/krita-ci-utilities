@@ -48,6 +48,10 @@ For a test run which doesn't change anything in the Microsoft Store use the
 **Warning:** The output can contain confidential information, e.g. if you have
 provided test credentials in the notes for submission.
 
+To prepare a new submission without committing it use the `--skip-commit` option.
+This allows you to have a final look at the submission in the Partner Center
+before you commit it from there.
+
 The script updates the information of the last published submission with the
 information found in the AppStream data of the app (including translations).
 The Store ID is extracted from the Microsoft Store URL of the app which is
