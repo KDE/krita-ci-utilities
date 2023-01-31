@@ -23,7 +23,8 @@ To submit an app run
 ```
 python3 submit-to-microsoft-store.py <appstreamId> <appxuploadFile>
 ```
-where *appstreamId* is the AppStream ID of the app (e.g. org.kde.neochat) and
+where *appstreamId* is the AppStream ID of the app (e.g. `org.kde.neochat`
+or `org.kde.okular` without the trailing `.desktop`) and
 *appxuploadFile* is the path of an .appxupload built by the CI.
 
 If the AppStream data does not yet contain the URL for the Microsoft Store (e.g.
