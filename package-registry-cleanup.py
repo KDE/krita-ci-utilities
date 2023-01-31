@@ -26,6 +26,30 @@ remoteRegistry = gitlabServer.projects.get( packageProject )
 # Start building up a list of known packages
 knownPackages = {}
 packagesToRemove = []
+
+# Configuration - list of Qt 5 package projects...
+packageProjectsForQt5 = [
+    'teams/ci-artifacts/suse-qt5.15',
+    'teams/ci-artifacts/suse-qt5.15-static',
+    'teams/ci-artifacts/freebsd-qt5.15',
+    'teams/ci-artifacts/android-qt5.15',
+    'teams/ci-artifacts/windows-qt5.15',
+    'teams/ci-artifacts/windows-qt5.15-static',
+]
+
+# Configuration - list of projects whose master is Qt 6 only now
+projectsWithQt6OnlyMaster = [
+    # Frameworks
+    'attica', 'baloo', 'bluez-qt', 'breeze-icons', 'extra-cmake-modules', 'frameworkintegration', 'kactivities', 'kactivities-stats',
+    'kapidox', 'karchive', 'kauth', 'kbookmarks', 'kcalendarcore', 'kcmutils', 'kcodecs', 'kcompletion', 'kconfig', 'kconfigwidgets', 
+    'kcontacts', 'kcoreaddons', 'kcrash', 'kdav', 'kdbusaddons', 'kdeclarative', 'kded', 'kdelibs4support', 'kdesignerplugin', 'kdesu',
+    'kdewebkit', 'kdnssd', 'kdoctools', 'kemoticons', 'kfilemetadata', 'kglobalaccel', 'kguiaddons', 'kholidays', 'khtml', 'ki18n',
+    'kiconthemes', 'kidletime', 'kimageformats', 'kinit', 'kio', 'kirigami', 'kitemmodels', 'kitemviews', 'kjobwidgets', 'kjs', 'kjsembed',
+    'kmediaplayer', 'knewstuff', 'knotifications', 'knotifyconfig', 'kpackage', 'kparts', 'kpeople', 'kplotting', 'kpty', 'kquickcharts',
+    'kross', 'krunner', 'kservice', 'ktexteditor', 'ktextwidgets', 'kunitconversion', 'kwallet', 'kwayland', 'kwidgetsaddons', 'kwindowsystem',
+    'kxmlgui', 'kxmlrpcclient', 'modemmanager-qt', 'networkmanager-qt', 'oxygen-icons5', 'plasma-framework', 'prison', 'purpose', 'qqc2-desktop-style',
+    'solid', 'sonnet', 'syndication', 'syntax-highlighting', 'threadweaver',
+]
         
 # Now that we have that setup, let's find out what packages our Gitlab package project knows about
 for package in remoteRegistry.packages.list( as_list=False ):
@@ -47,6 +71,12 @@ for package in remoteRegistry.packages.list( as_list=False ):
     # Is this a stale branch we can let go of?
     if branch in ['release-21.08', 'release-21.12', 'release-22.04', 'release-22.08']:
         # Then mark it for removal
+        packagesToRemove.append( packageData['package'] )
+        continue
+
+    # Is this a 'master' Framework package in a Qt 5 repository
+    if arguments.project in packageProjectsForQt5 and package.name in projectsWithQt6OnlyMaster and branch == "master":
+        # Then remove it too!
         packagesToRemove.append( packageData['package'] )
         continue
 
