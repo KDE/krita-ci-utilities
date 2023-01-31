@@ -19,7 +19,7 @@ try:
     import requests
     from azure.storage.blob import BlobClient
     from markdownify import markdownify
-    from msstore.MicrosoftStoreClient import MicrosoftStoreClient
+    from microstore.MicrosoftStoreClient import MicrosoftStoreClient
 except ImportError as e:
     print("Error: %s" % e, file=sys.stderr)
     print("Please install the requirements (see requirements.txt)!")
