@@ -390,6 +390,14 @@ os.remove( archiveFile.name )
 if arguments.only_build:
     sys.exit(0)
 
+# Regenerate our environment in case the newly installed software uses directories previously not used
+buildEnvironment = EnvironmentHandler.generateFor( installPrefix=installPath )
+
+# Apply any environment changes from our configuration as well
+for key, value in configuration['Environment'].items():
+    # Apply each key in turn
+    buildEnvironment[ key ] = value
+
 ####
 # Run tests if we didn't do that already
 ####
