@@ -1,7 +1,3 @@
-stages:
-  - build
-  - deploy
-
 workflow:
   rules:
     # Prevent branch pipelines if an MR is open on the branch.
