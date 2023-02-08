@@ -17,6 +17,7 @@ variables:
       BUILD_LANGUAGE: en
     script:
       # build html
+      - git config --global --add safe.directory $CI_PROJECT_DIR
       - sphinx-build -M html . _staging/$BUILD_LANGUAGE -D language="$BUILD_LANGUAGE" -w _logs/warnings-$BUILD_LANGUAGE-html.log
       - mkdir -p public/$BUILD_LANGUAGE/
       - mv _staging/$BUILD_LANGUAGE/html/* public/$BUILD_LANGUAGE/
