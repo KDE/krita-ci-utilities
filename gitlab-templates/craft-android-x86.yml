@@ -1,0 +1,14 @@
+include:
+  - project: sysadmin/ci-utilities
+    file: /gitlab-templates/craft-android-base.yml
+
+craft_android_x86:
+  extends: .craft_android_base
+  variables:
+    KDECI_CRAFT_PLATFORM: android-x86-clang
+  artifacts:
+    expire_in: 3 days
+    when: on_success
+    expose_as: "Android x86"
+    paths:
+     - ".kde-ci-packages/"
