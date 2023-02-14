@@ -9,6 +9,7 @@ craft_android_arm32:
   artifacts:
     expire_in: 3 days
     when: on_success
-    expose_as: "Android arm32"
     paths:
      - ".kde-ci-packages/"
+     # Archive only the architecture-specific artifacts for creating an application bundle
+     - ${KDECI_CRAFT_PLATFORM}/build/kde/applications/${CI_PROJECT_NAME}/work/build/${KDECI_ANDROID_TARGET}_build_apk/libs
