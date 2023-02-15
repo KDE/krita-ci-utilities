@@ -1,0 +1,27 @@
+craft_android_appbundle:
+  stage: deploy
+  when: manual
+  image: kdeorg/android-qt515:latest
+  tags:
+    - Linux
+  variables:
+    GIT_STRATEGY: none
+  interruptible: true
+  needs:
+    - craft_android_arm32
+    - craft_android_arm64
+    - craft_android_x86_64
+  script:
+    - export APK_PATH=${CI_PROJECT_DIR}/android-arm64-clang/build/kde/applications/${CI_PROJECT_NAME}/work/build/${KDECI_ANDROID_TARGET}_build_apk
+    - cd ${APK_PATH}
+    # Make the artifacts of the other architectures available for the app bundle
+    - mv -v ${CI_PROJECT_DIR}/android-arm-clang/build/kde/applications/${CI_PROJECT_NAME}/work/build/${KDECI_ANDROID_TARGET}_build_apk/libs/armeabi-v7a libs/
+    - mv -v ${CI_PROJECT_DIR}/android-x86_64-clang/build/kde/applications/${CI_PROJECT_NAME}/work/build/${KDECI_ANDROID_TARGET}_build_apk/libs/x86_64 libs/
+    # Now build the app bundle
+    - ./gradlew bundleRelease
+    - mv -vf build/outputs/bundle/release/${KDECI_ANDROID_TARGET}_build_apk-release.aab ${CI_PROJECT_DIR}/${KDECI_ANDROID_TARGET}-${CI_COMMIT_REF_SLUG}.aab
+  artifacts:
+    expire_in: 3 days
+    when: on_success
+    paths:
+     - "*.aab"
