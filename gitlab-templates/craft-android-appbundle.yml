@@ -22,7 +22,9 @@ craft_android_appbundle:
     - tar xzf ${CI_PROJECT_DIR}/app-bundle-artifacts/android-x86_64-clang.tar.gz
     # Now build the app bundle
     - ./gradlew bundleRelease
-    - mv -vf build/outputs/bundle/release/${KDECI_ANDROID_TARGET}_build_apk-release.aab ${CI_PROJECT_DIR}/${KDECI_ANDROID_TARGET}-${CI_COMMIT_REF_SLUG}.aab
+    - buildAabName=$(basename $(ls build/outputs/bundle/release/*_build_apk-release.aab))
+    - finalAabName=${buildAabName%_build_apk-release.aab}-${CI_COMMIT_REF_SLUG}.aab
+    - mv -vf build/outputs/bundle/release/${buildAabName} ${CI_PROJECT_DIR}/${finalAabName}
   artifacts:
     expire_in: 3 days
     when: on_success
