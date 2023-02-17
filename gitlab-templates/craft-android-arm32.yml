@@ -11,5 +11,4 @@ craft_android_arm32:
     when: on_success
     paths:
      - ".kde-ci-packages/"
-     # Archive only the architecture-specific artifacts for creating an application bundle
-     - ${KDECI_CRAFT_PLATFORM}/build/kde/applications/${CI_PROJECT_NAME}/work/build/${KDECI_ANDROID_TARGET}_build_apk/libs
+     - app-bundle-artifacts/

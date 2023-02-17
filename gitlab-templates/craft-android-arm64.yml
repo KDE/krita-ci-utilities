@@ -11,7 +11,4 @@ craft_android_arm64:
     when: on_success
     paths:
      - ".kde-ci-packages/"
-     # Archive everything we need for creating an application bundle
-     - ${KDECI_CRAFT_PLATFORM}/src/android/java
-     - ${KDECI_CRAFT_PLATFORM}/build/kde/applications/${CI_PROJECT_NAME}/work/build/*.gradle
-     - ${KDECI_CRAFT_PLATFORM}/build/kde/applications/${CI_PROJECT_NAME}/work/build/${KDECI_ANDROID_TARGET}_build_apk/{AndroidManifest.xml,assets,build.gradle,gradle,gradle.properties,gradlew,libs,local.properties,res,src}
+     - app-bundle-artifacts/
