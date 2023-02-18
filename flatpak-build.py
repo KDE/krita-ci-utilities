@@ -19,8 +19,10 @@ if __name__ == '__main__':
         manifestfile = f"{manifestfile}.json"
 
     # might be useful for debugging
-    subprocess.call(["flatpak", "info", "org.kde.Sdk"])
-    subprocess.call(["flatpak", "info", "org.kde.Platform"])
+    subprocess.call(["flatpak", "info", "org.kde.Sdk//5.15-21.08"])
+    subprocess.call(["flatpak", "info", "org.kde.Sdk//5.15-22.08"])
+    subprocess.call(["flatpak", "info", "org.kde.Platform//5.15-21.08"])
+    subprocess.call(["flatpak", "info", "org.kde.Platform//5.15-22.08"])
 
     # finally, build and install
     subprocess.call(["flatpak-builder", "--repo=repo", "--force-clean", "build-dir", "--disable-rofiles-fuse", "--user", manifestfile])
