@@ -10,7 +10,7 @@ workflow:
     - if: $CI_COMMIT_BRANCH
 
 flatpak:
-  stage: build
+  stage: deploy
   image: kdeorg/flatpak-builder:latest
   tags:
     - Linux
