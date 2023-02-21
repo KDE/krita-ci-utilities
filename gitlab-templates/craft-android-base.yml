@@ -2,7 +2,7 @@
   stage: deploy
   when: manual
   image: kdeorg/android-qt515:latest
-  #needs: ["android_qt515"]
+  needs: []
   tags:
     - Linux
   variables:
