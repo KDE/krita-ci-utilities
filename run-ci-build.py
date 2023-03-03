@@ -79,7 +79,7 @@ if os.path.exists('.git/HEAD') and (sys.platform == 'freebsd12' or sys.platform 
     subprocess.check_call("git gc --aggressive", shell=True)
 
 ####
-# Resolve our project dependencies
+# Prepare to resolve and fetch our project dependencies
 ####
 
 # Determine where some key resources we need for resolving dependencies will be found...
@@ -88,12 +88,6 @@ branchRulesPath = os.path.join( CommonUtils.scriptsBaseDirectory(), 'repo-metada
 
 # Bring our dependency resolver online...
 dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPath, platform )
-# And use it to resolve the dependencies of this project
-projectDirectDependencies = dependencyResolver.resolve( configuration['Dependencies'], arguments.branch )
-
-####
-# Fetch those dependencies!
-####
 
 # Retrieve some key bits of information from our environment
 # All of these come from environment variables due to needing to be set on either the CI Agent level or the group project level
@@ -107,10 +101,19 @@ packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
 
 # Bring the package archive up
 packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken, packageProject )
-# Use it to retrieve the previously resolved dependencies
-dependenciesToUnpack = packageRegistry.retrieveDependencies( projectDirectDependencies )
 
-# Now unpack those dependencies...
+####
+# Now resolve both build and runtime dependencies, then fetch the build dependencies!
+####
+
+# Resolve the dependencies of this project
+projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], arguments.branch )
+# As well as the runtime dependencies
+projectRuntimeDependencies = dependencyResolver.resolve( configuration['RuntimeDependencies'], arguments.branch )
+
+# Now we can retrieve the build time dependencies
+dependenciesToUnpack = packageRegistry.retrieveDependencies( projectBuildDependencies )
+# And then unpack them
 for packageContents, packageMetadata in dependenciesToUnpack:
     # Open the archive file
     archive = tarfile.open( name=packageContents, mode='r' )
@@ -366,7 +369,8 @@ archiveFile.close()
 if gitlabToken is not None and not arguments.skip_publishing:
     # With the archive being generated, we can now prepare some metadata...
     packageMetadata = {
-        'dependencies': projectDirectDependencies
+        'dependencies': projectBuildDependencies,
+        'runtime-dependencies': projectRuntimeDependencies
     }
     
     # Grab the Git revision (SHA-1 hash) we are building
@@ -389,6 +393,19 @@ os.remove( archiveFile.name )
 # If this is a build only run then bail here
 if arguments.only_build:
     sys.exit(0)
+
+####
+# Retrieve runtime dependencies if they are needed, and rebuild our environment
+####
+
+# Now we can retrieve the build time dependencies
+dependenciesToUnpack = packageRegistry.retrieveDependencies( projectRuntimeDependencies, runtime=True )
+# And then unpack them
+for packageContents, packageMetadata in dependenciesToUnpack:
+    # Open the archive file
+    archive = tarfile.open( name=packageContents, mode='r' )
+    # Extract it's contents into the install directory
+    archive.extractall( path=installPath )
 
 # Regenerate our environment in case the newly installed software uses directories previously not used
 buildEnvironment = EnvironmentHandler.generateFor( installPrefix=installPath )

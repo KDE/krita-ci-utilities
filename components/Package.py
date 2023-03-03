@@ -166,7 +166,7 @@ class Registry(object):
 
     # Takes a dict of projects (with values being the branches), and fetches them and any dependencies they have
     # Returns the complete list for further processing
-    def retrieveDependencies(self, dependenciesToFetch):
+    def retrieveDependencies(self, dependenciesToFetch, runtime=False):
         # Prepare a list of the details we need to keep
         fetchedPackages = {}
         packageBranches = {}
@@ -202,9 +202,16 @@ class Registry(object):
             if packageMetadata is None:
                 raise Exception("Unable to locate requested dependency in the registry: {} (branch: {})".format( identifier, branch ))
 
+            # Go over all the dependencies this package has and build a list to examine
+            # If we have been asked to include runtime dependencies, we need to capture them as well
+            packageDependencies = {}
+            packageDependencies.merge( packageMetadata['dependencies'] )
+            if runtime and 'runtime-dependencies' in packageMetadata:
+                packageDependencies.merge( packageMetadata['runtime-dependencies'] )
+
             # Go over all the dependencies this package has
             # If we haven't fetched it already, then we should add it to the list to process
-            for dependency, dependencyBranch in packageMetadata['dependencies'].items():
+            for dependency, dependencyBranch in packageDependencies.items():
                 # Is this package one we have seen before?
                 # and if it is, then is the branch the same?
                 if dependency in packageBranches and packageBranches[ dependency ] == dependencyBranch:
@@ -246,7 +253,8 @@ class Registry(object):
             'version': versionForGitlab,
             'timestamp': packageTimestamp,
             'gitRevision': gitRevision,
-            'dependencies': {}
+            'dependencies': {},
+            'runtime-dependencies': {},
         }
         # Include the additional information we have been provided
         packageMetadata.update( additionalMetadata )
