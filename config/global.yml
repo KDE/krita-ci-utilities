@@ -1,5 +1,7 @@
 Dependencies: {}
 
+RuntimeDependencies: {}
+
 Environment:
   KDECI_BUILD: "TRUE"
 
