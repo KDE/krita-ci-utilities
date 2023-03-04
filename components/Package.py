@@ -205,9 +205,9 @@ class Registry(object):
             # Go over all the dependencies this package has and build a list to examine
             # If we have been asked to include runtime dependencies, we need to capture them as well
             packageDependencies = {}
-            packageDependencies.merge( packageMetadata['dependencies'] )
+            packageDependencies.update( packageMetadata['dependencies'] )
             if runtime and 'runtime-dependencies' in packageMetadata:
-                packageDependencies.merge( packageMetadata['runtime-dependencies'] )
+                packageDependencies.update( packageMetadata['runtime-dependencies'] )
 
             # Go over all the dependencies this package has
             # If we haven't fetched it already, then we should add it to the list to process
