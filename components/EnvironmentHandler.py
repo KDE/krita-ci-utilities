@@ -47,7 +47,7 @@ def generateFor( installPrefix ):
     # Make sure that is included too
     if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
         # Include the necessary LLVM path then
-        envChanges = changesForPrefix( "/usr/local/llvm13", envChanges, systemPrefix=True )
+        envChanges = changesForPrefix( "/usr/local/llvm15", envChanges, systemPrefix=True )
 
     # Now we can merge this into the real environment
     splitChar = separatorCharacter()
