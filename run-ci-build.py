@@ -230,7 +230,7 @@ if platform.os == 'Android':
         "/opt/nativetooling/share/ECM/toolchain/Android.cmake",
     ]
     ecmToolchain = CommonUtils.firstPresentFile("/", ecmToolchainLocations)
-    qt6Toolchain = "/opt/Qt/lib/cmake/Qt6/qt.toolchain.cmake"
+    qt6Toolchain = "/home/user/android-arm-clang/lib/cmake/Qt6/qt.toolchain.cmake"
 
     # Now we make sure we found something (this should never happen)
     if ecmToolchain == "":
