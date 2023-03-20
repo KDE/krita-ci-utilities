@@ -102,7 +102,7 @@ class Resolver(object):
         # This is done by asking Git to print a list of all refs it knows of, prefixed by the negate operator (^)
         # We then reduce that to just mainline branches prior to passing it to git rev-list
         # Finally, we run git rev-list in reverse mode so it puts the oldest commit at the top (whose parent commit will be on a release branch)
-        command = 'git for-each-ref --format="^%(refname)" | grep -E "refs/heads/master|refs/heads/.*[0-9]\.[0-9]+" | git rev-list --stdin --reverse HEAD | head -n1'
+        command = 'git for-each-ref --format="^%(refname)" | grep -E "refs/heads/master|refs/heads/kf5|refs/heads/.*[0-9]\.[0-9]+" | git rev-list --stdin --reverse HEAD | head -n1'
         process = subprocess.Popen(command, shell=True, env=commandEnvironment, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         firstBranchCommit = process.stdout.readline().strip().decode('utf-8')
 
