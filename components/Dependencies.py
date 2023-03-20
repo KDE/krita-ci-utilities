@@ -115,7 +115,7 @@ class Resolver(object):
         # With the first branch commit now being known, we can do the second phase of this
         # This involves asking Git to print a list of all references that contain the given commit
         # Once again, we also filter this to only leave behind release branches - as that is what we are trying to resolve to
-        command = 'git for-each-ref --contains {0}^ --format="%(refname)" | grep -E "refs/heads/master|refs/heads/.*[0-9]\.[0-9]+" | sort -r -n'.format( firstBranchCommit )
+        command = 'git for-each-ref --contains {0}^ --format="%(refname)" | grep -E "refs/heads/master|refs/heads/kf5|refs/heads/.*[0-9]\.[0-9]+" | sort -r -n'.format( firstBranchCommit )
         process = subprocess.Popen(command, shell=True, env=commandEnvironment, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         rawPotentialBranches = process.stdout.readlines()
 
