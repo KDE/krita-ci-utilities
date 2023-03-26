@@ -1,0 +1,14 @@
+include:
+  - project: sysadmin/ci-utilities
+    file: /gitlab-templates/craft-macos-base.yml
+
+craft_macos_x86_64:
+  extends: .craft_macos_base
+  variables:
+    KDECI_CRAFT_PLATFORM: macos-arm-clang
+  artifacts:
+    expire_in: 3 days
+    when: on_success
+    expose_as: "macOS ARM"
+    paths:
+     - ".kde-ci-packages/"
