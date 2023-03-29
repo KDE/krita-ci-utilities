@@ -2,7 +2,8 @@ include:
   - project: sysadmin/ci-utilities
     file: /gitlab-templates/craft-macos-base.yml
 
-craft_macos_x86_64:
+# Hide job for now since we don't have a macOS ARM Craft cache yet. Remvove the leading dot to re-enable
+.craft_macos_x86_64:
   extends: .craft_macos_base
   variables:
     KDECI_CRAFT_PLATFORM: macos-arm-clang
