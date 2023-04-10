@@ -9,7 +9,7 @@ workflow:
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH
 
-image: kdeorg/staticweb:latest
+image: invent-registry.kde.org/sysadmin/ci-images/staticweb:latest
 
 #deploy_website:
 #  tags:

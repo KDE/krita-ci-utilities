@@ -1,7 +1,7 @@
 .craft_android_base:
   stage: deploy
   when: manual
-  image: kdeorg/android-qt515:latest
+  image: invent-registry.kde.org/sysadmin/ci-images/android-qt515:latest
   needs: []
   tags:
     - Linux

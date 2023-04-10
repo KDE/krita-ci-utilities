@@ -1,6 +1,6 @@
 suse_tumbleweed_qt64:
   stage: build
-  image: kdeorg/ci-suse-qt64:latest
+  image: invent-registry.kde.org/sysadmin/ci-images/suse-qt64:latest
   tags:
     - Linux
   variables:
