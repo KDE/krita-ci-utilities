@@ -12,7 +12,7 @@
   interruptible: true
   before_script:
     # ensure we start with an empty folder
-    - rm -rf *
+    - rm -rf .kde-ci-packages *
     - export LANG=en_US.UTF-8
     - git clone $CI_REPOSITORY_URL --branch=$CI_COMMIT_REF_NAME src/
     # Create empty .craft.ini if none exists
