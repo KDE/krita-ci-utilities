@@ -1,12 +1,12 @@
-freebsd_qt64:
+freebsd_qt65:
   stage: build
   tags:
     - FreeBSD
   variables:
-    KDECI_CC_CACHE: /var/tmp/gitlab_runner/caches/freebsd-qt6.4/
-    KDECI_CACHE_PATH: /var/tmp/gitlab_runner/artifacts/freebsd-qt6.4/
+    KDECI_CC_CACHE: /var/tmp/gitlab_runner/caches/freebsd-qt6.5/
+    KDECI_CACHE_PATH: /var/tmp/gitlab_runner/artifacts/freebsd-qt6.5/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
-    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/freebsd-qt6.4
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/freebsd-qt6.5
   interruptible: true
   before_script:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
