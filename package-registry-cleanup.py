@@ -50,6 +50,12 @@ projectsWithQt6OnlyMaster = [
     'kxmlgui', 'kxmlrpcclient', 'modemmanager-qt', 'networkmanager-qt', 'oxygen-icons5', 'plasma-framework', 'prison', 'purpose', 'qqc2-desktop-style',
     'solid', 'sonnet', 'syndication', 'syntax-highlighting', 'threadweaver',
 ]
+
+# Configuration - list of projects to always remove
+projectsToAlwaysRemove = [
+    # QtWebKit is no longer supported
+    'kdewebkit',
+]
         
 # Now that we have that setup, let's find out what packages our Gitlab package project knows about
 for package in remoteRegistry.packages.list( as_list=False ):
@@ -67,6 +73,12 @@ for package in remoteRegistry.packages.list( as_list=False ):
         'branch': branch,
         'timestamp': int(timestamp)
     }
+
+    # Is this a project we should always be removing?
+    if package.name in projectsToAlwaysRemove:
+        # Then remove it
+        packagesToRemove.append( packageData['package'] )
+        continue
 
     # Is this a stale branch we can let go of?
     if branch in ['release-21.08', 'release-21.12', 'release-22.04', 'release-22.08', 'Plasma-5.24', 'Plasma-5.25', 'Plasma-5.26']:
