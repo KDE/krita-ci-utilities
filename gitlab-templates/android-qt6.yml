@@ -1,12 +1,12 @@
-android_qt64:
+android_qt65:
   stage: build
-  image: invent-registry.kde.org/sysadmin/ci-images/android-qt64:latest
+  image: invent-registry.kde.org/sysadmin/ci-images/android-qt65:latest
   tags:
     - Linux
   variables:
-    KDECI_CACHE_PATH: /mnt/artifacts/android-qt6.4/
+    KDECI_CACHE_PATH: /mnt/artifacts/android-qt6.5/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
-    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/android-qt6.4
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/android-qt6.5
   interruptible: true
   before_script:
     - git clone https://invent.kde.org/sysadmin/ci-utilities
