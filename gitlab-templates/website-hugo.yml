@@ -32,6 +32,6 @@ build_hugo_website:
   script:
     - hugo --minify $HUGO_ADDITIONAL_ARGS
   artifacts:
-    expire_in: 2 weeks
+    expire_in: 2 days
     paths:
       - public/
