@@ -33,4 +33,4 @@ flatpak:
     when: on_success
     paths:
       - "${KDE_FLATPAK_MODULE_NAME}.flatpak"
-    expire_in: 14 days
+    expire_in: 7 days
