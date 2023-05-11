@@ -8,6 +8,8 @@ import multiprocessing
 from lxml import etree
 from components import CommonUtils
 
+import copy
+
 def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     # On Windows, we need to pull bin\data\ over from the Craft prefix to ensure resources in it can be found by QStandardPaths
     # This is a bit of a hack, but there isn't much we can do here as Qt doesn't give us any means of telling it to look elsewhere
@@ -88,28 +90,35 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
         if os.path.exists('/tmp/.X11-unix/X90'):
             os.remove('/tmp/.X11-unix/X90')
 
+    # when the project uses its own harfbuzz, it may interfere with
+    # the one used in the system packages, so remove our installation
+    # library path from the search path for the system tools
+    systemToolsEnvironment = copy.deepcopy(buildEnvironment)
+    del systemToolsEnvironment['LD_LIBRARY_PATH']
+
     # Spawn a X windowing system if needed
     # We'll also launch a Window Manager at the same time as some tests often need or unknowingly rely on one being present
     # As X doesn't belong on Windows or macOS we don't run it there
     if projectConfig['Options']['setup-x-environment'] and ( sys.platform != 'win32' and sys.platform != 'darwin' ):
         # Setup Xvfb
+        systemToolsEnvironment['DISPLAY'] = ':90'
         buildEnvironment['DISPLAY'] = ':90'
         commandToRun = "Xvfb :90 -ac -screen 0 1600x1200x24+32"
-        xvfbProcess = subprocess.Popen( commandToRun, stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT, shell=True, env=buildEnvironment )
+        xvfbProcess = subprocess.Popen( commandToRun, stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT, shell=True, env=systemToolsEnvironment )
 
         # Give Xvfb a few moments to get on it's feet
         time.sleep( 5 )
 
         # Startup a Window Manager
         commandToRun = "openbox"
-        wmProcess = subprocess.Popen( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, env=buildEnvironment )
+        wmProcess = subprocess.Popen( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, env=systemToolsEnvironment )
 
     # Spawn D-Bus if needed
     # Same rules apply for X in regards to Windows and macOS - it doesn't belong so we don't support it
     if projectConfig['Options']['setup-dbus-session'] and ( sys.platform != 'win32' and sys.platform != 'darwin' ):
         # Determine the command to run, then launch it and wait for it to exit
         commandToRun = 'dbus-launch'
-        process = subprocess.Popen( commandToRun, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=buildEnvironment )
+        process = subprocess.Popen( commandToRun, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=systemToolsEnvironment )
         process.wait()
         # Determine what environment variables need to be set, and ensure those are included in our build environment
         for variable in process.stdout:
