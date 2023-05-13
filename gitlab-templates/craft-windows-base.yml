@@ -1,7 +1,7 @@
 .craft_windows_base:
   stage: deploy
   when: manual
-  image: kdeorg/windows-msvc2019-qt515:latest
+  image: invent-registry.kde.org/sysadmin/ci-images/windows-msvc2019-qt515:latest
   #needs: ["windows_qt515"]
   tags:
     - Windows
