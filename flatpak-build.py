@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import os, sys, subprocess
+import os, sys, subprocess, json, yaml
+
 
 if __name__ == '__main__':
     try:
@@ -8,7 +9,7 @@ if __name__ == '__main__':
     except ValueError:
         print("usage: {} module_name [config-opt ...]".format(sys.argv[0]))
         sys.exit(1)
-    
+
     manifestfile = ".flatpak-manifest"
     # add right extension
     if os.path.exists(f"{manifestfile}.yml"):
@@ -26,3 +27,14 @@ if __name__ == '__main__':
 
     # finally, build and install
     subprocess.call(["flatpak-builder", "--repo=repo", "--force-clean", "build-dir", "--disable-rofiles-fuse", "--user", manifestfile])
+
+    # Export the result to a bundle
+    f = open(manifestfile, "r")
+    if manifestfile.endswith(".json"):
+        manifest = json.load(f)
+    else:
+        manifest = yaml.load(f)
+
+    app_id = manifest["id"]
+    subprocess.call(["flatpak", "build-bundle", "repo",
+                     f"{modulename}.flatpak", app_id, "master"])
