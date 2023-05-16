@@ -203,8 +203,9 @@ if configuration['Options']['release-build']:
 if platform.os == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):
     # Then we also want Coverage by default
     cmakeCommand.append('-DBUILD_COVERAGE=ON')
-    # We also want to enable ASAN for our builds
-    cmakeCommand.append("-DECM_ENABLE_SANITIZERS='address'")
+    if configuration['Options']['use-asan']:
+        # We also want to enable ASAN for our builds
+        cmakeCommand.append("-DECM_ENABLE_SANITIZERS='address'")
 
 # Are we on Windows?
 if sys.platform == 'win32':

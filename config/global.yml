@@ -26,3 +26,4 @@ Options:
   cppcheck-ignore-files: []
   run-gcovr: True
   gcovr-arguments: ''
+  use-asan: True
