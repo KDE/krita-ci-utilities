@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import os, sys, subprocess, json, yaml
+import os, sys, subprocess, json
+from ruamel.yaml import YAML
 
 
 if __name__ == '__main__':
@@ -33,6 +34,7 @@ if __name__ == '__main__':
     if manifestfile.endswith(".json"):
         manifest = json.load(f)
     else:
+        yaml = YAML()
         manifest = yaml.load(f)
 
     app_id = manifest["id"]
