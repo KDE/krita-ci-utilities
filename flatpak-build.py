@@ -37,6 +37,10 @@ if __name__ == '__main__':
         yaml = YAML()
         manifest = yaml.load(f)
 
-    app_id = manifest["id"]
+    try:
+        app_id = manifest["app-id"]
+    except KeyError:
+        app_id = manifest["id"]
+
     subprocess.call(["flatpak", "build-bundle", "repo",
                      f"{modulename}.flatpak", app_id, "master"])
