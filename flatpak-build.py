@@ -27,7 +27,7 @@ if __name__ == '__main__':
     subprocess.call(["flatpak", "info", "org.kde.Platform//5.15-22.08"])
 
     # finally, build and install
-    subprocess.call(["flatpak-builder", "--repo=repo", "--force-clean", "build-dir", "--disable-rofiles-fuse", "--user", manifestfile])
+    subprocess.check_call(["flatpak-builder", "--repo=repo", "--force-clean", "build-dir", "--disable-rofiles-fuse", "--user", manifestfile])
 
     # Export the result to a bundle
     f = open(manifestfile, "r")
@@ -42,5 +42,5 @@ if __name__ == '__main__':
     except KeyError:
         app_id = manifest["id"]
 
-    subprocess.call(["flatpak", "build-bundle", "repo",
+    subprocess.check_call(["flatpak", "build-bundle", "repo",
                      f"{modulename}.flatpak", app_id, "master"])
