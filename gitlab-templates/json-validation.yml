@@ -1,0 +1,15 @@
+json-validation:
+  stage: build
+  image: invent-registry.kde.org/sysadmin/ci-images/suse-qt65:latest
+  tags:
+    - Linux
+  variables:
+    KDECI_GITLAB_SERVER: https://invent.kde.org/
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/json-validation
+  interruptible: true
+  before_script:
+    - git clone https://invent.kde.org/sysadmin/ci-utilities
+  script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - ./ci-utilities/validate-json-files.py
+

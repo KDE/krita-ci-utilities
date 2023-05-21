@@ -30,3 +30,7 @@ suse_tumbleweed_qt65:
       - "**/appium_artifact_*"
     reports:
       junit: JUnitTestResults.xml
+
+include:
+  - project: sysadmin/ci-utilities
+    file: /gitlab-templates/json-validation.yml
