@@ -8,6 +8,7 @@ import argparse
 import subprocess
 import multiprocessing
 from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler, PlatformFlavor
+import shutil
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
@@ -350,30 +351,39 @@ del buildEnvironment['INSTALL_ROOT']
 # Capture the installation if needed and deploy the staged install to the final install directory
 ####
 
-# Create a temporary file, then open the file as a tar archive for writing
-# We don't want it to be deleted as storePackage will move the archive into it's cache
-archiveFile = tempfile.NamedTemporaryFile(delete=False)
-archive = tarfile.open( fileobj=archiveFile, mode='w' )
-
 # Now determine the path we should be archiving
 # Because we could potentially be running on Windows we have to ensure our second path has been converted to a suitable form
 # This conversion is necessary as os.path.join can't handle the presence of drive letters in paths other than the first argument
 pathToArchive = os.path.join( installStagingPath, CommonUtils.makePathRelative(installPath) )
 
-# Add all the files which need to be in the archive into the archive
 # We want to capture the tree as it is inside the install directory and don't want any trailing slashes in the archive as this isn't standards compliant
 # Therefore we list everything in the install directory and add each of those to the archive, rather than adding the whole install directory
 filesToInclude = os.listdir( pathToArchive )
+
+# Copy the files into the installation directory
+# This is so later tests can rely on the project having been installed
+# While we ran 'make install' just before this didn't install it as we diverted the installation to allow us to cleanly capture it
 for filename in filesToInclude:
     fullPath = os.path.join(pathToArchive, filename)
-    archive.add( fullPath, arcname=filename, recursive=True )
-
-# Close the archive, which will write it out to disk, finishing what we need to do here
-archive.close()
-archiveFile.close()
+    print("Copying {} -> {}".format(fullPath, os.path.join(installPath, filename)))
+    shutil.copytree(fullPath, os.path.join(installPath, filename), symlinks=True, dirs_exist_ok=True)
 
 # Are we supposed to be publishing this particular package to the archive?
 if gitlabToken is not None and not arguments.skip_publishing:
+    # Create a temporary file, then open the file as a tar archive for writing
+    # We don't want it to be deleted as storePackage will move the archive into it's cache
+    archiveFile = tempfile.NamedTemporaryFile(delete=False)
+    archive = tarfile.open( fileobj=archiveFile, mode='w' )
+
+    # Add all the files which need to be in the archive into the archive
+    for filename in filesToInclude:
+        fullPath = os.path.join(pathToArchive, filename)
+        archive.add( fullPath, arcname=filename, recursive=True )
+
+    # Close the archive, which will write it out to disk, finishing what we need to do here
+    archive.close()
+    archiveFile.close()
+
     # With the archive being generated, we can now prepare some metadata...
     packageMetadata = {
         'dependencies': projectBuildDependencies,
@@ -387,15 +397,8 @@ if gitlabToken is not None and not arguments.skip_publishing:
     # Publish our package to the 
     packageRegistry.upload(archiveFile.name, arguments.project, arguments.branch, gitRevision, packageMetadata)
 
-# Now open the archive - so we can extract it's contents over the install prefix
-# This is so later tests can rely on the project having been installed
-# While we ran 'make install' just before this didn't install it as we diverted the installation to allow us to cleanly capture it
-archive = tarfile.open( name=archiveFile.name, mode='r' )
-archive.extractall( path=installPath )
-archive.close()
-
-# Cleanup the temporary archive file as it is no longer needed
-os.remove( archiveFile.name )
+    # Cleanup the temporary archive file as it is no longer needed
+    os.remove( archiveFile.name )
 
 # If this is a build only run then bail here
 if arguments.only_build:
