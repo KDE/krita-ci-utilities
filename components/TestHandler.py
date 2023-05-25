@@ -4,6 +4,7 @@ import sys
 import stat
 import time
 import subprocess
+import multiprocessing
 from lxml import etree
 from components import CommonUtils
 
@@ -155,9 +156,15 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
         # Otherwise sleep for a few seconds and try again
         time.sleep( 5 )
 
+    # Do we need to run CTest with multiple parallel jobs?
+    cpuCount = 1
+    if projectConfig['Options']['tests-run-in-parallel']:
+        cpuCount = int(multiprocessing.cpu_count())
+
     # Now it's time to invoke CTest! Build up the command...
-    commandToRun = "ctest -T Test --output-on-failure --no-compress-output --test-output-size-passed 1048576 --test-output-size-failed 1048576 --timeout {timeLimit} {additionalCTestArguments}"
-    commandToRun = commandToRun.format( 
+    commandToRun = "ctest -T Test --output-on-failure --no-compress-output --test-output-size-passed 1048576 --test-output-size-failed 1048576 -j {cpuCount} --timeout {timeLimit} {additionalCTestArguments}"
+    commandToRun = commandToRun.format(
+        cpuCount=cpuCount
         timeLimit=projectConfig['Options']['per-test-timeout'],
         additionalCTestArguments=projectConfig['Options']['ctest-arguments']
     )

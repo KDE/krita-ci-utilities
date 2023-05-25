@@ -12,6 +12,7 @@ Options:
   test-before-installing: False
   run-tests: True
   tests-load-sensitive: False
+  tests-run-in-parallel: False
   per-test-timeout: 60
   setup-x-environment: True
   setup-dbus-session: True
