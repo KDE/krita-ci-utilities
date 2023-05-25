@@ -188,6 +188,13 @@ if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironme
     cmakeCommand.append('-DCMAKE_C_COMPILER_LAUNCHER=ccache')
     cmakeCommand.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
 
+# Have we explicitly requested a release build?
+# This should only ever be used by applications, and never libraries
+if configuration['Options']['release-build']:
+    # Switch the Debug build for a Release one then!
+    cmakeCommand.remove('-DCMAKE_BUILD_TYPE=Debug')
+    cmakeCommand.append('-DCMAKE_BUILD_TYPE=Release')
+
 # Are we on Linux (but not Android)?
 # If we are on Linux then we also need to check to see whether we are on a MUSL based system - as ASAN does not work there
 if platform.os == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):

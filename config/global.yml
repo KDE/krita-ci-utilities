@@ -9,6 +9,7 @@ Options:
   in-source-build: False
   use-ccache: False
   cmake-options: ''
+  release-build: False
   test-before-installing: False
   run-tests: True
   tests-load-sensitive: False
