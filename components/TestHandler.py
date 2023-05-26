@@ -82,7 +82,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
 
     # Cleanup the builder if needed
     if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
-        subprocess.call("killall -9 dbus-daemon kded5 kioslave klauncher kdeinit5 kiod openbox Xvfb kscreenlocker_greet", shell=True)
+        subprocess.call("killall -9 dbus-daemon kded5 kioslave klauncher kdeinit5 kiod openbox Xvfb kscreenlocker_greet lldb", shell=True)
         if os.path.exists('/tmp/.X90-lock'):
             os.remove('/tmp/.X90-lock')
         if os.path.exists('/tmp/.X11-unix/X90'):
@@ -199,7 +199,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
         subprocess.call("taskkill /f /T /im vctip.exe", shell=True)
 
     if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
-        subprocess.call("killall -9 dbus-daemon kded5 kioslave klauncher kdeinit5 kiod openbox Xvfb", shell=True)
+        subprocess.call("killall -9 dbus-daemon kded5 kioslave klauncher kdeinit5 kiod openbox Xvfb lldb", shell=True)
 
     # All done!
     return ctestProcess.returncode == 0
