@@ -9,15 +9,15 @@ workflow:
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH
 
-windows_qt64:
+windows_qt65:
   stage: build
-  image: kdeorg/windows-msvc2019-qt64:latest
+  image: invent-registry.kde.org/sysadmin/ci-images/windows-msvc2019-qt65:latest
   tags:
     - Windows
   variables:
-    KDECI_CACHE_PATH: C:/Gitlab/Artifacts/windows-qt6.4/
+    KDECI_CACHE_PATH: C:/Gitlab/Artifacts/windows-qt6.5/
     KDECI_GITLAB_SERVER: https://invent.kde.org/
-    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/windows-qt6.4
+    KDECI_PACKAGE_PROJECT: teams/ci-artifacts/windows-qt6.5
     CRAFT_ROOT: C:/Craft/windows-msvc2019_64-cl/
     CXX: cl.exe
     CC: cl.exe
