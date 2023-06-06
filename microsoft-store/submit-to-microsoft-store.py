@@ -19,7 +19,7 @@ try:
     import requests
     from azure.storage.blob import BlobClient
     from markdownify import markdownify
-    from microstore.MicrosoftStoreClient import MicrosoftStoreClient
+    from microstore.MicrosoftStoreClient import APIError, AuthorizationError, MicrosoftStoreClient
 except ImportError as e:
     print("Error: %s" % e, file=sys.stderr)
     print("Please install the requirements (see requirements.txt)!")
@@ -881,9 +881,15 @@ def main():
     setUpLogging(options)
 
     client = MicrosoftStoreClient(options.tenantId, options.clientId)
-    submitApp(client, **vars(options))
+    try:
+        submitApp(client, **vars(options))
+        return 0
+    except AuthorizationError as e:
+        print(f"Error: Authentication failed: {e}. Use `--debug-authorization 2` for details.", file=sys.stderr)
+    except APIError as e:
+        print(f"Error: API request failed: {e}. Use `--debug-api-calls 2` for details.", file=sys.stderr)
 
-    return 0
+    return 1
 
 
 if __name__ == "__main__":
