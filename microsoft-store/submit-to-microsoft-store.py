@@ -660,13 +660,9 @@ def updateBaseListingForLanguage(lang, storeLang, baseListing, defaultBaseListin
 
     # privacyPolicy - This value is obsolete. The privacy policy URL must be set in Partner Center.
 
-    # update supportContact for listing
-    if "supportcontact" not in keep or not baseListing["supportContact"]:
-        baseListing["supportContact"] = appstreamData.get("Url", {}).get("contact", "")
+    # supportContact - This value is obsolete. The support contact URL or email address must be set in Partner Center.
 
-    # update websiteUrl for listing
-    if "websiteurl" not in keep or not baseListing["websiteUrl"]:
-        baseListing["websiteUrl"] = appstreamData.get("Url", {}).get("homepage", "")
+    # websiteUrl - This value is obsolete. The URL of the web page for your app must be set in Partner Center.
 
     # features - AppStream does not provide a list of features (https://github.com/ximion/appstream/issues/388)
 
