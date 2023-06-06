@@ -536,12 +536,12 @@ def parseCommandLine():
     parser.add_argument(
         "--tenant-id",
         dest="tenantId",
-        help="the tenant ID; required; can also be set via MSSTORE_TENANT_ID environment variable",
+        help="the tenant ID; required; can also be set via MICROSTORE_TENANT_ID environment variable",
     )
     parser.add_argument(
         "--client-id",
         dest="clientId",
-        help="the client ID; required; can also be set via MSSTORE_CLIENT_ID environment variable",
+        help="the client ID; required; can also be set via MICROSTORE_CLIENT_ID environment variable",
     )
 
     parser.add_argument(
@@ -567,11 +567,11 @@ def parseCommandLine():
 def setUpLogging(options):
     logging.basicConfig(format="%(asctime)s %(name)s %(message)s", level=logging.WARNING)
     logger.setLevel(max(logging.DEBUG, logging.WARNING - 10 * options.verbose))
-    msstoreLogger = logging.getLogger("msstore")
-    msstoreLogger.setLevel(max(logging.DEBUG, logging.WARNING - 10 * options.verbose))
-    authLogger = logging.getLogger("msstore.auth")
+    microstoreLogger = logging.getLogger("microstore")
+    microstoreLogger.setLevel(max(logging.DEBUG, logging.WARNING - 10 * options.verbose))
+    authLogger = logging.getLogger("microstore.auth")
     authLogger.setLevel(max(logging.DEBUG, logging.WARNING - 10 * options.debugAuth))
-    apiLogger = logging.getLogger("msstore.api")
+    apiLogger = logging.getLogger("microstore.api")
     apiLogger.setLevel(max(logging.DEBUG, logging.WARNING - 10 * options.debugApi))
 
 
