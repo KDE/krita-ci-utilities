@@ -129,8 +129,10 @@ for key, value in configuration['Environment'].items():
     # Apply each key in turn
     buildEnvironment[ key ] = value
 
+useCcacheForBuilds = configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment
+
 # Do we need to get ccache ready to use?
-if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment:
+if useCcacheForBuilds:
     # Setup the path used for the cache....
     buildEnvironment['CCACHE_DIR'] = os.path.join( buildEnvironment['KDECI_CC_CACHE'], arguments.project )
     # Ensure ccache is setup for use
@@ -138,6 +140,10 @@ if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironme
         subprocess.check_call( 'ccache -M 10G', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
     else:
         subprocess.check_call( 'ccache -M 2G', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    # Reset cache-hit stats
+    subprocess.check_call( 'ccache -z', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    # Dump intial stats for ccache (to estimate the size)
+    subprocess.check_call( 'ccache -s', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 # Make sure the build directory exists
 if not os.path.exists( buildPath ):
@@ -187,7 +193,7 @@ cmakeCommand = [
 ]
 
 # Do we need to make use of ccache?
-if configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment:
+if useCcacheForBuilds:
     # Then instruct CMake accordingly...
     cmakeCommand.append('-DCMAKE_C_COMPILER_LAUNCHER=ccache')
     cmakeCommand.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
@@ -303,6 +309,12 @@ try:
 except Exception:
     print("## Failed to build the project")
     sys.exit(1)
+
+# Dump ccache stats if applicable
+if useCcacheForBuilds:
+    # Dump cache-hit stats
+    print( "## RUNNING: " + commandToRun )
+    subprocess.check_call( 'ccache -s', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 ####
 # Run tests before installation if needed
