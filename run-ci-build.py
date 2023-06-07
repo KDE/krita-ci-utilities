@@ -205,11 +205,15 @@ if configuration['Options']['release-build']:
     cmakeCommand.remove('-DCMAKE_BUILD_TYPE=Debug')
     cmakeCommand.append('-DCMAKE_BUILD_TYPE=Release')
 
+useCoverageBuild = False
+
 # Are we on Linux (but not Android)?
 # If we are on Linux then we also need to check to see whether we are on a MUSL based system - as ASAN does not work there
 if platform.os == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):
-    # Then we also want Coverage by default
-    cmakeCommand.append('-DBUILD_COVERAGE=ON')
+    if configuration['Options']['run-gcovr']:
+        # Then we also want Coverage by default
+        cmakeCommand.append('-DBUILD_COVERAGE=ON')
+        useCoverageBuild = True
     if configuration['Options']['use-asan']:
         # We also want to enable ASAN for our builds
         cmakeCommand.append("-DECM_ENABLE_SANITIZERS='address'")
@@ -456,7 +460,7 @@ if run_tests and not configuration['Options']['test-before-installing']:
 
 # If we aren't running on Linux then we skip this, as we consider that to be the canonical platform for code coverage...
 # Additionally, as coverage information requires tests to have been run, skip extracting coverage information if tests have been disabled
-if run_tests and platform.os == 'Linux' and configuration['Options']['run-gcovr']:
+if run_tests and useCoverageBuild:
     # Determine the command we need to run
     # We ask GCovr to exclude the build directory by default as we don't want generated artifacts (like moc files) getting included as well
     # Sometimes projects will want to customise things slightly so we provide for that as well
