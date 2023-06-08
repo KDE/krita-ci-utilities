@@ -28,7 +28,7 @@ class Resolver(object):
             # Now that we know we have something to work with....
             # Lets load the current metadata up
             metadataPath = os.path.join( currentPath, 'metadata.yaml' )
-            metadataFile = open( metadataPath, 'r' )
+            metadataFile = open( metadataPath, 'r', encoding="utf8")
             metadata = yaml.safe_load( metadataFile )
             
             # Extract the repository path, then save the details on the project we have found
