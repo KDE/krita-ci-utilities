@@ -200,7 +200,8 @@ if useCcacheForBuilds:
 
 # Have we explicitly requested a release build?
 # This should only ever be used by applications, and never libraries
-if configuration['Options']['release-build']:
+# On Windows we do this because building our dependencies in Debug mode is just too hard and MSVC requires everything to be in either Debug or Release (you can't mix/match)
+if configuration['Options']['release-build'] or sys.platform == 'win32':
     # Switch the Debug build for a Release one then!
     cmakeCommand.remove('-DCMAKE_BUILD_TYPE=Debug')
     cmakeCommand.append('-DCMAKE_BUILD_TYPE=Release')
@@ -222,10 +223,6 @@ if platform.os == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):
 if sys.platform == 'win32':
     # We want a Ninja based build, rather than the default MSBuild
     cmakeCommand.append('-G "Ninja"')
-    # Switch the Debug build for a Release one
-    # We do this because building our dependencies in Debug mode is just too hard and MSVC requires everything to be in either Debug or Release (you can't mix/match)
-    cmakeCommand.remove('-DCMAKE_BUILD_TYPE=Debug')
-    cmakeCommand.append('-DCMAKE_BUILD_TYPE=Release')
 
 # Are we building for Android?
 if platform.os == 'Android':
