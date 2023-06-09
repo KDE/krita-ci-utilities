@@ -143,9 +143,9 @@ if useCcacheForBuilds:
     else:
         subprocess.check_call( 'ccache -M 2G', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
     # Reset cache-hit stats
-    subprocess.check_call( 'ccache -z', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    subprocess.check_call( 'ccache -vvvz', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
     # Dump intial stats for ccache (to estimate the size)
-    subprocess.check_call( 'ccache -s', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    subprocess.check_call( 'ccache -vvvs', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 # Make sure the build directory exists
 if not os.path.exists( buildPath ):
@@ -396,8 +396,7 @@ del buildEnvironment['INSTALL_ROOT']
 # Dump ccache stats if applicable
 if useCcacheForBuilds:
     # Dump cache-hit stats
-    print( "## RUNNING: " + commandToRun )
-    subprocess.check_call( 'ccache -s', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    subprocess.check_call( 'ccache -vvvs', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 ####
 # Capture the installation if needed and deploy the staged install to the final install directory
