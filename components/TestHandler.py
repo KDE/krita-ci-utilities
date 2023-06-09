@@ -94,7 +94,9 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     # the one used in the system packages, so remove our installation
     # library path from the search path for the system tools
     systemToolsEnvironment = copy.deepcopy(buildEnvironment)
-    del systemToolsEnvironment['LD_LIBRARY_PATH']
+
+    if sys.platform =='linux':
+        del systemToolsEnvironment['LD_LIBRARY_PATH']
 
     # Spawn a X windowing system if needed
     # We'll also launch a Window Manager at the same time as some tests often need or unknowingly rely on one being present

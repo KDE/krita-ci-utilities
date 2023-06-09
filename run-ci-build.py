@@ -379,7 +379,10 @@ filesToInclude = os.listdir( pathToArchive )
 for filename in filesToInclude:
     fullPath = os.path.join(pathToArchive, filename)
     print("Copying {} -> {}".format(fullPath, os.path.join(installPath, filename)))
-    shutil.copytree(fullPath, os.path.join(installPath, filename), symlinks=True, dirs_exist_ok=True)
+    if os.path.isdir(fullPath):
+        shutil.copytree(fullPath, os.path.join(installPath, filename), symlinks=True, dirs_exist_ok=True)
+    else:
+        shutil.copy(fullPath, os.path.join(installPath, filename))
 
 # Are we supposed to be publishing this particular package to the archive?
 if gitlabToken is not None and not arguments.skip_publishing:
