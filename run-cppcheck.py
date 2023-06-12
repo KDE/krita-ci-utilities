@@ -82,10 +82,16 @@ if configuration['Options']['run-cppcheck']:
     try:
         print("## RUNNING: " + commandToRun)
         subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, env=buildEnvironment )
+    except Exception:
+        print("## Failed to run cppcheck over the project")
+        sys.exit(1)
+
+    try:
         print("## RUNNING: " + conversionCommand )
         subprocess.check_call( conversionCommand, stdout=sys.stdout, stderr=sys.stderr, shell=True, env=buildEnvironment )
     except Exception:
-        pass
+        print("## Failed to run convert cppcheck data")
+        sys.exit(2)
 
 ####
 # Run complete!
