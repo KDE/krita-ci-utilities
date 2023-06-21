@@ -91,6 +91,27 @@ def generateFor( installPrefix ):
     # All done
     return clonedEnv
 
+def addEnvironmentPrefix(installPrefix, currentEnvironment):
+    # Create our initial store for environment changes
+    envChanges = collections.defaultdict(list)
+
+    # We always check the install prefix we've been given - so let's look there first
+    envChanges = changesForPrefix( os.path.realpath( installPrefix ), envChanges )
+
+    splitChar = separatorCharacter()
+    clonedEnv = copy.deepcopy(currentEnvironment)
+    for variableName, variableEntries in envChanges.items():
+        # Join them
+        newEntry = splitChar.join( variableEntries )
+        # If the variable already exists in the system environment, we prefix ourselves on
+        if variableName in clonedEnv:
+            newEntry = '%s%s%s' % (newEntry, splitChar, clonedEnv[variableName])
+        # Set the variable into our cloned environment
+        clonedEnv[variableName] = newEntry
+
+    return clonedEnv
+
+
 def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
     # Setup CMAKE_PREFIX_PATH
     extraLocation = os.path.join( installPrefix )

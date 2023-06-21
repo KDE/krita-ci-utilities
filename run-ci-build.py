@@ -332,6 +332,12 @@ if run_tests and configuration['Options']['test-before-installing']:
 buildEnvironment['DESTDIR'] = installStagingPath
 buildEnvironment['INSTALL_ROOT'] = installStagingPath
 
+# Now determine the path we should be archiving
+# Because we could potentially be running on Windows we have to ensure our second path has been converted to a suitable form
+# This conversion is necessary as os.path.join can't handle the presence of drive letters in paths other than the first argument
+pathToArchive = os.path.join( installStagingPath, CommonUtils.makePathRelative(installPath) )
+
+
 # Determine the build command we want to use
 # Just about all of our platforms support standard "make" so that is our default...
 commandToRun = "make install"
@@ -371,6 +377,8 @@ for name, script in configuration['PostInstallScripts'].items():
     scriptEnvironment['KDECI_BUILD_TYPE'] = buildType
     scriptEnvironment['KDECI_INTERNAL_USE_CCACHE'] = str(useCcacheForBuilds)
 
+    scriptEnvironment = EnvironmentHandler.addEnvironmentPrefix(pathToArchive, scriptEnvironment)
+
     commandToRun = script
 
     # Run post-install scripts
@@ -394,11 +402,6 @@ if useCcacheForBuilds:
 ####
 # Capture the installation if needed and deploy the staged install to the final install directory
 ####
-
-# Now determine the path we should be archiving
-# Because we could potentially be running on Windows we have to ensure our second path has been converted to a suitable form
-# This conversion is necessary as os.path.join can't handle the presence of drive letters in paths other than the first argument
-pathToArchive = os.path.join( installStagingPath, CommonUtils.makePathRelative(installPath) )
 
 # We want to capture the tree as it is inside the install directory and don't want any trailing slashes in the archive as this isn't standards compliant
 # Therefore we list everything in the install directory and add each of those to the archive, rather than adding the whole install directory
