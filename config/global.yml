@@ -5,6 +5,8 @@ RuntimeDependencies: {}
 Environment:
   KDECI_BUILD: "TRUE"
 
+PostInstallScripts: {}
+
 Options:
   in-source-build: False
   use-ccache: False

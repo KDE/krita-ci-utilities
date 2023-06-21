@@ -9,6 +9,7 @@ import subprocess
 import multiprocessing
 from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler, PlatformFlavor
 import shutil
+import copy
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
@@ -95,6 +96,7 @@ localCachePath = os.environ.pop('KDECI_CACHE_PATH')
 gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
 packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
+buildType = os.environ.pop('KDECI_BUILD_TYPE', 'Debug')
 
 # Bring the package archive up
 packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken, packageProject )
@@ -175,13 +177,20 @@ print("## Starting build process...")
 # Configure the project!
 ####
 
+# Have we explicitly requested a release build?
+# This should only ever be used by applications, and never libraries
+# On Windows we do this because building our dependencies in Debug mode is just too hard and MSVC requires everything to be in either Debug or Release (you can't mix/match)
+if configuration['Options']['release-build'] or sys.platform == 'win32':
+    # Switch the Debug build for a Release one then!
+    buildType = 'Release'
+
 # Begin building up our configure command
 # There are some parameters which are universal to all platforms..
 cmakeCommand = [
     # Run CMake itself
     'cmake',
     # We want a Debug build to allow for good backtraces
-    '-DCMAKE_BUILD_TYPE=Debug',
+    '-DCMAKE_BUILD_TYPE={}'.format(buildType),
     # We want tests to be built!
     '-DBUILD_TESTING=ON',
     # And we want to be installed in a given directory
@@ -197,14 +206,6 @@ if useCcacheForBuilds:
     # Then instruct CMake accordingly...
     cmakeCommand.append('-DCMAKE_C_COMPILER_LAUNCHER=ccache')
     cmakeCommand.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
-
-# Have we explicitly requested a release build?
-# This should only ever be used by applications, and never libraries
-# On Windows we do this because building our dependencies in Debug mode is just too hard and MSVC requires everything to be in either Debug or Release (you can't mix/match)
-if configuration['Options']['release-build'] or sys.platform == 'win32':
-    # Switch the Debug build for a Release one then!
-    cmakeCommand.remove('-DCMAKE_BUILD_TYPE=Debug')
-    cmakeCommand.append('-DCMAKE_BUILD_TYPE=Release')
 
 useCoverageBuild = False
 
@@ -311,12 +312,6 @@ except Exception:
     print("## Failed to build the project")
     sys.exit(1)
 
-# Dump ccache stats if applicable
-if useCcacheForBuilds:
-    # Dump cache-hit stats
-    print( "## RUNNING: " + commandToRun )
-    subprocess.check_call( 'ccache -s', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
-
 ####
 # Run tests before installation if needed
 ####
@@ -356,9 +351,45 @@ except Exception:
     print("## Failed to install the project")
     sys.exit(1)
 
+####
+# Run post-install scripts
+####
+
+scriptsAllowed = None
+
+if 'KDECI_POST_INSTALL_SCRIPTS_FILTER' in os.environ:
+    scriptsAllowed = os.environ['KDECI_POST_INSTALL_SCRIPTS_FILTER'].split(';')
+
+for name, script in configuration['PostInstallScripts'].items():
+
+    if not scriptsAllowed is None and not name in scriptsAllowed:
+        print('## Skipping script \"{}\" due to the filter active'.format(name))
+        continue
+
+    scriptEnvironment = copy.deepcopy(buildEnvironment)
+    scriptEnvironment['KDECI_CACHE_PATH'] = localCachePath
+    scriptEnvironment['KDECI_BUILD_TYPE'] = buildType
+    scriptEnvironment['KDECI_INTERNAL_USE_CCACHE'] = str(useCcacheForBuilds)
+
+    commandToRun = script
+
+    # Run post-install scripts
+    try:
+        print('## RUNNING POST-INSTALL SCRIPT \"{}\": {}'.format(name, commandToRun))
+        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=os.getcwd(), env=scriptEnvironment )
+    except Exception:
+        print("## Failed to run post-install script the project")
+        sys.exit(1)
+
 # Cleanup the capture variables to ensure they don't interfere with later runs
 del buildEnvironment['DESTDIR']
 del buildEnvironment['INSTALL_ROOT']
+
+# Dump ccache stats if applicable
+if useCcacheForBuilds:
+    # Dump cache-hit stats
+    print( "## RUNNING: " + commandToRun )
+    subprocess.check_call( 'ccache -s', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 ####
 # Capture the installation if needed and deploy the staged install to the final install directory
