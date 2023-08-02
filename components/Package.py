@@ -53,7 +53,7 @@ class Registry(object):
         self.remoteRegistry = gitlabServer.projects.get( gitlabPackageProject )
         
         # Now that we have that setup, let's find out what packages our Gitlab package project knows about
-        for package in self.remoteRegistry.packages.list( as_list=False, iterator=True ):
+        for package in self.remoteRegistry.packages.list( iterator=True ):
             # Grab the version (branch+timestamp) and break it out into the corresponding components
             # We use the version snapshotted at the time the package was created to ensure that we agree with the metadata file
             branch, timestamp = package.version.rsplit('-', 1)
