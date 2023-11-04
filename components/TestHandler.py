@@ -66,19 +66,11 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
         # Knowing all of that, let's find ASAN's library and set it up to be injected
         buildEnvironment['LD_PRELOAD'] = CommonUtils.firstPresentFileInPaths( knownAsanLocations, knownAsanNames )
 
-    # We want Qt to be noisy about debug output to make debugging tests easier
-    # Some stuff is so verbose it hits the testlib maxwarnings limits though
-    buildEnvironment['QT_LOGGING_RULES'] = "*.debug=true;qt.text.font.db=false;kf.globalaccel.kglobalacceld=false;kf.wayland.client=false"
     # We want to force Qt to print to stderr, even on Windows
     buildEnvironment['QT_LOGGING_TO_CONSOLE'] = '1'
     buildEnvironment['QT_FORCE_STDERR_LOGGING'] = '1'
     # Always use software libgl instead of hardware
     buildEnvironment['LIBGL_ALWAYS_SOFTWARE'] = 'true'
-    # We also want Mesa to tell us what it's doing
-    # This makes it much easier to debug tests which are dependent on 3D stuff
-    buildEnvironment['EGL_LOG_LEVEL'] = 'debug'
-    buildEnvironment['LIBGL_DEBUG'] = 'verbose'
-    buildEnvironment['MESA_DEBUG'] = '1'
     # We also want CMake to be noisy when tests fail
     buildEnvironment['CTEST_OUTPUT_ON_FAILURE'] = '1'
 
