@@ -379,7 +379,7 @@ for name, script in configuration['PostInstallScripts'].items():
 
     scriptEnvironment = EnvironmentHandler.addEnvironmentPrefix(pathToArchive, scriptEnvironment)
 
-    commandToRun = script
+    commandToRun = sys.executable + " " + script
 
     # Run post-install scripts
     try:
