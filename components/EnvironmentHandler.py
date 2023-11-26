@@ -179,6 +179,12 @@ def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
     if os.path.exists( extraLocation ):
         envChanges['QMAKEFEATURES'].append( extraLocation )
 
+    # Setup PYTHONPATH
+    # Sometimes build system may depend on a local version of Meson
+    extraLocation = os.path.join( installPrefix, 'lib\site-packages' )
+    if os.path.exists( extraLocation ):
+        envChanges['PYTHONPATH'].append( extraLocation )
+
     return envChanges
 
 # Which character should be used as a separator for paths?
