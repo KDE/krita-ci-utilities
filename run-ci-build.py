@@ -43,7 +43,7 @@ if os.path.exists( projectConfigFile ):
 
 # Determine whether we will be running tests
 # This is only done if they're enabled for this project and we haven't been asked to just build the project
-run_tests = configuration['Options']['run-tests'] and not arguments.only_build
+run_tests = configuration['Options']['run-tests'] and configuration['Options']['build-tests'] and not arguments.only_build
 # We also Can't run tests in cross compilation environments, so don't run tests there either
 if platform.os in ['Android']:
     run_tests = False
@@ -192,7 +192,7 @@ cmakeCommand = [
     # We want a Debug build to allow for good backtraces
     '-DCMAKE_BUILD_TYPE={}'.format(buildType),
     # We want tests to be built!
-    '-DBUILD_TESTING=ON',
+    '-DBUILD_TESTING={}'.format('ON' if configuration['Options']['build-tests'] else 'OFF'),
     # And we want to be installed in a given directory
     '-DCMAKE_INSTALL_PREFIX="' + installPath + '"',
     # Generate compile_commands.json for tooling

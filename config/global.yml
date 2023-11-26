@@ -15,6 +15,7 @@ Options:
   release-build: False
   test-before-installing: False
   run-tests: True
+  build-tests: True
   tests-load-sensitive: False
   tests-run-in-parallel: False
   per-test-timeout: 60
