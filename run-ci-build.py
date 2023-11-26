@@ -131,7 +131,24 @@ for key, value in configuration['Environment'].items():
     # Apply each key in turn
     buildEnvironment[ key ] = value
 
+def ccacheSupportsVerbose():
+    result = True
+
+    print( "## Test if ccache supports verbose (\'-vvv\') option")
+    commandToRun = 'ccache -vvvs'
+
+    # Run the command
+    try:
+        print( "## RUNNING: " + commandToRun )
+        subprocess.check_call( commandToRun, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True )
+    except Exception:
+        result = False
+
+    print ('## ccache supports verbose output: {}'.format(result))
+    return result
+
 useCcacheForBuilds = configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment
+ccacheVerboseArg = '-vvv' if useCcacheForBuilds and ccacheSupportsVerbose() else ''
 
 # Do we need to get ccache ready to use?
 if useCcacheForBuilds:
@@ -143,9 +160,9 @@ if useCcacheForBuilds:
     else:
         subprocess.check_call( 'ccache -M 2G', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
     # Reset cache-hit stats
-    subprocess.check_call( 'ccache -vvvz', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    subprocess.check_call( 'ccache -z {}'.format(ccacheVerboseArg), stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
     # Dump intial stats for ccache (to estimate the size)
-    subprocess.check_call( 'ccache -vvvs', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    subprocess.check_call( 'ccache -s {}'.format(ccacheVerboseArg), stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 # Make sure the build directory exists
 if not os.path.exists( buildPath ):
@@ -399,7 +416,7 @@ del buildEnvironment['INSTALL_ROOT']
 # Dump ccache stats if applicable
 if useCcacheForBuilds:
     # Dump cache-hit stats
-    subprocess.check_call( 'ccache -vvvs', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    subprocess.check_call( 'ccache -s {}'.format(ccacheVerboseArg), stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
 ####
 # Capture the installation if needed and deploy the staged install to the final install directory
