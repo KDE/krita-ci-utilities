@@ -56,12 +56,13 @@ for identifier, branch in projectsToBuild.items():
     # Retrieve the full details from the Dependencies project database
     project = dependencyResolver.projectsByIdentifier[ identifier ]
 
-    # Construct the URL to clone
-    gitUrl = "https://invent.kde.org/{0}.git".format( project['repopath'] )
+    if project['hasrepo']:
+        # Construct the URL to clone
+        gitUrl = "https://invent.kde.org/{0}.git".format( project['repopath'] )
 
-    # Clone it!
-    commandToRun = "git clone {0} --branch={1} {2}/".format( gitUrl, branch, identifier )
-    subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=workingDirectory )
+        # Clone it!
+        commandToRun = "git clone {0} --branch={1} {2}/".format( gitUrl, branch, identifier )
+        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=workingDirectory )
 
     # This consists of:
     # 0) Global configuration
