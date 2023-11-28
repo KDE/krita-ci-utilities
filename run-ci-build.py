@@ -302,6 +302,10 @@ except Exception:
 # Compile the project!!
 ####
 
+# Set the appropriate environment variables to ensure we can capture make install's output later on
+buildEnvironment['DESTDIR'] = installStagingPath
+buildEnvironment['INSTALL_ROOT'] = installStagingPath
+
 # Determine the appropriate number of CPU cores we should use when running builds
 cpuCount = int(multiprocessing.cpu_count())
 
@@ -344,10 +348,6 @@ if run_tests and configuration['Options']['test-before-installing']:
 ####
 # Install the project...
 ####
-
-# Set the appropriate environment variables to ensure we can capture make install's output later on
-buildEnvironment['DESTDIR'] = installStagingPath
-buildEnvironment['INSTALL_ROOT'] = installStagingPath
 
 # Now determine the path we should be archiving
 # Because we could potentially be running on Windows we have to ensure our second path has been converted to a suitable form
