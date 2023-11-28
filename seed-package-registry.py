@@ -136,6 +136,8 @@ while len(projectsToBuild) != 0:
             flat_args = [item for sublist in arguments.extra_cmake_args for item in sublist]
             commandToRun += ' ' + ' '.join(['--extra-cmake-args=' + arg for arg in flat_args])
 
+        print('## Run project build: {}'.format(commandToRun))
+
         # Then run it!
         subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=projectSources )
 
