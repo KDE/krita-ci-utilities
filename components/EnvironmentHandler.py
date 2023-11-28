@@ -65,7 +65,7 @@ def generateFor( installPrefix ):
     # Fortunately, even though Qt Upstream doesn't support this, the Craft patched version of Qt does support the QT_DATA_DIRS variable which will be followed
     # To ensure all our resources can be found, we make sure QT_DATA_DIRS is set
     # We leave XDG_DATA_DIRS set to ensure any tools which haven't been adapted to the Windows/Mac environment continue to work
-    if sys.platform == 'win32' or sys.platform == 'darwin':
+    if (sys.platform == 'win32' or sys.platform == 'darwin') and 'XDG_DATA_DIRS' in clonedEnv:
         clonedEnv['QT_DATA_DIRS'] = clonedEnv['XDG_DATA_DIRS']
 
     # Qt needs hand holding in order to work properly
