@@ -19,6 +19,7 @@ parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--only-build', default=False, action='store_true')
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-publishing', default=False, action='store_true')
+parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
 arguments = parser.parse_args()
 platform = PlatformFlavor.PlatformFlavor(arguments.platform)
 
@@ -62,6 +63,9 @@ if configuration['Options']['in-source-build']:
 
 # Determine where to unpack the dependencies to
 installPath = os.path.join( os.getcwd(), '_install' )
+
+if 'KDECI_SHARED_INSTALL_PATH' in os.environ:
+    installPath = os.environ['KDECI_SHARED_INSTALL_PATH']
 
 # Determine where we will stage the installation
 installStagingPath = os.path.join( os.getcwd(), '_staging' )
@@ -110,14 +114,17 @@ projectBuildDependencies = dependencyResolver.resolve( configuration['Dependenci
 # As well as the runtime dependencies
 projectRuntimeDependencies = dependencyResolver.resolve( configuration['RuntimeDependencies'], arguments.branch )
 
-# Now we can retrieve the build time dependencies
-dependenciesToUnpack = packageRegistry.retrieveDependencies( projectBuildDependencies )
-# And then unpack them
-for packageContents, packageMetadata in dependenciesToUnpack:
-    # Open the archive file
-    archive = tarfile.open( name=packageContents, mode='r' )
-    # Extract it's contents into the install directory
-    archive.extractall( path=installPath )
+dependenciesToUnpack = []
+
+if not arguments.skip_dependencies_fetch:
+    # Now we can retrieve the build time dependencies
+    dependenciesToUnpack = packageRegistry.retrieveDependencies( projectBuildDependencies )
+    # And then unpack them
+    for packageContents, packageMetadata in dependenciesToUnpack:
+        # Open the archive file
+        archive = tarfile.open( name=packageContents, mode='r' )
+        # Extract it's contents into the install directory
+        archive.extractall( path=installPath )
 
 ####
 # Perform final steps needed to get ready to start the build process
