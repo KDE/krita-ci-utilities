@@ -470,8 +470,8 @@ if gitlabToken is not None and not arguments.skip_publishing:
     # This is always present in Gitlab CI builds
     gitRevision = os.environ['CI_COMMIT_SHA']
 
-    print('Publishing package: {} branch: {} sha1: {}'.format(arguments.project, arguments.branch, gitRevision))
-    print('    metadata: {}'.format(packageMetadata))
+    print('## Publishing package: {} branch: {} sha1: {}'.format(arguments.project, arguments.branch, gitRevision))
+    print('##    metadata: {}'.format(packageMetadata))
 
     # Publish our package to the 
     packageRegistry.upload(archiveFile.name, arguments.project, arguments.branch, gitRevision, packageMetadata)
