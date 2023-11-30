@@ -104,6 +104,8 @@ gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
 packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
 buildType = os.environ.pop('KDECI_BUILD_TYPE', 'Debug')
+buildTarget = os.environ.pop('KDECI_BUILD_TARGET', '')
+installTarget = os.environ.pop('KDECI_INSTALL_TARGET', 'install')
 
 # Bring the package archive up
 packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken, packageProject )
@@ -312,10 +314,6 @@ except Exception:
 # Compile the project!!
 ####
 
-# Set the appropriate environment variables to ensure we can capture make install's output later on
-buildEnvironment['DESTDIR'] = installStagingPath
-buildEnvironment['INSTALL_ROOT'] = installStagingPath
-
 beforeInstallTimestamp = datetime.datetime.now().timestamp()
 
 # Determine the appropriate number of CPU cores we should use when running builds
@@ -323,19 +321,19 @@ cpuCount = int(multiprocessing.cpu_count())
 
 # Determine the build command we want to use
 # Just about all of our platforms support standard "make" so that is our default...
-makeCommand = "make -j {cpuCount}"
+makeCommand = "make -j {cpuCount} {customTarget}"
 
 # Windows is a bit special though
 if sys.platform == 'win32':
     # We use NMake on Windows at the moment
-    makeCommand = "ninja -j {cpuCount}"
+    makeCommand = "ninja -j {cpuCount} {customTarget}"
 
 # FreeBSD also likes to do things slightly different
 if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
-    makeCommand = "gmake -j {cpuCount}"
+    makeCommand = "gmake -j {cpuCount} {customTarget}"
 
 # Finalise the command we will be running
-commandToRun = makeCommand.format( cpuCount=cpuCount, maximumLoad=cpuCount+1 )
+commandToRun = makeCommand.format( cpuCount=cpuCount, maximumLoad=cpuCount+1, customTarget = buildTarget )
 
 # Compile the project
 try:
@@ -361,6 +359,10 @@ if run_tests and configuration['Options']['test-before-installing']:
 # Install the project...
 ####
 
+# Set the appropriate environment variables to ensure we can capture make install's output later on
+buildEnvironment['DESTDIR'] = installStagingPath
+buildEnvironment['INSTALL_ROOT'] = installStagingPath
+
 # Now determine the path we should be archiving
 # Because we could potentially be running on Windows we have to ensure our second path has been converted to a suitable form
 # This conversion is necessary as os.path.join can't handle the presence of drive letters in paths other than the first argument
@@ -369,14 +371,16 @@ pathToArchive = os.path.join( installStagingPath, CommonUtils.makePathRelative(i
 
 # Determine the build command we want to use
 # Just about all of our platforms support standard "make" so that is our default...
-commandToRun = "make install"
+commandToRun = "make {customTarget}"
 # Windows is a bit special though
 if sys.platform == 'win32':
     # We use NMake on Windows at the moment
-    commandToRun = "ninja install"
+    commandToRun = "ninja {customTarget}"
 # FreeBSD also likes to do things slightly different
 if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
-    commandToRun = "gmake install"
+    commandToRun = "gmake {customTarget}"
+
+commandToRun = commandToRun.format(customTarget = installTarget)
 
 # Install the project
 try:
