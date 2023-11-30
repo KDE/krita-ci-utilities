@@ -175,6 +175,8 @@ ccacheVerboseArg = '-vvv' if useCcacheForBuilds and ccacheSupportsVerbose() else
 if useCcacheForBuilds:
     # Setup the path used for the cache....
     buildEnvironment['CCACHE_DIR'] = os.path.join( buildEnvironment['KDECI_CC_CACHE'], arguments.project )
+    buildEnvironment['CMAKE_C_COMPILER_LAUNCHER'] = 'ccache'
+    buildEnvironment['CMAKE_CXX_COMPILER_LAUNCHER'] = 'ccache'
     # Ensure ccache is setup for use
     if configuration['Options']['ccache-large-cache']:
         subprocess.check_call( 'ccache -M 20G', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
@@ -238,12 +240,6 @@ cmakeCommand = [
     # Plus any project specific parameters
     configuration['Options']['cmake-options']
 ]
-
-# Do we need to make use of ccache?
-if useCcacheForBuilds:
-    # Then instruct CMake accordingly...
-    cmakeCommand.append('-DCMAKE_C_COMPILER_LAUNCHER=ccache')
-    cmakeCommand.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
 
 useCoverageBuild = False
 
