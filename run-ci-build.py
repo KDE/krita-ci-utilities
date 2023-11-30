@@ -45,6 +45,15 @@ if os.path.exists( projectConfigFile ):
     projectConfig = yaml.safe_load( open(projectConfigFile) )
     CommonUtils.recursiveUpdate( configuration, projectConfig )
 
+if 'KDECI_GLOBAL_CONFIG_OVERRIDE_PATH' in os.environ:
+    overridePath = os.environ['KDECI_GLOBAL_CONFIG_OVERRIDE_PATH']
+    if os.path.exists( overridePath ):
+        overrideConfig = yaml.safe_load( open(overridePath) )
+        CommonUtils.recursiveUpdate( configuration, overrideConfig )
+    else:
+        print('## Error: $KDECI_GLOBAL_CONFIG_OVERRIDE_PATH({}) is present, but the file doesn\'t exist'.format(overridePath))
+        sys.exit(-1)
+
 # Determine whether we will be running tests
 # This is only done if they're enabled for this project and we haven't been asked to just build the project
 run_tests = configuration['Options']['run-tests'] and configuration['Options']['build-tests'] and not arguments.only_build
