@@ -10,6 +10,8 @@ import multiprocessing
 from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler, PlatformFlavor
 import shutil
 import copy
+import time
+import datetime
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
@@ -20,6 +22,7 @@ parser.add_argument('--only-build', default=False, action='store_true')
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-publishing', default=False, action='store_true')
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
+parser.add_argument('--fail-on-leaked-stage-files', default=False, action='store_true')
 arguments = parser.parse_args()
 platform = PlatformFlavor.PlatformFlavor(arguments.platform)
 
@@ -313,6 +316,8 @@ except Exception:
 buildEnvironment['DESTDIR'] = installStagingPath
 buildEnvironment['INSTALL_ROOT'] = installStagingPath
 
+beforeInstallTimestamp = datetime.datetime.now().timestamp()
+
 # Determine the appropriate number of CPU cores we should use when running builds
 cpuCount = int(multiprocessing.cpu_count())
 
@@ -415,6 +420,27 @@ for name, script in configuration['PostInstallScripts'].items():
     except Exception:
         print("## Failed to run post-install script the project")
         sys.exit(1)
+
+leakedFiles = []
+
+for root, dirs, files in os.walk(installPath):
+    for name in files:
+        filePath = os.path.join(root, name)
+        fileTimeStamp = os.path.getctime(filePath)
+        #print("file: {} timestamp: {}".format(filePath, fileTimeStamp))
+        if fileTimeStamp > beforeInstallTimestamp:
+            leakedFiles.append(filePath)
+
+if leakedFiles:
+    print("## ERROR: some files seem to have been installed bypassing the _staging directory ($DESTDIR environment variable)!")
+    print("##  timestamp: {}".format(time.asctime(time.localtime(beforeInstallTimestamp))))
+    for filePath in leakedFiles:
+        print("##  leaked file: {}, {}".format(filePath, time.asctime(time.localtime(os.path.getctime(filePath)))))
+    if arguments.fail_on_leaked_stage_files:
+        print('## Exiting... (\'--fail-on-leaked-stage-files\' is set)')
+        sys.exit(1)
+    else:
+        print('## Ignoring... (set \'--fail-on-leaked-stage-files\' to fail on leaked files)')
 
 # Cleanup the capture variables to ensure they don't interfere with later runs
 del buildEnvironment['DESTDIR']
