@@ -19,12 +19,25 @@ parser.add_argument('--project', type=str, required=True)
 parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--only-build', default=False, action='store_true')
+parser.add_argument('--only-deps', default=False, action='store_true')
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-publishing', default=False, action='store_true')
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
 parser.add_argument('--fail-on-leaked-stage-files', default=False, action='store_true')
 arguments = parser.parse_args()
 platform = PlatformFlavor.PlatformFlavor(arguments.platform)
+
+if arguments.only_deps:
+    if arguments.only_build:
+        print ("WARNING: argument --only-build is ignored, since --only-deps is preset")
+    if arguments.extra_cmake_args:
+        print ("WARNING: argument --extra-cmake-args is ignored, since --only-deps is preset")
+    if arguments.skip_publishing:
+        print ("WARNING: argument --skip-publishing is ignored, since --only-deps is preset")
+    if arguments.fail_on_leaked_stage_files:
+        print ("WARNING: argument --fail-on-leaked-stage-files is ignored, since --only-deps is preset")
+    if arguments.skip_dependencies_fetch:
+        print ("ERROR: argument --skip-dependencies-fetch conflicts with --only-deps")
 
 ####
 # Load the project configuration
@@ -139,6 +152,9 @@ if not arguments.skip_dependencies_fetch:
         archive = tarfile.open( name=packageContents, mode='r' )
         # Extract it's contents into the install directory
         archive.extractall( path=installPath )
+
+if arguments.only_deps:
+    sys.exit(0)
 
 ####
 # Perform final steps needed to get ready to start the build process
