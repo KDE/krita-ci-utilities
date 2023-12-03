@@ -93,10 +93,11 @@ class Resolver(object):
             return os.environ['CI_MERGE_REQUEST_TARGET_BRANCH_NAME']
 
         # Before we can begin, on Windows we don't natively have grep/sort available to us (or many other unix utilities for that matter)
-        # As Git for Windows includes them, we need to add it's path for this to our PATH if we're on Windows
+        # Git for Windows includes them, but they are not always on PATH, so we need to locate git.exe and add its /usr/bin directory manually.
         commandEnvironment = copy.deepcopy( os.environ )
         if sys.platform == 'win32':
-            commandEnvironment['PATH'] = 'C:\\Program Files\\Git\\usr\\bin\\;' + commandEnvironment['PATH']
+            git_usrbin_directory = os.path.normpath(os.path.join(os.path.dirname(subprocess.check_output("where git", text=True)), '..\\usr\\bin'))
+            commandEnvironment['PATH'] = git_usrbin_directory + ';' + commandEnvironment['PATH']
 
         # To do this we need to first get a list of commits that are in the branch we are building (HEAD) which aren't in any mainline branch
         # This is done by asking Git to print a list of all refs it knows of, prefixed by the negate operator (^)
