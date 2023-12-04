@@ -84,7 +84,7 @@ sourcesPath = os.getcwd()
 baseWorkDirectoryPath = os.getcwd()
 
 if 'KDECI_WORKDIR_PATH' in os.environ:
-    baseWorkDirectoryPath = os.environ['KDECI_WORKDIR_PATH']
+    baseWorkDirectoryPath = os.path.join(os.environ['KDECI_WORKDIR_PATH'], arguments.project)
     potentialBuildFolder = os.path.join(baseWorkDirectoryPath, '_build')
     if os.path.isdir(potentialBuildFolder):
         print('## WARNING: workdir already contains _build folder: {}'.format(potentialBuildFolder))
