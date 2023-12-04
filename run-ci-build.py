@@ -117,7 +117,7 @@ elif 'CI_REPOSITORY_URL' in os.environ:
 # Prepare to resolve and fetch our project dependencies
 ####
 
-metadataFolderPath = os.environ.pop('KDECI_REPO_METADATA_PATH', os.path.join(CommonUtils.scriptsBaseDirectory(), 'repo-metadata'))
+metadataFolderPath = os.environ.get('KDECI_REPO_METADATA_PATH', os.path.join(CommonUtils.scriptsBaseDirectory(), 'repo-metadata'))
 
 # Determine where some key resources we need for resolving dependencies will be found...
 projectsMetadataPath = os.path.join( metadataFolderPath, 'projects-invent' )
@@ -135,9 +135,9 @@ localCachePath = os.environ.pop('KDECI_CACHE_PATH')
 gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
 packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
-buildType = os.environ.pop('KDECI_BUILD_TYPE', 'Debug')
-buildTarget = os.environ.pop('KDECI_BUILD_TARGET', '')
-installTarget = os.environ.pop('KDECI_INSTALL_TARGET', 'install')
+buildType = os.environ.get('KDECI_BUILD_TYPE', 'Debug')
+buildTarget = os.environ.get('KDECI_BUILD_TARGET', '')
+installTarget = os.environ.get('KDECI_INSTALL_TARGET', 'install')
 
 # Bring the package archive up
 packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken, packageProject )

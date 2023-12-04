@@ -34,7 +34,7 @@ seedConfiguration = yaml.safe_load( open( arguments.seed_file ) )
 # Determine where we will be working
 workingDirectory = os.getcwd()
 
-metadataFolderPath = os.environ.pop('KDECI_REPO_METADATA_PATH', os.path.join(CommonUtils.scriptsBaseDirectory(), 'repo-metadata'))
+metadataFolderPath = os.environ.get('KDECI_REPO_METADATA_PATH', os.path.join(CommonUtils.scriptsBaseDirectory(), 'repo-metadata'))
 
 # Determine where some key resources we need for resolving dependencies will be found...
 projectsMetadataPath = os.path.join( metadataFolderPath, 'projects-invent' )
