@@ -81,19 +81,27 @@ if platform.os in ['Android']:
 # Our sources are assumed to be in the current working directory
 sourcesPath = os.getcwd()
 
+baseWorkDirectoryPath = os.getcwd()
+
+if 'KDECI_WORKDIR_PATH' in os.environ:
+    baseWorkDirectoryPath = os.environ['KDECI_WORKDIR_PATH']
+    potentialBuildFolder = os.path.join(baseWorkDirectoryPath, '_build')
+    if os.path.isdir(potentialBuildFolder):
+        print('## WARNING: workdir already contains _build folder: {}'.format(potentialBuildFolder))
+
 # Determine where to locate the project build
-buildPath = os.path.join( os.getcwd(), '_build' )
+buildPath = os.path.join( baseWorkDirectoryPath, '_build' )
 if configuration['Options']['in-source-build']:
     buildPath = os.getcwd()
 
 # Determine where to unpack the dependencies to
-installPath = os.path.join( os.getcwd(), '_install' )
+installPath = os.path.join( baseWorkDirectoryPath, '_install' )
 
 if 'KDECI_SHARED_INSTALL_PATH' in os.environ:
     installPath = os.environ['KDECI_SHARED_INSTALL_PATH']
 
 # Determine where we will stage the installation
-installStagingPath = os.path.join( os.getcwd(), '_staging' )
+installStagingPath = os.path.join( baseWorkDirectoryPath, '_staging' )
 
 ####
 # Fetch project sources
