@@ -352,18 +352,7 @@ beforeInstallTimestamp = datetime.datetime.now().timestamp()
 # Determine the appropriate number of CPU cores we should use when running builds
 cpuCount = int(multiprocessing.cpu_count())
 
-# Determine the build command we want to use
-# Just about all of our platforms support standard "make" so that is our default...
-makeCommand = "make -j {cpuCount} {customTarget}"
-
-# Windows is a bit special though
-if sys.platform == 'win32':
-    # We use NMake on Windows at the moment
-    makeCommand = "cmake --build . --parallel {cpuCount} --target {customTarget}"
-
-# FreeBSD also likes to do things slightly different
-if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
-    makeCommand = "gmake -j {cpuCount} {customTarget}"
+makeCommand = "cmake --build . --parallel {cpuCount} --target {customTarget}"
 
 # Finalise the command we will be running
 commandToRun = makeCommand.format( cpuCount=cpuCount, maximumLoad=cpuCount+1, customTarget = buildTarget )
@@ -401,18 +390,7 @@ buildEnvironment['INSTALL_ROOT'] = installStagingPath
 # This conversion is necessary as os.path.join can't handle the presence of drive letters in paths other than the first argument
 pathToArchive = os.path.join( installStagingPath, CommonUtils.makePathRelative(installPath) )
 
-
-# Determine the build command we want to use
-# Just about all of our platforms support standard "make" so that is our default...
-commandToRun = "make {customTarget}"
-# Windows is a bit special though
-if sys.platform == 'win32':
-    # We use NMake on Windows at the moment
-    commandToRun = "ninja {customTarget}"
-# FreeBSD also likes to do things slightly different
-if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
-    commandToRun = "gmake {customTarget}"
-
+makeCommand = "cmake --build . --target {customTarget}"
 commandToRun = commandToRun.format(customTarget = installTarget)
 
 # Install the project
