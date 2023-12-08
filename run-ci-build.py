@@ -359,7 +359,7 @@ makeCommand = "make -j {cpuCount} {customTarget}"
 # Windows is a bit special though
 if sys.platform == 'win32':
     # We use NMake on Windows at the moment
-    makeCommand = "ninja -j {cpuCount} {customTarget}"
+    makeCommand = "cmake --build . --parallel {cpuCount} --target {customTarget}"
 
 # FreeBSD also likes to do things slightly different
 if sys.platform == 'freebsd12' or sys.platform == 'freebsd13':
