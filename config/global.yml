@@ -12,6 +12,7 @@ Options:
   use-ccache: False
   ccache-large-cache: False
   cmake-options: ''
+  generator: default
   release-build: False
   test-before-installing: False
   run-tests: True
