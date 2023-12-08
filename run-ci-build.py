@@ -136,7 +136,7 @@ gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
 packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
 buildType = os.environ.get('KDECI_BUILD_TYPE', 'Debug')
-buildTarget = os.environ.get('KDECI_BUILD_TARGET', '')
+buildTarget = os.environ.get('KDECI_BUILD_TARGET', 'all')
 installTarget = os.environ.get('KDECI_INSTALL_TARGET', 'install')
 
 # Bring the package archive up
