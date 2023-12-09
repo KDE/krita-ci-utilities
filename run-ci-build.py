@@ -391,7 +391,7 @@ buildEnvironment['INSTALL_ROOT'] = installStagingPath
 pathToArchive = os.path.join( installStagingPath, CommonUtils.makePathRelative(installPath) )
 
 makeCommand = "cmake --build . --target {customTarget}"
-commandToRun = commandToRun.format(customTarget = installTarget)
+commandToRun = makeCommand.format(customTarget = installTarget)
 
 # Install the project
 try:
