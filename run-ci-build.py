@@ -282,10 +282,11 @@ if platform.os == 'Linux' and not os.path.exists('/lib/libc.musl-x86_64.so.1'):
 
 # Are we on Windows?
 if sys.platform == 'win32':
-    # We want a Ninja based build, rather than the default MSBuild
-    cmakeCommand.append('-G "{}"'.format('Ninja' if configuration['Options']['generator'] == 'default' else configuration['Options']['generator']))
-elif configuration['Options']['generator'] != 'default':
-    cmakeCommand.append('-G "{}"'.format(configuration['Options']['generator']))
+    if configuration['Options']['force-ninja-on-windows']:
+        # We want a Ninja based build, rather than the default MSBuild
+        cmakeCommand.append('-G "Ninja"')
+    else:
+        cmakeCommand.append('-G "MinGW Makefiles"')
 
 # Are we building for Android?
 if platform.os == 'Android':
