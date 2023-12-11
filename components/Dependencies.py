@@ -153,6 +153,10 @@ class Resolver(object):
             for requirement, requirementBranch in dependencyRuleset['require'].items():
                 # Find the projects that match the specification we have been given
                 matchingProjects = [ project for repositoryPath, project in self.projects.items() if fnmatch.fnmatch(repositoryPath, requirement) ]
+
+                if not matchingProjects:
+                    raise Exception("Unable to resolve metadata for the requested dependency: {} (branch: {})".format(requirement, requirementBranch))
+
                 # Next we need to resolve the branch for each of the dependencies we have found
                 # This will be needed later to fetch the appropriate build
                 for requirementProject in matchingProjects:
