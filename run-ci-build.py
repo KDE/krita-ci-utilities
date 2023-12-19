@@ -24,6 +24,7 @@ parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', 
 parser.add_argument('--skip-publishing', default=False, action='store_true')
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
 parser.add_argument('--fail-on-leaked-stage-files', default=False, action='store_true')
+parser.add_argument('-s','--skip-deps', nargs='+', help='A space-separated list of dependencies to skip fetching', required=False)
 arguments = parser.parse_args()
 platform = PlatformFlavor.PlatformFlavor(arguments.platform)
 
@@ -155,7 +156,13 @@ dependenciesToUnpack = []
 
 if not arguments.skip_dependencies_fetch:
     # Now we can retrieve the build time dependencies
-    dependenciesToUnpack = packageRegistry.retrieveDependencies( projectBuildDependencies )
+    allDependencies = packageRegistry.retrieveDependencies( projectBuildDependencies )
+
+    dependenciesToUnpack = \
+        allDependencies \
+        if arguments.skip_deps is None \
+        else [item for item in allDependencies if item[1]['identifier'] not in arguments.skip_deps]
+
     # And then unpack them
     for packageContents, packageMetadata in dependenciesToUnpack:
         # Open the archive file
@@ -232,6 +239,11 @@ print("##")
 print("## Providing the following dependencies:")
 for packageContents, packageMetadata in dependenciesToUnpack:
     print("##    {0} - {1} ({2})".format(packageMetadata['identifier'], packageMetadata['branch'], packageMetadata['gitRevision']))
+print("##")
+if arguments.skip_deps:
+    print("## Skipped the following deps (provided with --skip-deps option):")
+    for depId in arguments.skip_deps:
+        print("##     {}".format(depId))
 print("##")
 print("## Building with the following environment variables:")
 for variable, contents in buildEnvironment.items():

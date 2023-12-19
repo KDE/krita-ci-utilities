@@ -86,7 +86,7 @@ class Registry(object):
             
     # Retrieve a package matching the supplied parameters
     # Returns a tuple containing a handle to the package archive and a dictionary of metadata surrounding the package
-    def retrieve(self, identifier, branch):
+    def retrieve(self, identifier, branch, onlyMetadata = False):
         # Get ready to search
         remotePackage = None
         cachedPackage = None
@@ -135,8 +135,22 @@ class Registry(object):
 
         # Let's retrieve the file if we need to now...
         # First we need to formulate the original version string
-        # Download the archive first...
+        # Download the metadata first...
         response = self.remoteRegistry.generic_packages.download( 
+            package_name=remotePackage['identifier'],
+            package_version=remotePackage['version'],
+            file_name="metadata.json"
+        )
+
+        if onlyMetadata:
+            return ( None, response )
+
+        latestMetadata = tempfile.NaedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
+        latestMetadata.write( response )
+        latestMetadata.close()
+
+        # Now the metadata...
+        response = self.remoteRegistry.generic_packages.download(
             package_name=remotePackage['identifier'], 
             package_version=remotePackage['version'],
             file_name="archive.tar"
@@ -144,16 +158,6 @@ class Registry(object):
         latestContent = tempfile.NamedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
         latestContent.write( response )
         latestContent.close()
-
-        # Now the metadata file...
-        response = self.remoteRegistry.generic_packages.download( 
-            package_name=remotePackage['identifier'],
-            package_version=remotePackage['version'],
-            file_name="metadata.json"
-        )
-        latestMetadata = tempfile.NamedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
-        latestMetadata.write( response )
-        latestMetadata.close()
 
         # Move both to the cache for future use
         shutil.move( latestContent.name, localContentsPath )
@@ -166,7 +170,7 @@ class Registry(object):
 
     # Takes a dict of projects (with values being the branches), and fetches them and any dependencies they have
     # Returns the complete list for further processing
-    def retrieveDependencies(self, dependenciesToFetch, runtime=False):
+    def retrieveDependencies(self, dependenciesToFetch, runtime=False, onlyMetadata = False):
         # Prepare a list of the details we need to keep
         fetchedPackages = {}
         packageBranches = {}
@@ -187,7 +191,7 @@ class Registry(object):
 
             # Given we have not previously fetched this dependency, we should do so...
             try:
-                fetchedPackages[ identifier ] = self.retrieve( identifier, branch )
+                fetchedPackages[ identifier ] = self.retrieve( identifier, branch, onlyMetadata=onlyMetadata )
             except Exception:
                 raise Exception("Unable to locate requested dependency in the registry: {} (branch: {})".format( identifier, branch ))
 

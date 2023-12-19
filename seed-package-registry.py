@@ -5,7 +5,7 @@ import copy
 import yaml
 import argparse
 import subprocess
-from components import CommonUtils, Dependencies, PlatformFlavor
+from components import CommonUtils, Dependencies, PlatformFlavor, Package
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to seed a Package Registry for use with run-ci-build.py')
@@ -144,6 +144,25 @@ while len(projectsToBuild) != 0:
             # necessary since we cannot use the 'extend' action for the arguments due to requiring Python < 3.8
             flat_args = [item for sublist in arguments.extra_cmake_args for item in sublist]
             commandToRun += ' ' + ' '.join(['--extra-cmake-args=' + arg for arg in flat_args])
+
+        if 'KDECI_SHARED_INSTALL_PATH' in os.environ:
+            existingProjects = {}
+            for id, branch in projectBuildDependencies[identifier].items():
+                if id in builtProjects:
+                    existingProjects[id] = branch
+
+            if existingProjects:
+                localCachePath = os.environ['KDECI_CACHE_PATH']
+                gitlabInstance = os.environ['KDECI_GITLAB_SERVER']
+                packageProject = os.environ['KDECI_PACKAGE_PROJECT']
+
+                packageRegistry = Package.Registry( localCachePath, gitlabInstance, None, packageProject )
+                allDependencies = packageRegistry.retrieveDependencies( existingProjects, onlyMetadata=True )
+
+                exisitingDeps = set(item[1]['identifier'] for item in allDependencies)
+                exisitingDeps.update(existingProjects.keys())
+
+                commandToRun += ' --skip-deps ' + ' '.join(exisitingDeps)
 
         print('## Run project build: {}'.format(commandToRun))
 
