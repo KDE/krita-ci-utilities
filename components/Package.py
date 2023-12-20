@@ -143,7 +143,7 @@ class Registry(object):
         )
 
         if onlyMetadata:
-            return ( None, response )
+            return ( None, json.loads(response) )
 
         latestMetadata = tempfile.NamedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
         latestMetadata.write( response )
