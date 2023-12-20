@@ -145,7 +145,7 @@ class Registry(object):
         if onlyMetadata:
             return ( None, response )
 
-        latestMetadata = tempfile.NaedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
+        latestMetadata = tempfile.NamedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
         latestMetadata.write( response )
         latestMetadata.close()
 
