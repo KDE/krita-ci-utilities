@@ -231,6 +231,7 @@ print("## Starting build for {0} on {1}".format(arguments.project, arguments.bra
 print("##")
 print("## Installing project to {0}".format(installPath))
 print("## Building project in {0}".format(buildPath))
+print("## Staging project directory {0}".format(installStagingPath))
 print("##")
 print("## Project CI configuration as follows:")
 for key, value in configuration['Options'].items():
