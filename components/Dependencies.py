@@ -94,7 +94,7 @@ class Resolver(object):
 
         # Before we can begin, on Windows we don't natively have grep/sort available to us (or many other unix utilities for that matter)
         # Git for Windows includes them, but they are not always on PATH, so we need to locate git.exe and add its /usr/bin directory manually.
-        commandEnvironment = copy.deepcopy( os.environ )
+        commandEnvironment = copy.deepcopy(dict(os.environ))
         if sys.platform == 'win32':
             git_usrbin_directory = os.path.normpath(os.path.join(os.path.dirname(subprocess.check_output("where git", text=True)), '..\\usr\\bin'))
             commandEnvironment['PATH'] = git_usrbin_directory + ';' + commandEnvironment['PATH']

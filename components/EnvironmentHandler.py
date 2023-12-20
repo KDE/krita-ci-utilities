@@ -51,7 +51,7 @@ def generateFor( installPrefix ):
 
     # Now we can merge this into the real environment
     splitChar = separatorCharacter()
-    clonedEnv = copy.deepcopy(os.environ)
+    clonedEnv = copy.deepcopy(dict(os.environ))
     for variableName, variableEntries in envChanges.items():
         # Join them
         newEntry = splitChar.join( variableEntries )
