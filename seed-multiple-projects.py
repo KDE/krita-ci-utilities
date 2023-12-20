@@ -14,6 +14,11 @@ parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 arguments = parser.parse_args()
 
+if len(arguments.projects) == 1 and ' ' in arguments.projects[0]:
+    fixedProjects = arguments.projects[0].split();
+    print("Fixing the projects list: {} -> {}", arguments.projects, fixedProjects)
+    arguments.projects = fixedProjects
+
 projects = dict.fromkeys(arguments.projects, arguments.branch)
 out = [
     {
