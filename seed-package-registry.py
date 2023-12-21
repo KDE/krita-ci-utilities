@@ -7,6 +7,66 @@ import argparse
 import subprocess
 from components import CommonUtils, Dependencies, PlatformFlavor, Package
 
+####
+# Load the project configuration
+####
+def loadProjectConfiguration(projectRoot, projectName):
+    # This consists of:
+    # 0) Global configuration
+    configuration = yaml.safe_load( open(os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', 'global.yml')) )
+
+    # 1) Project/branch specific configuration contained within the repository
+    if os.path.exists(os.path.join(projectRoot, '.kde-ci.yml')):
+        localConfig = yaml.safe_load( open(os.path.join(projectRoot, '.kde-ci.yml')) )
+        CommonUtils.recursiveUpdate( configuration, localConfig )
+
+    # 2) Global overrides applied to the project configuration
+    projectConfigFile = os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', projectName + '.yml')
+    if os.path.exists( projectConfigFile ):
+        projectConfig = yaml.safe_load( open(projectConfigFile) )
+        CommonUtils.recursiveUpdate( configuration, projectConfig )
+
+    if 'KDECI_GLOBAL_CONFIG_OVERRIDE_PATH' in os.environ:
+        overridePath = os.environ['KDECI_GLOBAL_CONFIG_OVERRIDE_PATH']
+        if os.path.exists( overridePath ):
+            overrideConfig = yaml.safe_load( open(overridePath) )
+            CommonUtils.recursiveUpdate( configuration, overrideConfig )
+        else:
+            print('## Error: $KDECI_GLOBAL_CONFIG_OVERRIDE_PATH({}) is present, but the file doesn\'t exist'.format(overridePath))
+            sys.exit(-1)
+
+    return configuration
+
+####
+# Lazily retrieve project dependency information either from a local build or
+# from the package registry
+####
+packageRegistry = None
+def lazyResolveProjectDeps(workingDirectory, projectId, projectBranch):
+    exisitingDeps = set()
+    projectDirectory = os.path.join(workingDirectory, projectId)
+
+    if not os.path.exists(projectDirectory):
+        localCachePath = os.environ['KDECI_CACHE_PATH']
+        gitlabInstance = os.environ['KDECI_GITLAB_SERVER']
+        packageProject = os.environ['KDECI_PACKAGE_PROJECT']
+
+        if packageRegistry is None:
+            packageRegistry = Package.Registry( localCachePath, gitlabInstance, None, packageProject )
+        allDependencies = packageRegistry.retrieveDependencies( [projectId], onlyMetadata=True )
+
+        exisitingDeps.update([item[1]['identifier'] for item in allDependencies])
+    else:
+        configuration = loadProjectConfiguration(projectDirectory, projectId)
+        projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], projectBranch )
+
+        for childDep, childBranch in projectBuildDependencies.items():
+            exisitingDeps.add(childDep)
+            exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, childDep, childBranch))
+
+    return exisitingDeps
+
+
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to seed a Package Registry for use with run-ci-build.py')
 parser.add_argument('--seed-file', type=str, required=True)
@@ -152,15 +212,11 @@ while len(projectsToBuild) != 0:
                     existingProjects[id] = branch
 
             if existingProjects:
-                localCachePath = os.environ['KDECI_CACHE_PATH']
-                gitlabInstance = os.environ['KDECI_GITLAB_SERVER']
-                packageProject = os.environ['KDECI_PACKAGE_PROJECT']
+                exisitingDeps = set()
 
-                packageRegistry = Package.Registry( localCachePath, gitlabInstance, None, packageProject )
-                allDependencies = packageRegistry.retrieveDependencies( existingProjects, onlyMetadata=True )
-
-                exisitingDeps = set(item[1]['identifier'] for item in allDependencies)
-                exisitingDeps.update(existingProjects.keys())
+                for projectId in existingProjects.keys():
+                    exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, projectId, existingProjects[projectId]))
+                    exisitingDeps.add(projectId)
 
                 commandToRun += ' --skip-deps ' + ' '.join(exisitingDeps)
 

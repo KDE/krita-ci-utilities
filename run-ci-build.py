@@ -155,8 +155,14 @@ projectRuntimeDependencies = dependencyResolver.resolve( configuration['RuntimeD
 dependenciesToUnpack = []
 
 if not arguments.skip_dependencies_fetch:
+    # skip retrieving dependencies which are already prepared
+    dependenciesToRetrieve = \
+        projectBuildDependencies \
+        if arguments.skip_deps is None \
+        else dict(item for item in projectBuildDependencies.items() if item[0] not in arguments.skip_deps)
+
     # Now we can retrieve the build time dependencies
-    allDependencies = packageRegistry.retrieveDependencies( projectBuildDependencies )
+    allDependencies = packageRegistry.retrieveDependencies( dependenciesToRetrieve )
 
     dependenciesToUnpack = \
         allDependencies \
