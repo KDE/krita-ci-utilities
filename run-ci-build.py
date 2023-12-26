@@ -477,6 +477,22 @@ if leakedFiles:
     else:
         print('## Ignoring... (set \'--fail-on-leaked-stage-files\' to fail on leaked files)')
 
+if configuration['Options']['pkg-config-sanity-check'] != 'none':
+    commandToRun = '{} -u {} --prefix {} --destdir {} {}'.format(
+        sys.executable,
+        os.path.join(CommonUtils.scriptsBaseDirectory(), 'sanity-check-pkg-config-files.py'),
+        installPath,
+        installStagingPath,
+        '-f' if configuration['Options']['pkg-config-sanity-check'] == 'error' else '')
+
+    # Run pkg-config sanity checks
+    try:
+        print('## RUNNING PKG-CONFIG SANITY-CHECKS: {}'.format(commandToRun))
+        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=os.getcwd(), env=os.environ )
+    except Exception:
+        print("## Failed to run pkg-config sanity-check script")
+        sys.exit(1)
+
 # Cleanup the capture variables to ensure they don't interfere with later runs
 del buildEnvironment['DESTDIR']
 del buildEnvironment['INSTALL_ROOT']
