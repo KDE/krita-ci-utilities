@@ -241,6 +241,9 @@ if useCcacheForBuilds:
     # Dump intial stats for ccache (to estimate the size)
     subprocess.check_call( 'ccache -s {}'.format(ccacheVerboseArg), stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
 
+# Python can create __pycache__ directories that will trigger DESTDIR leak detection so we disable this
+buildEnvironment['PYTHONDONTWRITEBYTECODE'] = '1'
+
 # Make sure the build directory exists
 if not os.path.exists( buildPath ):
     os.makedirs( buildPath )
