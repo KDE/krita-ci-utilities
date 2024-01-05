@@ -145,24 +145,27 @@ dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPat
 # Of these values, KDECI_GITLAB_TOKEN is optional as it is only used for writing changes back to the package archive
 # The remainder are required for storing packages locally and fetching them
 localCachePath = os.environ.pop('KDECI_CACHE_PATH')
-gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
-packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
 buildType = os.environ.get('KDECI_BUILD_TYPE', 'Debug')
 buildTarget = os.environ.get('KDECI_BUILD_TARGET', 'all')
 installTarget = os.environ.get('KDECI_INSTALL_TARGET', 'install')
 
-# Bring the package archive up
-packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken, packageProject )
+# We can skip all communication with invent if we're not fetching dependencies, testing or publishing
+if not (arguments.skip_dependencies_fetch and arguments.only_build):
+    packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
+    gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 
-####
-# Now resolve both build and runtime dependencies, then fetch the build dependencies!
-####
+    # Bring the package archive up
+    packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken, packageProject )
 
-# Resolve the dependencies of this project
-projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], arguments.branch )
-# As well as the runtime dependencies
-projectRuntimeDependencies = dependencyResolver.resolve( configuration['RuntimeDependencies'], arguments.branch )
+    ####
+    # Now resolve both build and runtime dependencies, then fetch the build dependencies!
+    ####
+
+    # Resolve the dependencies of this project
+    projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], arguments.branch )
+    # As well as the runtime dependencies
+    projectRuntimeDependencies = dependencyResolver.resolve( configuration['RuntimeDependencies'], arguments.branch )
 
 dependenciesToUnpack = []
 
