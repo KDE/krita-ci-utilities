@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description='Utility to run builds for multiple
 parser.add_argument('-p','--projects', nargs='+', help='Projects to be built', required=True)
 parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
+parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
 arguments = parser.parse_args()
 
 if len(arguments.projects) == 1 and ' ' in arguments.projects[0]:
@@ -40,6 +41,9 @@ commandToRun = "{0} -u {1}/seed-package-registry.py --seed-file {2} --platform {
             seedFile.name,
             arguments.platform
         )
+
+if arguments.skip_dependencies_fetch:
+    commandToRun += " --skip-dependencies-fetch"
 
 print('## Run the build for the requested projects: {}'.format(commandToRun))
 
