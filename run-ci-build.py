@@ -7,7 +7,7 @@ import tempfile
 import argparse
 import subprocess
 import multiprocessing
-from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler, PlatformFlavor
+from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler, PlatformFlavor, EnvFileUtils
 import shutil
 import copy
 import time
@@ -20,6 +20,8 @@ parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--only-build', default=False, action='store_true')
 parser.add_argument('--only-deps', default=False, action='store_true')
+parser.add_argument('-e', '--env', type=str)
+parser.add_argument('--only-env', action='store_true')
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-publishing', default=False, action='store_true')
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
@@ -256,6 +258,17 @@ print("## Building with the following environment variables:")
 for variable, contents in buildEnvironment.items():
     print("##    {0}={1}".format(variable, contents))
 print("##")
+
+if not arguments.env is None or arguments.only_env:
+    envFile = os.path.abspath(os.path.join(baseWorkDirectoryPath, arguments.env)) if not arguments.env is None else os.path.join(baseWorkDirectoryPath, 'env')
+    print("## Generating env file: {}".format(envFile))
+
+    EnvFileUtils.writeEnvFile(os.path.dirname(envFile), os.path.basename(envFile),
+                              buildEnvironment)
+    if arguments.only_env:
+        print("## env file generated, exiting...")
+        sys.exit(0)
+
 print("## Starting build process...")
 
 ####
