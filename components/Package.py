@@ -149,11 +149,19 @@ class Registry(object):
         latestMetadata.write( response )
         latestMetadata.close()
 
+        extraDownloadArgs = {}
+
+        if os.environ.get('KDECI_COMPRESS_PACKAGES_ON_DOWNLOAD', '0') in ['1', 'True', 'true']:
+            extraDownloadArgs = {
+                'headers' : {'Accept-Encoding': 'gzip, deflate'}
+            }
+
         # Now the metadata...
         response = self.remoteRegistry.generic_packages.download(
             package_name=remotePackage['identifier'], 
             package_version=remotePackage['version'],
-            file_name="archive.tar"
+            file_name="archive.tar",
+            **extraDownloadArgs
         )
         latestContent = tempfile.NamedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
         latestContent.write( response )
