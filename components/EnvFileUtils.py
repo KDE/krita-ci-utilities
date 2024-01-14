@@ -14,14 +14,14 @@ def getSaveResotreVarLine(var):
         return ('set {saved}=%{var}%\n'.format(saved = savedVariableName, var = var),
                 'set {var}=%{saved}%\n'.format(saved = savedVariableName, var = var))
     else:
-        return ('export {saved}=${var}\n'.format(saved = savedVariableName, var = var),
-                'export {var}=${saved}\n'.format(saved = savedVariableName, var = var))
+        return ('export {saved}=\"${var}\"\n'.format(saved = savedVariableName, var = var),
+                'export {var}=\"${saved}\"\nunset {saved}\n'.format(saved = savedVariableName, var = var))
     
 def getVarSetterLine(var, value):
     if platform.system() == "Windows":
         return 'set {}={}\n'.format(var, value)
     else:
-        return 'export {}={}\n'.format(var, value)
+        return 'export {}=\"{}\"\n'.format(var, value)
 
 def getVarUpdaterLine(var, values):
     if not isinstance(values, list):
