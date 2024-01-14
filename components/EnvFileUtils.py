@@ -67,12 +67,12 @@ def writeEnvFile(directory, fileBaseName, environmentUpdate, environmentAppend =
         for var, value in environmentAppend.items():
             envFile.write(getVarUpdaterLine(var, value))
         for script in extraActivationScripts:
-            envFile.write(os.path.abspath(script))
+            envFile.write(getScriptLine(os.path.abspath(script)))
 
     with open(os.path.join(directory, fileBaseName + '_deactivate' + fileSuffix), 'w') as envFile:
         if platform.system() == "Windows":
             envFile.write('@echo off\n')
 
         for script in extraDeactivationScripts:
-            envFile.write(getScriptLine(script))
+            envFile.write(getScriptLine(os.path.abspath(script)))
         envFile.writelines(restoreLines)
