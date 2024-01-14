@@ -45,6 +45,9 @@ prefixMatcher = re.compile('^\s*prefix\s*=\s*(.+)')
 
 for path in pkgConfigPaths:
     # print('# Checking relocatability in folder: {}'.format(path))
+    if not os.path.isdir(path):
+        continue
+
     os.chdir(path) # `root_dir` option is not available in Python 3.8
     for relFile in glob.glob(os.path.join('**', '*.pc'), recursive=True):
         file = os.path.join(path, relFile)
