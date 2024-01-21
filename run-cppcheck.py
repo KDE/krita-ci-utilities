@@ -8,6 +8,7 @@ import argparse
 import subprocess
 import multiprocessing
 from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler
+from components.CiConfigurationUtils import *
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
@@ -19,20 +20,7 @@ arguments = parser.parse_args()
 # Load the project configuration
 ####
 
-# This consists of:
-# 0) Global configuration
-configuration = yaml.safe_load( open(os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', 'global.yml')) )
-
-# 1) Project/branch specific configuration contained within the repository
-if os.path.exists('.kde-ci.yml'):
-    localConfig = yaml.safe_load( open('.kde-ci.yml') )
-    CommonUtils.recursiveUpdate( configuration, localConfig )
-
-# 2) Global overrides applied to the project configuration
-projectConfigFile = os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', arguments.project + '.yml')
-if os.path.exists( projectConfigFile ):
-    projectConfig = yaml.safe_load( open(projectConfigFile) )
-    CommonUtils.recursiveUpdate( configuration, projectConfig )
+configuration = loadProjectConfiguration('', arguments.project)
 
 ####
 # Determine a number of paths we will need later on

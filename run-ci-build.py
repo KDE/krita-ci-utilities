@@ -7,7 +7,8 @@ import tempfile
 import argparse
 import subprocess
 import multiprocessing
-from components import CommonUtils, Dependencies, Package, EnvironmentHandler, TestHandler, PlatformFlavor, EnvFileUtils
+from components import CommonUtils, Package, EnvironmentHandler, TestHandler, PlatformFlavor, EnvFileUtils
+from components.CiConfigurationUtils import *
 import shutil
 import copy
 import time
@@ -56,29 +57,7 @@ if arguments.only_env:
 # Load the project configuration
 ####
 
-# This consists of:
-# 0) Global configuration
-configuration = yaml.safe_load( open(os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', 'global.yml')) )
-
-# 1) Project/branch specific configuration contained within the repository
-if os.path.exists('.kde-ci.yml'):
-    localConfig = yaml.safe_load( open('.kde-ci.yml') )
-    CommonUtils.recursiveUpdate( configuration, localConfig )
-
-# 2) Global overrides applied to the project configuration
-projectConfigFile = os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', arguments.project + '.yml')
-if os.path.exists( projectConfigFile ):
-    projectConfig = yaml.safe_load( open(projectConfigFile) )
-    CommonUtils.recursiveUpdate( configuration, projectConfig )
-
-if 'KDECI_GLOBAL_CONFIG_OVERRIDE_PATH' in os.environ:
-    overridePath = os.environ['KDECI_GLOBAL_CONFIG_OVERRIDE_PATH']
-    if os.path.exists( overridePath ):
-        overrideConfig = yaml.safe_load( open(overridePath) )
-        CommonUtils.recursiveUpdate( configuration, overrideConfig )
-    else:
-        print('## Error: $KDECI_GLOBAL_CONFIG_OVERRIDE_PATH({}) is present, but the file doesn\'t exist'.format(overridePath))
-        sys.exit(-1)
+configuration = loadProjectConfiguration('', arguments.project)
 
 # Determine whether we will be running tests
 # This is only done if they're enabled for this project and we haven't been asked to just build the project
@@ -130,14 +109,8 @@ elif 'CI_REPOSITORY_URL' in os.environ:
 # Prepare to resolve and fetch our project dependencies
 ####
 
-metadataFolderPath = os.environ.get('KDECI_REPO_METADATA_PATH', os.path.join(CommonUtils.scriptsBaseDirectory(), 'repo-metadata'))
-
-# Determine where some key resources we need for resolving dependencies will be found...
-projectsMetadataPath = os.path.join( metadataFolderPath, 'projects-invent' )
-branchRulesPath = os.path.join( metadataFolderPath, 'branch-rules.yml' )
-
 # Bring our dependency resolver online...
-dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPath, platform )
+dependencyResolver = prepareDependenciesResolver(platform)
 
 # Retrieve some key bits of information from our environment
 # All of these come from environment variables due to needing to be set on either the CI Agent level or the group project level

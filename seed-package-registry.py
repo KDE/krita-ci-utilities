@@ -6,65 +6,7 @@ import yaml
 import argparse
 import subprocess
 from components import CommonUtils, Dependencies, PlatformFlavor, Package
-
-####
-# Load the project configuration
-####
-def loadProjectConfiguration(projectRoot, projectName):
-    # This consists of:
-    # 0) Global configuration
-    configuration = yaml.safe_load( open(os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', 'global.yml')) )
-
-    # 1) Project/branch specific configuration contained within the repository
-    if os.path.exists(os.path.join(projectRoot, '.kde-ci.yml')):
-        localConfig = yaml.safe_load( open(os.path.join(projectRoot, '.kde-ci.yml')) )
-        CommonUtils.recursiveUpdate( configuration, localConfig )
-
-    # 2) Global overrides applied to the project configuration
-    projectConfigFile = os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', projectName + '.yml')
-    if os.path.exists( projectConfigFile ):
-        projectConfig = yaml.safe_load( open(projectConfigFile) )
-        CommonUtils.recursiveUpdate( configuration, projectConfig )
-
-    if 'KDECI_GLOBAL_CONFIG_OVERRIDE_PATH' in os.environ:
-        overridePath = os.environ['KDECI_GLOBAL_CONFIG_OVERRIDE_PATH']
-        if os.path.exists( overridePath ):
-            overrideConfig = yaml.safe_load( open(overridePath) )
-            CommonUtils.recursiveUpdate( configuration, overrideConfig )
-        else:
-            print('## Error: $KDECI_GLOBAL_CONFIG_OVERRIDE_PATH({}) is present, but the file doesn\'t exist'.format(overridePath))
-            sys.exit(-1)
-
-    return configuration
-
-####
-# Lazily retrieve project dependency information either from a local build or
-# from the package registry
-####
-packageRegistry = None
-def lazyResolveProjectDeps(workingDirectory, projectId, projectBranch):
-    exisitingDeps = set()
-    projectDirectory = os.path.join(workingDirectory, projectId)
-
-    if not os.path.exists(projectDirectory):
-        localCachePath = os.environ['KDECI_CACHE_PATH']
-        gitlabInstance = os.environ['KDECI_GITLAB_SERVER']
-        packageProject = os.environ['KDECI_PACKAGE_PROJECT']
-
-        if packageRegistry is None:
-            packageRegistry = Package.Registry( localCachePath, gitlabInstance, None, packageProject )
-        allDependencies = packageRegistry.retrieveDependencies( [projectId], onlyMetadata=True )
-
-        exisitingDeps.update([item[1]['identifier'] for item in allDependencies])
-    else:
-        configuration = loadProjectConfiguration(projectDirectory, projectId)
-        projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], projectBranch )
-
-        for childDep, childBranch in projectBuildDependencies.items():
-            exisitingDeps.add(childDep)
-            exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, childDep, childBranch))
-
-    return exisitingDeps
+from components.CiConfigurationUtils import *
 
 
 # Capture our command line parameters
@@ -94,14 +36,9 @@ seedConfiguration = yaml.safe_load( open( arguments.seed_file ) )
 # Determine where we will be working
 workingDirectory = os.getcwd()
 
-metadataFolderPath = os.environ.get('KDECI_REPO_METADATA_PATH', os.path.join(CommonUtils.scriptsBaseDirectory(), 'repo-metadata'))
-
-# Determine where some key resources we need for resolving dependencies will be found...
-projectsMetadataPath = os.path.join( metadataFolderPath, 'projects-invent' )
-branchRulesPath = os.path.join( metadataFolderPath, 'branch-rules.yml' )
-
 # Bring our dependency resolver online...
-dependencyResolver = Dependencies.Resolver( projectsMetadataPath, branchRulesPath, platform )
+dependencyResolver = prepareDependenciesResolver(platform)
+
 # And use it to determine the projects we will be building
 # The seed file uses the same definition format as the project dependencies, so we can reuse that logic
 # In this case the branch name is only used to resolve @same and that is unsupported in a seed file, so a dummy value of None is sufficient here
@@ -127,21 +64,7 @@ for identifier, branch in projectsToBuild.items():
         commandToRun = "git clone {0} --branch={1} {2}/".format( gitUrl, branch, identifier )
         subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=workingDirectory )
 
-    # This consists of:
-    # 0) Global configuration
-    configuration = yaml.safe_load( open(os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', 'global.yml')) )
-
-    # 1) Project/branch specific configuration contained within the repository
-    localConfigFile = os.path.join( workingDirectory, identifier, '.kde-ci.yml' )
-    if os.path.exists( localConfigFile ):
-        localConfig = yaml.safe_load( open(localConfigFile) )
-        CommonUtils.recursiveUpdate( configuration, localConfig )
-
-    # 2) Global overrides applied to the project configuration
-    projectConfigFile = os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', identifier + '.yml')
-    if os.path.exists( projectConfigFile ):
-        projectConfig = yaml.safe_load( open(projectConfigFile) )
-        CommonUtils.recursiveUpdate( configuration, projectConfig )
+    configuration = loadProjectConfiguration(os.path.join(workingDirectory, identifier), identifier)
 
     # The Dependency Resolver requires the current working directory to be in the project it is resolving (due to @same)
     # Therefore we need to switch there first
@@ -215,7 +138,7 @@ while len(projectsToBuild) != 0:
                 exisitingDeps = set()
 
                 for projectId in existingProjects.keys():
-                    exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, projectId, existingProjects[projectId]))
+                    exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, projectId, existingProjects[projectId], dependencyResolver))
                     exisitingDeps.add(projectId)
 
                 commandToRun += ' --skip-deps ' + ' '.join(exisitingDeps)
