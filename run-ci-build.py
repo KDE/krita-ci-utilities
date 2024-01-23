@@ -413,6 +413,7 @@ if run_tests and configuration['Options']['test-before-installing']:
 # Set the appropriate environment variables to ensure we can capture make install's output later on
 buildEnvironment['DESTDIR'] = installStagingPath
 buildEnvironment['INSTALL_ROOT'] = installStagingPath
+buildEnvironment['KDECI_REAL_PREFIX_PATH'] = installPath
 
 # Now determine the path we should be archiving
 # Because we could potentially be running on Windows we have to ensure our second path has been converted to a suitable form
@@ -505,6 +506,7 @@ if configuration['Options']['pkg-config-sanity-check'] != 'none':
 # Cleanup the capture variables to ensure they don't interfere with later runs
 del buildEnvironment['DESTDIR']
 del buildEnvironment['INSTALL_ROOT']
+del buildEnvironment['KDECI_REAL_PREFIX_PATH']
 
 # Dump ccache stats if applicable
 if useCcacheForBuilds:
