@@ -16,8 +16,12 @@ parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
 parser.add_argument('--publish-to-cache', default=False, action='store_true')
+parser.add_argument('--missing-only', default=False, action='store_true')
 arguments = parser.parse_args()
 platform = PlatformFlavor.PlatformFlavor(arguments.platform)
+
+if arguments.missing_only and not arguments.publish_to_cache:
+    print ("WARNING: argument --missing-only has no effect without --publish-to-cache")
 
 ####
 # Prepare to work
@@ -104,6 +108,15 @@ while len(projectsToBuild) != 0:
         # Remove it from the list of projects to build....
         del projectsToBuild[ identifier ]
 
+        # Add it to the list of projects we've built
+        builtProjects[ identifier ] = branch
+
+        localCachePath = os.environ.get('KDECI_CACHE_PATH', None)
+        if not localCachePath is None and arguments.publish_to_cache and arguments.missing_only:
+            if os.path.exists(os.path.join(localCachePath, '{}-{}.json'.format(identifier, branch))):
+                print('## Skipping build of {} since a package exists in the cache'.format(identifier))
+                continue
+
         # Then start the build process - find where the sources are...
         projectSources = os.path.join( workingDirectory, identifier )
 
@@ -152,9 +165,6 @@ while len(projectsToBuild) != 0:
 
         # Then run it!
         subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=projectSources )
-
-        # Add it to the list of projects we've built
-        builtProjects[ identifier ] = branch
 
 ####
 # We're done!
