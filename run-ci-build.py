@@ -13,6 +13,7 @@ import shutil
 import copy
 import time
 import datetime
+import json
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
@@ -25,6 +26,7 @@ parser.add_argument('-e', '--env', type=str, help='The name of the environment i
 parser.add_argument('--only-env', action='store_true', help='Fetch deps, generate environment file and exit')
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-publishing', default=False, action='store_true')
+parser.add_argument('--publish-to-cache', default=False, action='store_true')
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
 parser.add_argument('--fail-on-leaked-stage-files', default=False, action='store_true')
 parser.add_argument('-s','--skip-deps', nargs='+', help='A space-separated list of dependencies to skip fetching', required=False)
@@ -533,7 +535,7 @@ for filename in filesToInclude:
         shutil.copy(fullPath, os.path.join(installPath, filename))
 
 # Are we supposed to be publishing this particular package to the archive?
-if gitlabToken is not None and not arguments.skip_publishing:
+if (gitlabToken is not None or arguments.publish_to_cache) and not arguments.skip_publishing:
     # Create a temporary file, then open the file as a tar archive for writing
     # We don't want it to be deleted as storePackage will move the archive into it's cache
     archiveFile = tempfile.NamedTemporaryFile(delete=False)
@@ -553,16 +555,38 @@ if gitlabToken is not None and not arguments.skip_publishing:
         'dependencies': projectBuildDependencies,
         'runtime-dependencies': projectRuntimeDependencies
     }
-    
-    # Grab the Git revision (SHA-1 hash) we are building
-    # This is always present in Gitlab CI builds
-    gitRevision = os.environ['CI_COMMIT_SHA']
 
-    print('## Publishing package: {} branch: {} sha1: {}'.format(arguments.project, arguments.branch, gitRevision))
-    print('##    metadata: {}'.format(packageMetadata))
+    if gitlabToken is not None:
+        # Grab the Git revision (SHA-1 hash) we are building
+        # This is always present in Gitlab CI builds
+        gitRevision = os.environ['CI_COMMIT_SHA']
 
-    # Publish our package to the 
-    packageRegistry.upload(archiveFile.name, arguments.project, arguments.branch, gitRevision, packageMetadata)
+        print('## Publishing package: {} branch: {} sha1: {}'.format(arguments.project, arguments.branch, gitRevision))
+        print('##    metadata: {}'.format(packageMetadata))
+
+        # Publish our package to the registry
+        packageRegistry.upload(archiveFile.name, arguments.project, arguments.branch, gitRevision, packageMetadata)
+
+    if arguments.publish_to_cache:
+        packageNameFile = '{}-{}.tar'.format(arguments.project, arguments.branch)
+        packageMetadataFile = '{}-{}.json'.format(arguments.project, arguments.branch)
+
+        normalisedBranch = packageRegistry._normaliseBranchName(arguments.branch)
+
+        packageTimestamp = int( os.path.getmtime(archiveFile.name) )
+        versionForGitlab = "{0}-{1}".format(normalisedBranch, packageTimestamp)
+
+        gitRevision = os.environ.get('CI_COMMIT_SHA', 'unknown')
+        fullPackageMetadata = packageRegistry.generateMetadata(archiveFile.name, arguments.project, arguments.branch, gitRevision, packageMetadata)
+
+        print('## Copying package to chache: {} branch: {}'.format(arguments.project, arguments.branch))
+        print('##    metadata: {}'.format(fullPackageMetadata))
+        print('##    package file: {}'.format(packageNameFile))
+        print('##    location: {}'.format(localCachePath))
+
+        shutil.copy2(archiveFile.name, os.path.join(localCachePath, packageNameFile))
+        with open(os.path.join(localCachePath, packageMetadataFile), 'w') as f:
+            f.write(json.dumps(fullPackageMetadata, indent = 4))
 
     # Cleanup the temporary archive file as it is no longer needed
     os.remove( archiveFile.name )

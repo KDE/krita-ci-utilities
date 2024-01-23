@@ -245,14 +245,14 @@ class Registry(object):
         # Processing complete!
         return list( fetchedPackages.values() )
 
-    def upload(self, archivePath, identifier, branch, gitRevision, additionalMetadata = {}):
+    def generateMetadata(self, archivePath, identifier, branch, gitRevision, additionalMetadata = {}):
         # Formulate the remote version number
         # While Git branches may contain slashes, the Gitlab generic package registry does not allow this so we need to normalise it first
         normalisedBranch = self._normaliseBranchName( branch )
 
         # Make sure that the archive path we have been given exists
         if not os.path.exists( archivePath ):
-            return False
+            return None
 
         # With the branch name normalised, we can now generate the version string to provide to Gitlab's package registry
         packageTimestamp = int( os.path.getmtime( archivePath ) )
@@ -270,6 +270,23 @@ class Registry(object):
         }
         # Include the additional information we have been provided
         packageMetadata.update( additionalMetadata )
+
+        return packageMetadata
+
+    def upload(self, archivePath, identifier, branch, gitRevision, additionalMetadata = {}):
+        # Make sure that the archive path we have been given exists
+        if not os.path.exists( archivePath ):
+            return False
+
+        # Prepare the metadata, ensuring that the minimum bits of information are being included
+        packageMetadata = self.generateMetadata(archivePath, identifier, branch, gitRevision, additionalMetadata)
+
+        if packageMetadata is None:
+            return False
+
+        # With the branch name normalised, we can now generate the version string to provide to Gitlab's package registry
+        versionForGitlab = packageMetadata['version']
+
         # Turn this into a file for upload
         latestMetadata = tempfile.NamedTemporaryFile(delete=False, mode='w')
         json.dump( packageMetadata, latestMetadata, indent = 4 )

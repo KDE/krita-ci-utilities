@@ -15,6 +15,7 @@ parser.add_argument('--seed-file', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--extra-cmake-args', type=str, nargs='+', action='append', required=False)
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
+parser.add_argument('--publish-to-cache', default=False, action='store_true')
 arguments = parser.parse_args()
 platform = PlatformFlavor.PlatformFlavor(arguments.platform)
 
@@ -122,6 +123,10 @@ while len(projectsToBuild) != 0:
         if arguments.skip_dependencies_fetch:
             # just forward skip-dependencies-fetch argument to the lower-level tool
             commandToRun += ' --skip-dependencies-fetch'
+
+        if arguments.publish_to_cache:
+            # just forward publish-to-cache argument to the lower-level tool
+            commandToRun += ' --publish-to-cache'
 
         if arguments.extra_cmake_args:
             # necessary since we cannot use the 'extend' action for the arguments due to requiring Python < 3.8
