@@ -8,7 +8,6 @@ def fix_abs_path(destdir, path):
     #print("fix_abs_path: path={}, destdir={}".format(path, destdir))
     if os.path.isabs(path):
         if destdir:
-            print("   fixing...")
             normedPath = os.path.normpath(path)
             normedPath = os.path.splitdrive(normedPath)[1]
             if normedPath.startswith(os.sep):
@@ -29,7 +28,7 @@ pkgConfigPaths = []
 absPrefixPath = os.path.abspath(arguments.prefix)
 
 if 'PKG_CONFIG_PATH' in os.environ:
-    pkgConfigPaths.append[os.environ['PKG_CONFIG_PATH'].split(os.pathsep)]
+    pkgConfigPaths.extend(os.environ['PKG_CONFIG_PATH'].split(os.pathsep))
 
 if not arguments.destdir is None or 'DESTDIR' in os.environ:
     destdir = arguments.destdir if not arguments.destdir is None else os.environ['DESTDIR']
