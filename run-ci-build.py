@@ -523,6 +523,30 @@ if useCcacheForBuilds:
 # Therefore we list everything in the install directory and add each of those to the archive, rather than adding the whole install directory
 filesToInclude = os.listdir( pathToArchive )
 
+def ignoreFunction(dir, content, srcRoot, dstRoot):
+    shouldIgnore = []
+
+    for file in content:
+        srcPath = os.path.join(dir, file)
+        dstPath = os.path.join(dstRoot, os.path.relpath(srcPath, srcRoot))
+
+        # shutil.copytree cannot overwrite symlinks, so we should
+        # either manually ignore them or remove from the destination
+        if os.path.islink(srcPath) and os.path.islink(dstPath):
+            srcLink = os.readlink(srcPath)
+            dstLink = os.readlink(dstPath)
+
+            if srcLink == dstLink:
+                shouldIgnore.append(file)
+            else:
+                os.unlink(dstPath)
+
+    return shouldIgnore
+
+
+def makeIgnoreFunction(srcRoot, dstRoot):
+    return lambda dir, content: ignoreFunction(dir, content, srcRoot, dstRoot)
+
 # Copy the files into the installation directory
 # This is so later tests can rely on the project having been installed
 # While we ran 'make install' just before this didn't install it as we diverted the installation to allow us to cleanly capture it
@@ -530,9 +554,12 @@ for filename in filesToInclude:
     fullPath = os.path.join(pathToArchive, filename)
     print("Copying {} -> {}".format(fullPath, os.path.join(installPath, filename)))
     if os.path.isdir(fullPath):
-        shutil.copytree(fullPath, os.path.join(installPath, filename), symlinks=True, dirs_exist_ok=True)
+        dstFullPath = os.path.join(installPath, filename)
+        shutil.copytree(fullPath, dstFullPath,
+            symlinks=True, dirs_exist_ok=True,
+            ignore = makeIgnoreFunction(fullPath, dstFullPath))
     else:
-        shutil.copy(fullPath, os.path.join(installPath, filename))
+        shutil.copy2(fullPath, os.path.join(installPath, filename))
 
 # Are we supposed to be publishing this particular package to the archive?
 if (gitlabToken is not None or arguments.publish_to_cache) and not arguments.skip_publishing:
