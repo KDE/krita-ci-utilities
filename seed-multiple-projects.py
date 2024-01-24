@@ -13,6 +13,9 @@ parser.add_argument('-p','--projects', nargs='+', help='Projects to be built', r
 parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
+parser.add_argument('--publish-to-cache', default=False, action='store_true')
+parser.add_argument('--missing-only', default=False, action='store_true')
+
 arguments = parser.parse_args()
 
 if len(arguments.projects) == 1 and ' ' in arguments.projects[0]:
@@ -44,6 +47,12 @@ commandToRun = "{0} -u {1}/seed-package-registry.py --seed-file {2} --platform {
 
 if arguments.skip_dependencies_fetch:
     commandToRun += " --skip-dependencies-fetch"
+
+if arguments.publish_to_cache:
+     commandToRun += ' --publish-to-cache'
+
+if arguments.missing_only:
+     commandToRun += ' --missing-only'
 
 print('## Run the build for the requested projects: {}'.format(commandToRun))
 
