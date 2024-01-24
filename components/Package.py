@@ -95,7 +95,7 @@ class Registry(object):
         normalisedBranch = self._normaliseBranchName( branch )
 
         # We start this process by searching through our remote details
-        for entry in self.remotePackages:
+        for entry in self.remotePackages + self.cachedPackages:
             # If the identifier and branch don't match then skip over to the next one
             # We have to use the normalised branch name when doing the comparison, as the entries returned from Gitlab's API will be normalised
             if entry['identifier'] != identifier or entry['branch'] != normalisedBranch:
