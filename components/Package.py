@@ -6,6 +6,11 @@ import gitlab
 import shutil
 import tempfile
 import packaging.version
+from enum import Enum
+
+class CacheStatus(Enum):
+    FromRemote = 0,
+    FromCache = 1
 
 class Registry(object):
 
@@ -112,7 +117,7 @@ class Registry(object):
         # Before we continue, did we find something?
         # If we found nothing, bow out gracefully here...
         if remotePackage is None:
-            return ( None, None )
+            return ( None, None, None )
 
         # Determine the name we use for the files in the cache as well as the path to the files
         packageName = "{0}-{1}".format( remotePackage['identifier'], remotePackage['branch'] )
@@ -131,7 +136,7 @@ class Registry(object):
         # If we have a cachedPackage entry then we can assume we have a cache hit and we should use that
         if cachedPackage:
             # Return the contents file and the corresponding metadata
-            return ( localContentsPath, cachedPackage )
+            return ( localContentsPath, cachedPackage, CacheStatus.FromCache )
 
         # Let's retrieve the file if we need to now...
         # First we need to formulate the original version string
@@ -143,7 +148,7 @@ class Registry(object):
         )
 
         if onlyMetadata:
-            return ( None, json.loads(response) )
+            return ( None, json.loads(response), CacheStatus.FromRemote )
 
         latestMetadata = tempfile.NamedTemporaryFile(delete=False, mode='wb', dir=self.localCachePath)
         latestMetadata.write( response )
@@ -174,7 +179,7 @@ class Registry(object):
         # All done, we can return a tuple of the archive and metadata now
         localContentsPath = localContentsPath
         localMetadataFile = json.load( open(localMetadataPath) )
-        return ( localContentsPath, localMetadataFile )
+        return ( localContentsPath, localMetadataFile, CacheStatus.FromRemote )
 
     # Takes a dict of projects (with values being the branches), and fetches them and any dependencies they have
     # Returns the complete list for further processing
@@ -207,7 +212,7 @@ class Registry(object):
             packageBranches[ identifier ] = branch
 
             # Pull the metadata out...
-            packageContents, packageMetadata = fetchedPackages[ identifier ]
+            packageContents, packageMetadata, cacheStatus = fetchedPackages[ identifier ]
 
             # Make sure we have received a usable package
             # Otherwise throw an exception and bail

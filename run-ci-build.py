@@ -160,7 +160,10 @@ if not arguments.skip_dependencies_fetch:
         else [item for item in allDependencies if item[1]['identifier'] not in arguments.skip_deps]
 
     # And then unpack them
-    for packageContents, packageMetadata in dependenciesToUnpack:
+    for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
+
+        print('## Unpacking dependency: {} ({})'.format(packageMetadata['identifier'], cacheStatus.name))
+
         # Open the archive file
         archive = tarfile.open( name=packageContents, mode='r' )
         # Extract it's contents into the install directory
@@ -237,7 +240,7 @@ for key, value in configuration['Options'].items():
     print("##    {0}: {1}".format(key, value))
 print("##")
 print("## Providing the following dependencies:")
-for packageContents, packageMetadata in dependenciesToUnpack:
+for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
     print("##    {0} - {1} ({2})".format(packageMetadata['identifier'], packageMetadata['branch'], packageMetadata['gitRevision']))
 print("##")
 if arguments.skip_deps:
@@ -629,7 +632,7 @@ if arguments.only_build:
 # Now we can retrieve the build time dependencies
 dependenciesToUnpack = packageRegistry.retrieveDependencies( projectRuntimeDependencies, runtime=True )
 # And then unpack them
-for packageContents, packageMetadata in dependenciesToUnpack:
+for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
     # Open the archive file
     archive = tarfile.open( name=packageContents, mode='r' )
     # Extract it's contents into the install directory
