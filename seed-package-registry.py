@@ -108,9 +108,6 @@ while len(projectsToBuild) != 0:
         # Remove it from the list of projects to build....
         del projectsToBuild[ identifier ]
 
-        # Add it to the list of projects we've built
-        builtProjects[ identifier ] = branch
-
         localCachePath = os.environ.get('KDECI_CACHE_PATH', None)
         if not localCachePath is None and arguments.publish_to_cache and arguments.missing_only:
             if os.path.exists(os.path.join(localCachePath, '{}-{}.json'.format(identifier, branch))):
@@ -164,7 +161,17 @@ while len(projectsToBuild) != 0:
         print('## Run project build: {}'.format(commandToRun))
 
         # Then run it!
-        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=projectSources )
+        try:
+            subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=projectSources )
+        except:
+            print('## Failed building a project: {}'.format(identifier))
+            print('## Projects built: \"{}\"'.format((' '.join(builtProjects.keys()))))
+            print('## Projects **not** built: \"{}\"'.format(' '.join(projectsToBuild.keys())))
+            raise
+
+        # Add it to the list of projects we've built
+        builtProjects[ identifier ] = branch
+
 
 ####
 # We're done!
