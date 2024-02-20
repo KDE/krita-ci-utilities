@@ -466,7 +466,7 @@ for name, script in configuration['PostInstallScripts'].items():
     # Run post-install scripts
     try:
         print('## RUNNING POST-INSTALL SCRIPT \"{}\": {}'.format(name, commandToRun))
-        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=os.getcwd(), env=scriptEnvironment )
+        subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=baseWorkDirectoryPath, env=scriptEnvironment )
     except Exception:
         print("## Failed to run post-install script the project")
         sys.exit(1)
