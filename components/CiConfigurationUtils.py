@@ -82,7 +82,7 @@ def lazyResolveProjectDeps(workingDirectory, projectId, projectBranch, dependenc
 #    ext_zlib -> ext_qt
 #    ext_qt -> ext_kimageformats
 ####
-def genReverseDeps(workingDirectory, dependencyResolver, branch, debug = False):
+def genReverseDeps(workingDirectory, dependencyResolver, branch, debug = False, onlyPlatformDeps = None):
     reverseDeps = {}
     for subdir, dirs, files in os.walk(workingDirectory):
         relative = os.path.relpath(subdir, workingDirectory)
@@ -100,19 +100,24 @@ def genReverseDeps(workingDirectory, dependencyResolver, branch, debug = False):
             dirs.clear()
             continue
 
+        checkAllowed = lambda name: (name in onlyPlatformDeps) if not onlyPlatformDeps is None else True
+
         projectName = subDirName
+
+        if not checkAllowed(projectName): continue
 
         if os.path.exists(os.path.join(subdir, 'CMakeLists.txt')):
             configuration = loadProjectConfiguration(subdir, projectName)
-            projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], branch )
+            projectBuildDependencies = list(dependencyResolver.resolve( configuration['Dependencies'], branch ).keys())
+            projectBuildDependencies = list(filter(checkAllowed, projectBuildDependencies))
 
             if debug:
-                print ("##  project: {} depends: {}".format(projectName, list(projectBuildDependencies.keys())))
+                print ("##  project: {} depends: {}".format(projectName, projectBuildDependencies))
 
             # found the project, don't check subdirs anymore
             dirs.clear()
 
-            for dep, _branch_unused in projectBuildDependencies.items():
+            for dep in projectBuildDependencies:
                 if dep in reverseDeps:
                     reverseDeps[dep].add(projectName)
                 else:
