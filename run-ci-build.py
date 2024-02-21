@@ -459,9 +459,9 @@ for name, script in configuration['PostInstallScripts'].items():
     scriptEnvironment = EnvironmentHandler.addEnvironmentPrefix(pathToArchive, scriptEnvironment)
 
     if script.endswith('.py') and not (script.startswith('python ') or script.startswith('python3')):
-        commandToRun = sys.executable + " " + script
+        commandToRun = sys.executable + " " + os.path.join(sourcesPath, script)
     else:
-        commandToRun = script
+        commandToRun = script if os.path.isabs(script) else os.path.join(sourcesPath, script)
 
     # Run post-install scripts
     try:
