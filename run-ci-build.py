@@ -455,6 +455,7 @@ for name, script in configuration['PostInstallScripts'].items():
     scriptEnvironment['KDECI_CACHE_PATH'] = localCachePath
     scriptEnvironment['KDECI_BUILD_TYPE'] = buildType
     scriptEnvironment['KDECI_INTERNAL_USE_CCACHE'] = str(useCcacheForBuilds)
+    scriptEnvironment['KDECI_SOURCES_DIR'] = sourcesPath
 
     scriptEnvironment = EnvironmentHandler.addEnvironmentPrefix(pathToArchive, scriptEnvironment)
 
