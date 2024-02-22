@@ -203,6 +203,12 @@ def ccacheSupportsVerbose():
 useCcacheForBuilds = configuration['Options']['use-ccache'] and 'KDECI_CC_CACHE' in buildEnvironment
 ccacheVerboseArg = '-vvv' if useCcacheForBuilds and ccacheSupportsVerbose() else ''
 
+if arguments.only_env or arguments.only_deps:
+    try:
+        subprocess.check_call( 'ccache --version', stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=sourcesPath, env=buildEnvironment )
+    except:
+        useCcacheForBuilds = False
+
 # Do we need to get ccache ready to use?
 if useCcacheForBuilds:
     # Setup the path used for the cache....
