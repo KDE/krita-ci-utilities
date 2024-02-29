@@ -55,6 +55,10 @@ if arguments.only_env:
     if arguments.fail_on_leaked_stage_files:
         print ("WARNING: argument --fail-on-leaked-stage-files is ignored, since --only-env is preset")
 
+if 'KDECI_ONLY_BUILD' in os.environ:
+    arguments.only_build = bool(os.environ['KDECI_ONLY_BUILD'])
+    print ('## Overriding --only-build from environment: {}'.format(arguments.only_build))
+
 ####
 # Load the project configuration
 ####
