@@ -369,6 +369,9 @@ if arguments.extra_cmake_args:
     flat_args = [item for sublist in arguments.extra_cmake_args for item in sublist]
     cmakeCommand.extend(flat_args)
 
+if 'KDECI_EXTRA_CMAKE_ARGS' in os.environ:
+    cmakeCommand.extend(os.environ['KDECI_EXTRA_CMAKE_ARGS'].split())
+
 # Lucky last, we add the path to our sources
 cmakeCommand.append( '"' + sourcesPath + '"' )
 
