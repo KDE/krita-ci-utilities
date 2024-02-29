@@ -1,0 +1,146 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2023 KDE e.V.
+
+# see macappsigner-projects.sample.yaml in sysadmin/ci-notary-service for details
+
+defaults:
+  branches:
+    - master
+
+##########################################################################################################
+# The entries are sorted by their project name (i.e. the name of the directory for the project on invent)
+##########################################################################################################
+
+office/alkimia:
+  applicationid: org.kde.Alkimia
+
+office/calligraplan:
+  applicationid: org.kde.calligraplan
+  branches:
+    3.3:
+
+education/cantor:
+  applicationid: org.kde.cantor
+  branches:
+    release/23.08:
+    release/24.02:
+
+utilities/filelight:
+  applicationid: org.kde.filelight
+  branches:
+    release/23.08:
+    release/24.02:
+
+network/kaidan:
+  applicationid: im.kaidan.kaidan
+
+utilities/kate:
+  applicationid: org.kde.Kate
+  branches:
+    release/23.08:
+    release/24.02:
+
+education/kbruch:
+  applicationid: org.kde.kbruch
+  branches:
+    release/23.08:
+    release/24.02:
+
+network/kdeconnect-kde:
+  applicationid: org.kde.kdeconnect
+  branches:
+    release/23.08:
+    release/24.02:
+
+multimedia/kdenlive:
+  applicationid: org.kde.Kdenlive
+  branches:
+    release/23.08:
+    release/24.02:
+
+sdk/kdiff3:
+  applicationid: org.kde.KDiff3
+  branches:
+    1.11:
+
+sdk/codevis:
+  applicationid: org.kde.codevis
+
+education/kgeography:
+  applicationid: org.kde.kgeography
+  branches:
+    release/23.08:
+    release/24.02:
+
+multimedia/kid3:
+  applicationid: org.kde.kid3
+
+education/kig:
+  applicationid: org.kde.kig
+  branches:
+    release/23.08:
+    release/24.02:
+
+office/kile:
+  applicationid: org.kde.kile
+
+education/kmplot:
+  applicationid: org.kde.kmplot
+  branches:
+    release/23.08:
+    release/24.02:
+
+office/kmymoney:
+  applicationid: org.kde.KMyMoney
+  branches:
+    5.1:
+
+graphics/kolourpaint:
+  applicationid: org.kde.kolourpaint
+  branches:
+    release/23.08:
+    release/24.02:
+
+utilities/konsole:
+  applicationid: org.kde.konsole
+  branches:
+    release/23.08:
+    release/24.02:
+
+education/kstars:
+  applicationid: org.kde.kstars
+  branches:
+    stable-3.6.8:
+
+education/kturtle:
+  applicationid: org.kde.kturtle
+  branches:
+    release/23.08:
+    release/24.02:
+
+education/kwordquiz:
+  applicationid: org.kde.kwordquiz
+  branches:
+    release/23.08:
+    release/24.02:
+
+education/labplot:
+  applicationid: org.kde.labplot
+  branches:
+    release/2.10:
+
+education/parley:
+  applicationid: org.kde.parley
+  branches:
+    release/23.08:
+    release/24.02:
+
+education/rkward:
+  applicationid: org.kde.RKWard
+  branches:
+    releases/0.7.5:
+
+network/ruqola:
+  applicationid: org.kde.ruqola
+  branches:
+    2.1:

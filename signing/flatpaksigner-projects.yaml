@@ -1,0 +1,794 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2023 KDE e.V.
+
+# see flatpaksigner-projects.sample.yaml in sysadmin/ci-notary-service for details
+
+defaults:
+  signingkey: C78BF89D05C413A086459241700327D7B23406B3
+  runtimerepourl: https://cdn.kde.org/flatpak/kde-runtime-nightly/kde-runtime-nightly.flatpakrepo
+  branches:
+    - master
+
+##########################################################################################################
+# The entries are sorted by their project name (i.e. the name of the directory for the project on invent)
+##########################################################################################################
+
+# First the runtime as a special case
+
+packaging/flatpak-kde-runtime:
+  applicationid:
+    - org.kde.Platform
+    - org.kde.Sdk
+  isruntime: true
+  branches:
+    kf6:
+      repository: kde-runtime-nightly
+
+# Now the apps
+
+network/alligator:
+  applicationid: org.kde.alligator
+  repository: alligator-nightly
+
+network/angelfish:
+  applicationid: org.kde.angelfish
+  repository: angelfish-nightly
+
+utilities/ark:
+  applicationid: org.kde.ark
+  repository: ark-nightly
+
+games/arkade:
+  applicationid: org.kde.arkade
+  repository: arkade-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/artikulate:
+  applicationid: org.kde.artikulate
+  repository: artikulate-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+libraries/atcore:
+  applicationid: org.kde.atcore
+  repository: atcore-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/atelier:
+  applicationid: org.kde.atelier
+  repository: atelier-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+multimedia/audiotube:
+  applicationid: org.kde.audiotube
+  repository: audiotube-nightly
+
+utilities/basket:
+  applicationid: org.kde.basket
+  repository: basket-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/blinken:
+  applicationid: org.kde.blinken
+  repository: blinken-nightly
+
+games/bomber:
+  applicationid: org.kde.bomber
+  repository: bomber-nightly
+
+games/bovo:
+  applicationid: org.kde.bovo
+  repository: bovo-nightly
+
+plasma-mobile/calindori:
+  applicationid: org.kde.calindori
+  repository: calindori-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+office/calligra:
+  applicationid: org.kde.calligragemini
+  repository: calligra-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+office/calligraplan:
+  applicationid: org.kde.calligraplan
+  repository: calligraplan-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/cantor:
+  applicationid: org.kde.cantor
+  repository: cantor-nightly
+
+sdk/cervisia:
+  applicationid: org.kde.cervisia
+  repository: cervisia-nightly
+
+graphics/digikam:
+  applicationid: org.kde.digikam
+  repository: digikam-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+plasma/discover:
+  applicationid: org.kde.discover
+  repository: discover-nightly
+
+system/dolphin:
+  applicationid: org.kde.dolphin
+  repository: dolphin-nightly
+
+multimedia/dragon:
+  applicationid: org.kde.dragonplayer
+  repository: dragon-nightly
+
+multimedia/elisa:
+  applicationid: org.kde.elisa
+  repository: elisa-nightly
+
+network/falkon:
+  applicationid: org.kde.falkon
+  repository: falkon-nightly
+
+utilities/filelight:
+  applicationid: org.kde.filelight
+  repository: filelight-nightly
+
+utilities/francis:
+  applicationid: org.kde.francis
+  repository: francis-nightly
+
+education/gcompris:
+  applicationid: org.kde.gcompris
+  repository: gcompris-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+graphics/gwenview:
+  applicationid: org.kde.gwenview
+  repository: gwenview-nightly
+
+multimedia/haruna:
+  applicationid: org.kde.haruna
+  repository: haruna-nightly
+
+maui/index-fm:
+  applicationid: org.kde.index
+  repository: index-fm-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/isoimagewriter:
+  applicationid: org.kde.isoimagewriter
+  repository: isoimagewriter-nightly
+
+pim/itinerary:
+  applicationid: org.kde.itinerary
+  repository: itinerary-nightly
+
+multimedia/juk:
+  applicationid: org.kde.juk
+  repository: juk-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+network/kaidan:
+  applicationid: im.kaidan.kaidan
+  repository: kaidan-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/kalgebra:
+  applicationid: org.kde.kalgebra
+  repository: kalgebra-nightly
+
+utilities/kalk:
+  applicationid: org.kde.kalk
+  repository: kalk-nightly
+
+education/kalzium:
+  applicationid: org.kde.kalzium
+  repository: kalzium-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+multimedia/kamoso:
+  applicationid: org.kde.kamoso
+  repository: kamoso-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/kanagram:
+  applicationid: org.kde.kanagram
+  repository: kanagram-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/kapman:
+  applicationid: org.kde.kapman
+  repository: kapman-nightly
+
+multimedia/kasts:
+  applicationid: org.kde.kasts
+  repository: kasts-nightly
+
+utilities/kate:
+  applicationid: org.kde.kate
+  repository: kate-nightly
+
+games/katomic:
+  applicationid: org.kde.katomic
+  repository: katomic-nightly
+
+games/kblackbox:
+  applicationid: org.kde.kblackbox
+  repository: kblackbox-nightly
+
+games/kblocks:
+  applicationid: org.kde.kblocks
+  repository: kblocks-nightly
+
+games/kbounce:
+  applicationid: org.kde.kbounce
+  repository: kbounce-nightly
+
+games/kbreakout:
+  applicationid: org.kde.kbreakout
+  repository: kbreakout-nightly
+
+education/kbruch:
+  applicationid: org.kde.kbruch
+  repository: kbruch-nightly
+
+sdk/kcachegrind:
+  applicationid: org.kde.kcachegrind
+  repository: kcachegrind-nightly
+
+utilities/kcalc:
+  applicationid: org.kde.kcalc
+  repository: kcalc-nightly
+
+utilities/kcharselect:
+  applicationid: org.kde.kcharselect
+  repository: kcharselect-nightly
+
+utilities/kclock:
+  applicationid: org.kde.kclock
+  repository: kclock-nightly
+
+graphics/kcolorchooser:
+  applicationid: org.kde.kcolorchooser
+  repository: kcolorchooser-nightly
+
+utilities/kdebugsettings:
+  applicationid: org.kde.kdebugsettings
+  repository: kdebugsettings-nightly
+
+network/kdeconnect-kde:
+  applicationid: org.kde.kdeconnect
+  repository: kdeconnect-kde-nightly
+
+multimedia/kdenlive:
+  applicationid: org.kde.kdenlive
+  repository: kdenlive-nightly
+
+kdevelop/kdevelop:
+  applicationid: org.kde.kdevelop
+  repository: kdevelop-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/kdiamond:
+  applicationid: org.kde.kdiamond
+  repository: kdiamond-nightly
+
+sdk/kdiff3:
+  applicationid: org.kde.kdiff3
+  repository: kdiff3-nightly
+  branches:
+    1.8:
+      repository: kdiff3-staging
+      runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+office/kexi:
+  applicationid: org.kde.kexi
+  repository: kexi-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/keysmith:
+  applicationid: org.kde.keysmith
+  repository: keysmith-nightly
+
+utilities/kfind:
+  applicationid: org.kde.kfind
+  repository: kfind-nightly
+
+utilities/kfloppy:
+  applicationid: org.kde.kfloppy
+  repository: kfloppy-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/kfourinline:
+  applicationid: org.kde.kfourinline
+  repository: kfourinline-nightly
+
+education/kgeography:
+  applicationid: org.kde.kgeography
+  repository: kgeography-nightly
+
+network/kget:
+  applicationid: org.kde.kget
+  repository: kget-nightly
+
+games/kgoldrunner:
+  applicationid: org.kde.kgoldrunner
+  repository: kgoldrunner-nightly
+
+education/khangman:
+  applicationid: org.kde.khangman
+  repository: khangman-nightly
+
+education/khipu:
+  applicationid: org.kde.khipu
+  repository: khipu-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+multimedia/kid3:
+  applicationid: org.kde.kid3
+  repository: kid3-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/kig:
+  applicationid: org.kde.kig
+  repository: kig-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/kigo:
+  applicationid: org.kde.kigo
+  repository: kigo-nightly
+
+office/kile:
+  applicationid: org.kde.kile
+  repository: kile-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/killbots:
+  applicationid: org.kde.killbots
+  repository: killbots-nightly
+
+sdk/kirigami-gallery:
+  applicationid: org.kde.kirigami2.gallery
+  repository: kirigami-gallery-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/kiriki:
+  applicationid: org.kde.kiriki
+  repository: kiriki-nightly
+
+utilities/kirogi:
+  applicationid: org.kde.kirogi
+  repository: kirogi-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/kiten:
+  applicationid: org.kde.kiten
+  repository: kiten-nightly
+
+pim/kitinerary:
+  applicationid: org.kde.kitinerary-extractor
+  repository: kitinerary-extractor-nightly
+
+pim/kitinerary-workbench:
+  applicationid: org.kde.kitinerary-workbench
+  repository: kitinerary-workbench-nightly
+
+system/kjournald:
+  applicationid: org.kde.kjournald
+  repository: kjournald-nightly
+
+games/kjumpingcube:
+  applicationid: org.kde.kjumpingcube
+  repository: kjumpingcube-nightly
+
+pim/kleopatra:
+  applicationid: org.kde.kleopatra
+  repository: kleopatra-nightly
+
+education/klettres:
+  applicationid: org.kde.klettres
+  repository: klettres-nightly
+
+games/klickety:
+  applicationid: org.kde.klickety
+  repository: klickety-nightly
+
+utilities/klimbgrades:
+  applicationid: org.kde.klimbgrades
+  repository: klimbgrades-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/klines:
+  applicationid: org.kde.klines
+  repository: klines-nightly
+
+accessibility/kmag:
+  applicationid: org.kde.kmag
+  repository: kmag-nightly
+
+games/kmahjongg:
+  applicationid: org.kde.kmahjongg
+  repository: kmahjongg-nightly
+
+games/kmines:
+  applicationid: org.kde.kmines
+  repository: kmines-nightly
+
+multimedia/kmix:
+  applicationid: org.kde.kmix
+  repository: kmix-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/kmplot:
+  applicationid: org.kde.kmplot
+  repository: kmplot-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/knavalbattle:
+  applicationid: org.kde.knavalbattle
+  repository: knavalbattle-nightly
+
+games/knetwalk:
+  applicationid: org.kde.knetwalk
+  repository: knetwalk-nightly
+
+graphics/koko:
+  applicationid: org.kde.koko
+  repository: koko-nightly
+
+games/kolf:
+  applicationid: org.kde.kolf
+  repository: kolf-nightly
+
+games/kollision:
+  applicationid: org.kde.kollision
+  repository: kollision-nightly
+
+graphics/kolourpaint:
+  applicationid: org.kde.kolourpaint
+  repository: kolourpaint-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+sdk/kompare:
+  applicationid: org.kde.kompare
+  repository: kompare-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/kongress:
+  applicationid: org.kde.kongress
+  repository: kongress-nightly
+
+network/konqueror:
+  applicationid: org.kde.konqueror
+  repository: konqueror-nightly
+
+games/konquest:
+  applicationid: org.kde.konquest
+  repository: konquest-nightly
+
+utilities/konsole:
+  applicationid: org.kde.konsole
+  repository: konsole-nightly
+
+pim/kontact:
+  applicationid: org.kde.kontact
+  repository: kontact-nightly
+
+accessibility/kontrast:
+  applicationid: org.kde.kontrast
+  repository: kontrast-nightly
+
+network/konversation:
+  applicationid: org.kde.konversation
+  repository: konversation-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+network/kopete:
+  applicationid: org.kde.kopete
+  repository: kopete-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+libraries/kosmindoormap:
+  applicationid: org.kde.kosmindoormap
+  repository: kosmindoormap-nightly
+
+games/kpat:
+  applicationid: org.kde.kpat
+  repository: kpat-nightly
+
+network/krdc:
+  applicationid: org.kde.krdc
+  repository: krdc-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/krecorder:
+  applicationid: org.kde.krecorder
+  repository: krecorder-nightly
+
+utilities/krename:
+  applicationid: org.kde.krename
+  repository: krename-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/kreversi:
+  applicationid: org.kde.kreversi
+  repository: kreversi-nightly
+
+network/krfb:
+  applicationid: org.kde.krfb
+  repository: krfb-nightly
+
+graphics/krita:
+  applicationid: org.kde.krita-nightly
+  repository: krita-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/kronometer:
+  applicationid: org.kde.kronometer
+  repository: kronometer-nightly
+
+graphics/kruler:
+  applicationid: org.kde.kruler
+  repository: kruler-nightly
+
+games/kshisen:
+  applicationid: org.kde.kshisen
+  repository: kshisen-nightly
+
+games/ksirk:
+  applicationid: org.kde.ksirk
+  repository: ksirk-nightly
+
+games/ksnakeduel:
+  applicationid: org.kde.ksnakeduel
+  repository: ksnakeduel-nightly
+
+games/kspaceduel:
+  applicationid: org.kde.kspaceduel
+  repository: kspaceduel-nightly
+
+games/ksquares:
+  applicationid: org.kde.ksquares
+  repository: ksquares-nightly
+
+education/kstars:
+  applicationid: org.kde.kstars
+  repository: kstars-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/ksudoku:
+  applicationid: org.kde.ksudoku
+  repository: ksudoku-nightly
+
+system/ksystemlog:
+  applicationid: org.kde.ksystemlog
+  repository: ksystemlog-nightly
+
+utilities/kteatime:
+  applicationid: org.kde.kteatime
+  repository: kteatime-nightly
+
+utilities/ktimer:
+  applicationid: org.kde.ktimer
+  repository: ktimer-nightly
+
+network/ktorrent:
+  applicationid: org.kde.ktorrent
+  repository: ktorrent-nightly
+
+education/ktouch:
+  applicationid: org.kde.ktouch
+  repository: ktouch-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/ktrip:
+  applicationid: org.kde.ktrip
+  repository: ktrip-nightly
+
+games/ktuberling:
+  applicationid: org.kde.ktuberling
+  repository: ktuberling-nightly
+
+education/kturtle:
+  applicationid: org.kde.kturtle
+  repository: kturtle-nightly
+
+pim/kube:
+  applicationid: org.kde.kube
+  repository: kube-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+frameworks/kuserfeedback:
+  applicationid: org.kde.kuserfeedback-console
+  repository: kuserfeedback-nightly
+
+utilities/kweather:
+  applicationid: org.kde.kweather
+  repository: kweather-nightly
+
+education/kwordquiz:
+  applicationid: org.kde.kwordquiz
+  repository: kwordquiz-nightly
+
+education/labplot:
+  applicationid: org.kde.labplot2
+  repository: labplot-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+sdk/lokalize:
+  applicationid: org.kde.lokalize
+  repository: lokalize-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/lskat:
+  applicationid: org.kde.lskat
+  repository: lskat-nightly
+
+education/marble:
+  applicationid: org.kde.marble
+  repository: marble-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+sdk/massif-visualizer:
+  applicationid: org.kde.massif-visualizer
+  repository: massif-visualizer-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+pim/merkuro:
+  applicationid: org.kde.merkuro
+  repository: merkuro-nightly
+
+education/minuet:
+  applicationid: org.kde.minuet
+  repository: minuet-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+network/neochat:
+  applicationid: org.kde.neochat
+  repository: neochat-nightly
+
+utilities/okteta:
+  applicationid: org.kde.okteta
+  repository: okteta-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+graphics/okular:
+  applicationid:
+    - org.kde.okular
+    - org.kde.okular.kirigami
+  repository: okular-nightly
+
+games/palapeli:
+  applicationid: org.kde.palapeli
+  repository: palapeli-nightly
+
+education/parley:
+  applicationid: org.kde.parley
+  repository: parley-nightly
+
+graphics/peruse:
+  applicationid: org.kde.peruse
+  repository: peruse-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+plasma-mobile/plasma-phonebook:
+  applicationid: org.kde.phonebook
+  repository: plasma-phonebook-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+games/picmi:
+  applicationid: org.kde.picmi
+  repository: picmi-nightly
+
+maui/pix:
+  applicationid: org.kde.pix
+  repository: pix-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+plasma-mobile/plasma-camera:
+  applicationid: org.kde.plasma-camera
+  repository: plasma-camera-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+multimedia/plasmatube:
+  applicationid: org.kde.plasmatube
+  repository: plasmatube-nightly
+
+libraries/xdg-portal-test-kde:
+  applicationid: org.kde.xdg-portal-test-kde
+  repository: xdg-portal-test-kde-nightly
+
+plasma-mobile/qmlkonsole:
+  applicationid: org.kde.qmlkonsole
+  repository: qmlkonsole-nightly
+
+utilities/qrca:
+  applicationid: org.kde.qrca
+  repository: qrca-nightly
+
+multimedia/rattlesnake:
+  applicationid: org.kde.rattlesnake
+  repository: rattlesnake-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/rkward:
+  applicationid: org.kde.rkward
+  repository: rkward-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+education/rocs:
+  applicationid: org.kde.rocs
+  repository: rocs-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/rsibreak:
+  applicationid: org.kde.rsibreak
+  repository: rsibreak-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+network/ruqola:
+  applicationid: org.kde.ruqola
+  repository: ruqola-nightly
+
+graphics/skanlite:
+  applicationid: org.kde.skanlite
+  repository: skanlite-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/skanpage:
+  applicationid: org.kde.skanpage
+  repository: skanpage-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+office/skrooge:
+  applicationid: org.kde.skrooge
+  repository: skrooge-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+graphics/spectacle:
+  applicationid: org.kde.spectacle
+  repository: spectacle-nightly
+
+education/step:
+  applicationid: org.kde.step
+  repository: step-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+multimedia/subtitlecomposer:
+  applicationid: org.kde.subtitlecomposer
+  repository: subtitlecomposer-nightly
+
+office/tellico:
+  applicationid: org.kde.tellico
+  repository: tellico-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+utilities/telly-skout:
+  applicationid: org.kde.telly-skout
+  repository: telly-skout-nightly
+
+network/tokodon:
+  applicationid: org.kde.tokodon
+  repository: tokodon-nightly
+
+pim/trojita:
+  applicationid: org.kde.trojita
+  repository: trojita-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+sdk/umbrello:
+  applicationid: org.kde.umbrello
+  repository: umbrello-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+pim/vakzination:
+  applicationid: org.kde.vakzination
+  repository: vakzination-nightly
+
+maui/vvave:
+  applicationid: org.kde.vvave
+  repository: vvave-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+system/xwaylandvideobridge:
+  applicationid: org.kde.xwaylandvideobridge
+  repository: xwaylandvideobridge-nightly
+  runtimerepourl: https://dl.flathub.org/repo/flathub.flatpakrepo

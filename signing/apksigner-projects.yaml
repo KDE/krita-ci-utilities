@@ -1,0 +1,115 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2023 KDE e.V.
+
+# see apksigner-projects.sample.yaml in sysadmin/ci-notary-service for details
+
+defaults:
+  keystore: ~/keystores/android.keystore
+  keystorepass: file:~/keystores/android.keystorepass
+  branches:
+    - master
+
+##########################################################################################################
+# The entries are sorted by their project name (i.e. the name of the directory for the project on invent)
+##########################################################################################################
+
+network/alligator:
+  applicationid: org.kde.alligator
+
+plasma-mobile/calindori:
+  applicationid: org.kde.calindori
+
+multimedia/elisa:
+  applicationid: org.kde.elisa
+  branches:
+    release/23.08:
+    release/24.02:
+
+pim/itinerary:
+  applicationid: org.kde.itinerary
+  branches:
+    release/23.08:
+    release/24.02:
+
+network/kaidan:
+  applicationid: im.kaidan.kaidan
+
+education/kalgebra:
+  applicationid: org.kde.kalgebramobile
+
+multimedia/kasts:
+  applicationid: org.kde.kasts
+  branches:
+    release/23.08:
+    release/24.02:
+
+utilities/keysmith:
+  applicationid: org.kde.keysmith
+
+sdk/kirigami-gallery:
+  applicationid: org.kde.kirigami2.gallery
+
+utilities/klimbgrades:
+  applicationid: org.kde.klimbgrades
+
+utilities/kongress:
+  applicationid: org.kde.kongress
+  branches:
+    release/23.08:
+    release/24.02:
+
+accessibility/kontrast:
+  applicationid: org.kde.kontrast
+
+libraries/kosmindoormap:
+  applicationid: org.kde.kosmindoormap
+
+utilities/krecorder:
+  applicationid: org.kde.krecorder
+
+utilities/ktrip:
+  applicationid: org.kde.ktrip
+  branches:
+    release/23.08:
+    release/24.02:
+
+games/ktuberling:
+  applicationid: org.kde.ktuberling
+  keystore: ~/keystores/ktuberling.keystore
+  keystorepass: file:~/keystores/ktuberling.keystorepass
+
+utilities/kweather:
+  applicationid: org.kde.kweather
+
+network/neochat:
+  applicationid: org.kde.neochat
+  branches:
+    release/23.08:
+    release/24.02:
+
+graphics/okular:
+  applicationid: org.kde.okular.kirigami
+  branches:
+    release/23.08:
+    release/24.02:
+
+plasma-mobile/plasma-camera:
+  applicationid: org.kde.plasma.camera
+
+plasma-mobile/plasma-phonebook:
+  applicationid: org.kde.phonebook
+
+utilities/qrca:
+  applicationid: org.kde.qrca
+
+utilities/toad:
+  applicationid: org.kde.tasks
+
+network/tokodon:
+  applicationid: org.kde.tokodon
+  branches:
+    release/23.08:
+    release/24.02:
+
+pim/vakzination:
+  applicationid: org.kde.vakzination

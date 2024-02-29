@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2023 KDE e.V.
+
+# see googleplaypublisher-projects.sample.yaml in sysadmin/ci-notary-service for details
+
+defaults:
+  # by default, do not publish any branches on Google Play
+  branches: []
+
+##########################################################################################################
+# The entries are sorted by their project name (i.e. the name of the directory for the project on invent)
+##########################################################################################################
+
+pim/itinerary:
+  applicationid: org.kde.itinerary
+  branches:
+    release/24.02:

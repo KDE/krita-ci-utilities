@@ -1,0 +1,147 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2023 KDE e.V.
+
+# see fdroidpublisher-projects.sample.yaml in sysadmin/ci-notary-service for details
+
+defaults:
+  repository: nightly
+
+##########################################################################################################
+# The entries are sorted by their project name (i.e. the name of the directory for the project on invent)
+##########################################################################################################
+
+network/alligator:
+  applicationid: org.kde.alligator
+  # branches:
+  #   master:
+
+plasma-mobile/calindori:
+  applicationid: org.kde.calindori
+  branches:
+    master:
+
+multimedia/elisa:
+  applicationid: org.kde.elisa
+  branches:
+    # master:
+    release/23.08:
+      repository: stable-releases
+
+pim/itinerary:
+  applicationid: org.kde.itinerary
+  branches:
+    master:
+    release/24.02:
+      repository: stable-releases
+
+education/kalgebra:
+  applicationid: org.kde.kalgebramobile
+  # branches:
+  #   master:
+
+multimedia/kasts:
+  applicationid: org.kde.kasts
+  branches:
+    master:
+    release/23.08:
+      repository: stable-releases
+
+utilities/keysmith:
+  applicationid: org.kde.keysmith
+  branches:
+    master:
+
+sdk/kirigami-gallery:
+  applicationid: org.kde.kirigami2.gallery
+  branches:
+    master:
+
+utilities/klimbgrades:
+  applicationid: org.kde.klimbgrades
+  branches:
+    master:
+
+utilities/kongress:
+  applicationid: org.kde.kongress
+  branches:
+    master:
+    release/23.08:
+      repository: stable-releases
+
+accessibility/kontrast:
+  applicationid: org.kde.kontrast
+  branches:
+    master:
+
+libraries/kosmindoormap:
+  applicationid: org.kde.kosmindoormap
+  branches:
+    master:
+
+utilities/krecorder:
+  applicationid: org.kde.krecorder
+  branches:
+    master:
+
+utilities/ktrip:
+  applicationid: org.kde.ktrip
+  branches:
+    master:
+    release/23.08:
+      repository: stable-releases
+
+games/ktuberling:
+  applicationid: org.kde.ktuberling
+  # branches:
+  #   master:
+
+utilities/kweather:
+  applicationid: org.kde.kweather
+  branches:
+    master:
+
+network/neochat:
+  applicationid: org.kde.neochat
+  branches:
+    # master:
+    release/23.08:
+      repository: stable-releases
+
+graphics/okular:
+  applicationid: org.kde.okular.kirigami
+  branches:
+    master:
+    release/23.08:
+      repository: stable-releases
+
+plasma-mobile/plasma-camera:
+  applicationid: org.kde.plasma.camera
+  branches:
+    master:
+
+plasma-mobile/plasma-phonebook:
+  applicationid: org.kde.phonebook
+  # branches:
+  #   master:
+
+utilities/qrca:
+  applicationid: org.kde.qrca
+  branches:
+    master:
+
+utilities/toad:
+  applicationid: org.kde.tasks
+  branches:
+    master:
+
+network/tokodon:
+  applicationid: org.kde.tokodon
+  branches:
+    master:
+    release/23.08:
+      repository: stable-releases
+
+pim/vakzination:
+  applicationid: org.kde.vakzination
+  branches:
+    master:

@@ -1,0 +1,471 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2024 KDE e.V.
+
+# see windowsbinariessigner-projects.sample.yaml in sysadmin/ci-notary-service for details
+
+defaults:
+  branches: []
+
+##########################################################################################################
+# The entries are sorted by their project name (i.e. the name of the directory for the project on invent)
+##########################################################################################################
+
+# First the ci-management repo for signing the caches
+
+sysadmin/ci-management:
+  branches:
+    master:
+
+# Now the apps
+
+office/alkimia:
+  branches:
+    master:
+
+network/alligator:
+  branches:
+    master:
+
+education/blinken:
+  branches:
+    master:
+
+games/bomber:
+  branches:
+    master:
+
+games/bovo:
+  branches:
+    master:
+
+office/calligra:
+  branches:
+    master:
+
+office/calligraplan:
+  branches:
+    master:
+    3.3:
+
+education/cantor:
+  applicationid: KDEe.V.Cantor
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+graphics/digikam:
+  applicationid: KDEe.V.digiKam
+  branches:
+    master:
+
+graphics/krita:
+  applicationid: KDEe.V.Krita
+  branches:
+    master:
+    krita/5.2:
+
+system/dolphin:
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+multimedia/elisa:
+  applicationid: KDEe.V.Elisa
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+utilities/filelight:
+  applicationid: KDEe.V.Filelight
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+games/granatier:
+  branches:
+    master:
+
+multimedia/haruna:
+  branches:
+    master:
+
+utilities/isoimagewriter:
+  applicationid: KDEe.V.ISOImageWriter
+  branches:
+    master:
+
+network/kaidan:
+  branches:
+    master:
+
+education/kalgebra:
+  branches:
+    master:
+
+games/kapman:
+  branches:
+    master:
+
+multimedia/kasts:
+  applicationid: KDEe.V.Kasts
+  branches:
+    release/23.08:
+    release/24.02:
+
+utilities/kate:
+  applicationid: KDEe.V.Kate
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+games/katomic:
+  branches:
+    master:
+
+office/kbibtex:
+  branches:
+    master:
+
+games/kblackbox:
+  branches:
+    master:
+
+games/kblocks:
+  branches:
+    master:
+
+education/kbruch:
+  branches:
+    master:
+
+games/kbounce:
+  branches:
+    master:
+
+games/kbreakout:
+  branches:
+    master:
+
+multimedia/kdenlive:
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+network/kdeconnect-kde:
+  applicationid: KDEe.V.KDEConnect
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+kdevelop/kdevelop:
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+games/kdiamond:
+  branches:
+    master:
+
+sdk/kdiff3:
+  applicationid: KDEe.V.KDiff3
+  branches:
+    master:
+    1.11:
+
+office/kexi:
+  branches:
+    master:
+    3.2:
+
+games/kfourinline:
+  branches:
+    master:
+
+education/kgeography:
+  branches:
+    master:
+
+games/kgoldrunner:
+  branches:
+    master:
+
+multimedia/kid3:
+  branches:
+    master:
+
+education/kig:
+  branches:
+    master:
+
+games/kigo:
+  branches:
+    master:
+
+office/kile:
+  applicationid: KDEe.V.Kile
+  branches:
+    master:
+
+games/killbots:
+  branches:
+    master:
+
+sdk/kirigami-gallery:
+  branches:
+    master:
+
+games/kiriki:
+  branches:
+    master:
+
+education/kiten:
+  applicationid: KDEe.V.Kiten
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+games/kjumpingcube:
+  branches:
+    master:
+
+games/klickety:
+  branches:
+    master:
+
+games/klines:
+  branches:
+    master:
+
+games/kmahjongg:
+  branches:
+    master:
+
+games/kmines:
+  branches:
+    master:
+
+education/kmplot:
+  branches:
+    master:
+
+office/kmymoney:
+  branches:
+    master:
+    5.1:
+
+games/knavalbattle:
+  branches:
+    master:
+
+games/knetwalk:
+  branches:
+    master:
+
+games/kolf:
+  branches:
+    master:
+
+games/kollision:
+  branches:
+    master:
+
+graphics/kolourpaint:
+  branches:
+    master:
+
+utilities/konsole:
+  applicationid: KDEe.V.Konsole
+  branches:
+    master:
+
+games/konquest:
+  branches:
+    master:
+
+network/konversation:
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+games/kpat:
+  branches:
+    master:
+
+games/kreversi:
+  branches:
+    master:
+
+utilities/kronometer:
+  branches:
+    master:
+
+games/kshisen:
+  branches:
+    master:
+
+games/ksnakeduel:
+  branches:
+    master:
+
+games/kspaceduel:
+  branches:
+    master:
+
+games/ksquares:
+  branches:
+    master:
+
+education/kstars:
+  applicationid: KDEe.V.KStars
+  branches:
+    master:
+    stable-3.6.8:
+
+games/ksudoku:
+  branches:
+    master:
+
+system/ksystemlog:
+  branches:
+    master:
+
+pim/ktimetracker:
+  branches:
+    master:
+
+utilities/ktrip:
+  applicationid: KDEe.V.KTrip
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+games/ktuberling:
+  branches:
+    master:
+
+education/kturtle:
+  branches:
+    master:
+
+games/kubrick:
+  branches:
+    master:
+
+education/kwordquiz:
+  branches:
+    master:
+
+education/labplot:
+  applicationid: KDEe.V.LabPlot
+  branches:
+    master:
+    release/2.10:
+
+sdk/lokalize:
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+games/lskat:
+  branches:
+    master:
+
+education/marble:
+  branches:
+    master:
+
+pim/merkuro:
+  branches:
+    master:
+
+education/minuet:
+  branches:
+    master:
+
+network/neochat:
+  applicationid: KDEe.V.NeoChat
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+utilities/okteta:
+  branches:
+    master:
+
+graphics/okular:
+  applicationid: KDEe.V.Okular
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+education/parley:
+  branches:
+    master:
+
+graphics/peruse:
+  branches:
+    master:
+
+games/picmi:
+  branches:
+    master:
+
+education/rkward:
+  applicationid: KDEe.V.RKWard
+  branches:
+    master:
+
+network/ruqola:
+  applicationid: KDEe.V.Ruqola
+  branches:
+    master:
+    2.1:
+
+libraries/snoretoast:
+  branches:
+    master:
+
+office/skrooge:
+  branches:
+    master:
+
+education/step:
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+office/tellico:
+  branches:
+    master:
+
+network/tokodon:
+  applicationid: KDEe.V.Tokodon
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+sdk/umbrello:
+  branches:
+    master:
+    release/23.08:
+    release/24.02:
+
+pim/vakzination:
+  branches:
+    master:
