@@ -340,6 +340,14 @@ if sys.platform == 'win32':
     else:
         cmakeCommand.append('-G "MinGW Makefiles"')
 
+if sys.platform == 'darwin':
+    macOSArch = subprocess.check_output('arch').decode('utf-8').strip()
+    if macOSArch == "arm64":
+        cmakeCommand.append("-DCMAKE_OSX_ARCHITECTURES:STRING=x86_64\;arm64")
+
+    cmakeCommand.append("-DDESTDIR=" + installStagingPath)
+    cmakeCommand.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=10.14")
+
 # Are we building for Android?
 if platform.os == 'Android' and not skipECMAndroidToolchain:
     # We want CMake to cross compile appropriately
