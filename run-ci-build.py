@@ -344,6 +344,13 @@ if sys.platform == 'darwin':
     macOSArch = subprocess.check_output('arch').decode('utf-8').strip()
     if macOSArch == "arm64":
         cmakeCommand.append("-DCMAKE_OSX_ARCHITECTURES:STRING=x86_64\;arm64")
+    
+    # use ninja if available
+    try:
+        subprocess.check_call('which ninja', stdout=sys.stdout, stderr=sys.stderr, shell=True, close_fds=True, cwd=buildPath, env=buildEnvironment)
+        cmakeCommand.append('-G "Ninja"')
+    except Exception:
+        print("## Using Makefile Generator")
 
     cmakeCommand.append("-DDESTDIR=" + installStagingPath)
     cmakeCommand.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=10.14")
