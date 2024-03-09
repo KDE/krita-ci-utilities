@@ -182,7 +182,12 @@ def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
     # This mostly undocumented environment variable lets QMake find *.pri files which are outside Qt's install prefix
     extraLocation = os.path.join( installPrefix, 'mkspecs/features' )
     if os.path.exists( extraLocation ):
-        envChanges['QMAKEFEATURES'].append( extraLocation )
+        if sys.platform == 'darwin':
+            extraLocationMac =  os.path.join( extraLocation, 'mac' )
+            if os.path.exists( extraLocationMac ):
+                envChanges['QMAKEFEATURES'].append( extraLocationMac )
+        else:
+            envChanges['QMAKEFEATURES'].append( extraLocation )
 
     # Setup PYTHONPATH
     # Sometimes build system may depend on a local version of Meson
