@@ -353,7 +353,7 @@ if sys.platform == 'darwin':
         print("## Using Makefile Generator")
 
     cmakeCommand.append("-DDESTDIR=" + installStagingPath)
-    cmakeCommand.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=10.14")
+    cmakeCommand.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=" + buildEnvironment['MACOSX_DEPLOYMENT_TARGET'])
 
 # Are we building for Android?
 if platform.os == 'Android' and not skipECMAndroidToolchain:
