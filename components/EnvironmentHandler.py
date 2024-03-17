@@ -149,6 +149,11 @@ def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
         if os.path.exists( extraLocation ):
             envChanges['QML2_IMPORT_PATH'].append(extraLocation)
 
+    # Now do PKG_CONFIG_PATH in 'share' directory
+        extraLocation = os.path.join( installPrefix, 'share', 'pkgconfig' )
+        if os.path.exists( extraLocation ):
+            envChanges['PKG_CONFIG_PATH'].append(extraLocation)
+
     # Special Case for QT_PLUGIN_PATH and QML2_IMPORT_PATH
     # On Windows these are installed to $prefix/bin/$pluginDirName rather than under $prefix/lib/$pluginDirName
     if sys.platform == 'win32':
