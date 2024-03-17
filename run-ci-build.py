@@ -59,6 +59,12 @@ if 'KDECI_ONLY_BUILD' in os.environ:
     arguments.only_build = (os.environ['KDECI_ONLY_BUILD'].lower() in ['true', '1', 't', 'y', 'yes'])
     print ('## Overriding --only-build from environment: {}'.format(arguments.only_build))
 
+skipECMAndroidToolchain = False
+
+if 'KDECI_SKIP_ECM_ANDROID_TOOLCHAIN' in os.environ:
+    skipECMAndroidToolchain = (os.environ['KDECI_SKIP_ECM_ANDROID_TOOLCHAIN'].lower() in ['true', '1', 't', 'y', 'yes'])
+    print ('## Disable ECM\'s Android toolchain file: {}'.format(skipECMAndroidToolchain))
+
 ####
 # Load the project configuration
 ####
@@ -332,7 +338,7 @@ if sys.platform == 'win32':
         cmakeCommand.append('-G "MinGW Makefiles"')
 
 # Are we building for Android?
-if platform.os == 'Android':
+if platform.os == 'Android' and not skipECMAndroidToolchain:
     # We want CMake to cross compile appropriately
     cmakeCommand.append('-DKF5_HOST_TOOLING=/opt/nativetooling/lib/x86_64-linux-gnu/cmake/')
     cmakeCommand.append('-DKF6_HOST_TOOLING=/opt/nativetooling6/lib/x86_64-linux-gnu/cmake/')
