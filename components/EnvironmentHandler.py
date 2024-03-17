@@ -36,7 +36,7 @@ def generateFor( installPrefix ):
         envChanges = changesForPrefix( '/home/user/android-arm-clang', envChanges )
 
     # Otherwise are we on a Non-Windows / Mac platform?
-    if sys.platform != 'win32' and sys.platform != 'darwin':
+    if sys.platform != 'win32' and sys.platform != 'darwin' and not 'ANDROID_HOME' in os.environ:
         # The we need to consider the system install prefix
         # Normally these would be setup for us, but this is just to be absolutely sure everything is right
         envChanges = changesForPrefix( "/usr/", envChanges, systemPrefix=True )
