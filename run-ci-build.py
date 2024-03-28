@@ -124,6 +124,16 @@ elif 'CI_REPOSITORY_URL' in os.environ:
 # Bring our dependency resolver online...
 dependencyResolver = prepareDependenciesResolver(platform)
 
+defaultBuildType = 'Debug'
+
+# Have we explicitly requested a release build?
+# This should only ever be used by applications, and never libraries
+# On Windows we do this because building our dependencies in Debug mode is just too hard and MSVC requires everything to be in either Debug or Release (you can't mix/match)
+if configuration['Options']['release-build'] or sys.platform == 'win32':
+    # Switch the Debug build for a Release one then!
+    defaultBuildType = 'Release'
+
+
 # Retrieve some key bits of information from our environment
 # All of these come from environment variables due to needing to be set on either the CI Agent level or the group project level
 # We remove them from the environment as they are sensitive (in the case of KDECI_GITLAB_TOKEN especially) and aren't needed by anything else
@@ -131,7 +141,7 @@ dependencyResolver = prepareDependenciesResolver(platform)
 # The remainder are required for storing packages locally and fetching them
 localCachePath = os.environ.pop('KDECI_CACHE_PATH')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
-buildType = os.environ.get('KDECI_BUILD_TYPE', 'Debug')
+buildType = os.environ.get('KDECI_BUILD_TYPE', defaultBuildType)
 buildTarget = os.environ.get('KDECI_BUILD_TARGET', 'all')
 installTarget = os.environ.get('KDECI_INSTALL_TARGET', 'install')
 
@@ -291,13 +301,6 @@ print("## Starting build process...")
 ####
 # Configure the project!
 ####
-
-# Have we explicitly requested a release build?
-# This should only ever be used by applications, and never libraries
-# On Windows we do this because building our dependencies in Debug mode is just too hard and MSVC requires everything to be in either Debug or Release (you can't mix/match)
-if configuration['Options']['release-build'] or sys.platform == 'win32':
-    # Switch the Debug build for a Release one then!
-    buildType = 'Release'
 
 # Begin building up our configure command
 # There are some parameters which are universal to all platforms..
