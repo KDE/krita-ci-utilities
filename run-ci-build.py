@@ -548,6 +548,26 @@ if configuration['Options']['pkg-config-sanity-check'] != 'none':
         print("## Failed to run pkg-config sanity-check script")
         sys.exit(1)
 
+if sys.platform == 'darwin':
+    try:
+        if configuration['Options']['macos-rpath-fix']:
+            commandToRun = '{} {} --prefix {} --destdir {}'.format(
+                "zsh",
+                os.path.join(CommonUtils.scriptsBaseDirectory(), 'macos-fix-rpath.sh'),
+                installPath,
+                installStagingPath)
+            
+            # Run macos-fix-rpath 
+            try:
+                print('## RUNNING MACOS-RPATH-FIX: {}'.format(commandToRun))
+                subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=os.getcwd(), env=os.environ )
+            except Exception:
+                print("## Failed to run macOS rpath-fix script")
+                sys.exit(1)
+    except Exception:
+        pass
+
+
 # Cleanup the capture variables to ensure they don't interfere with later runs
 del buildEnvironment['DESTDIR']
 del buildEnvironment['INSTALL_ROOT']
