@@ -354,7 +354,7 @@ if sys.platform == 'darwin':
     except Exception:
         print("## Using Makefile Generator")
 
-    cmakeCommand.append("-DDESTDIR:STRING=" + installStagingPath)
+    cmakeCommand.append("-DMACOS_DESTDIR:STRING=" + installStagingPath)
     cmakeCommand.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=" + buildEnvironment['MACOSX_DEPLOYMENT_TARGET'])
 
 # Are we building for Android?
