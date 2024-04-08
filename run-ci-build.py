@@ -350,6 +350,7 @@ if sys.platform == 'darwin':
     except Exception:
         print("## Using Makefile Generator")
 
+    # TODO: try removing this option when macos DESTDIR thing is clarified
     cmakeCommand.append("-DMACOS_DESTDIR:STRING=" + installStagingPath)
 
 # Are we building for Android?
