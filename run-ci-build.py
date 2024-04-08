@@ -343,10 +343,6 @@ if sys.platform == 'win32':
         cmakeCommand.append('-G "MinGW Makefiles"')
 
 if sys.platform == 'darwin':
-    macOSArch = subprocess.check_output('arch').decode('utf-8').strip()
-    if macOSArch == "arm64":
-        cmakeCommand.append("-DCMAKE_OSX_ARCHITECTURES:STRING=x86_64\;arm64")
-    
     # use ninja if available
     try:
         subprocess.check_call('which ninja', stdout=sys.stdout, stderr=sys.stderr, shell=True, close_fds=True, cwd=buildPath, env=buildEnvironment)
@@ -355,7 +351,6 @@ if sys.platform == 'darwin':
         print("## Using Makefile Generator")
 
     cmakeCommand.append("-DMACOS_DESTDIR:STRING=" + installStagingPath)
-    cmakeCommand.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=" + buildEnvironment['MACOSX_DEPLOYMENT_TARGET'])
 
 # Are we building for Android?
 if platform.os == 'Android' and not skipECMAndroidToolchain:
