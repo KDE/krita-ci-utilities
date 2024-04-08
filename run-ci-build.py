@@ -179,8 +179,13 @@ if not arguments.skip_dependencies_fetch:
         if arguments.skip_deps is None \
         else [item for item in allDependencies if item[1]['identifier'] not in arguments.skip_deps]
 
+    # TODO: remove the ad-hoc reversion of the dependencies list;
+    #       we shouldn't really depend on the order in which the deps are listed
+    #       in the YAML file. Instead, the deps should be sorted in the order
+    #       of their internal dependencies.
     # in general we want packages unpacked in dependency order
     dependenciesToUnpack.reverse()
+
     # And then unpack them
     for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
 
