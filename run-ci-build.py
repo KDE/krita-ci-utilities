@@ -355,9 +355,6 @@ if sys.platform == 'darwin':
     except Exception:
         print("## Using Makefile Generator")
 
-    # TODO: try removing this option when macos DESTDIR thing is clarified
-    cmakeCommand.append("-DMACOS_DESTDIR:STRING=" + installStagingPath)
-
 # Are we building for Android?
 if platform.os == 'Android' and not skipECMAndroidToolchain:
     # We want CMake to cross compile appropriately
