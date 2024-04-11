@@ -17,9 +17,9 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     if sys.platform == 'win32' and 'CRAFT_ROOT' in os.environ:
         # Determine where Craft is...
         craftRoot = os.path.realpath( os.environ['CRAFT_ROOT'] )
-        sourceDirectory = os.path.join( craftRoot, 'bin\data' )
+        sourceDirectory = os.path.join( craftRoot, 'bin', 'data' )
         # Determine where we want to deploy these files to
-        destinationDirectory = os.path.join( buildPath, 'bin\data' )
+        destinationDirectory = os.path.join( buildPath, 'bin', 'data' )
         # Do the copy!
         CommonUtils.recursiveDirectoryCopy( sourceDirectory, destinationDirectory )
 

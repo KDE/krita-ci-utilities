@@ -191,7 +191,7 @@ def changesForPrefix( installPrefix, envChanges, systemPrefix=False ):
 
     # Setup PYTHONPATH
     # Sometimes build system may depend on a local version of Meson
-    extraLocation = os.path.join( installPrefix, 'lib\site-packages' )
+    extraLocation = os.path.join( installPrefix, os.path.join('lib', 'site-packages'))
     if os.path.exists( extraLocation ):
         envChanges['PYTHONPATH'].append( extraLocation )
 
