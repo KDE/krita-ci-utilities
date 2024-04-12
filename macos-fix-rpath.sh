@@ -56,7 +56,6 @@ fix_rpath () {
 
         elif [[ -n "$(grep 'bin/' <<< ${libFile})" ]]; then
             ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/../lib "${libFile}" 2> /dev/null
-
         fi
 
         for lib in ${SharedLibs[@]}; do
@@ -65,8 +64,9 @@ fix_rpath () {
                 echo "INSTALLPATH_LIB: ${installPath}/${libFile##*/}"
             fi
 
-            if [[ ${libFile} =~ ^.*${lib}$ ]]; then
+            if [[ "${lib}" = "${libFile#${installStagingPath}}" ]]; then
                 ${SCRIPT_DEBUG} install_name_tool -id "@rpath/${lib##*lib/}" "${libFile}"
+                ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path "${libFile}" 2> /dev/null
 
             elif [[ -n "$(grep '_install' <<< ${lib})" ]]; then
                 ${SCRIPT_DEBUG} install_name_tool -change ${lib} "@rpath/${lib##*lib/}" "${libFile}"
