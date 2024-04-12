@@ -50,8 +50,14 @@ fix_rpath () {
             }
         } END {}'))
 
+        ${SCRIPT_DEBUG} install_name_tool -delete_rpath "${installPath}/lib" "${libFile}" 2> /dev/null
+
         if [[ -n "$(grep -E '(framework.*bin|MacOS)' <<< ${libFile})" ]]; then
             rel2lib=$(perl_abs2rel "${libFile%/lib/*}" "${libFile%/*}")
+            ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/${rel2lib}/lib "${libFile}" 2> /dev/null
+
+        elif [[ -n "$(grep -E '(framework.*lib)' <<< ${libFile})" ]]; then
+            rel2lib=$(perl_abs2rel "${libFile%%/lib/*}" "${libFile%/*}")
             ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/${rel2lib}/lib "${libFile}" 2> /dev/null
 
         elif [[ -n "$(grep 'bin/' <<< ${libFile})" ]]; then
