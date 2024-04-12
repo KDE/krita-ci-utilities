@@ -549,7 +549,7 @@ if configuration['Options']['pkg-config-sanity-check'] != 'none':
 if sys.platform == 'darwin':
     try:
         if configuration['Options']['macos-rpath-fix']:
-            commandToRun = '{} {} --prefix {} --destdir {}'.format(
+            commandToRun = '{} {} --debug --prefix {} --destdir {}'.format(
                 "zsh",
                 os.path.join(CommonUtils.scriptsBaseDirectory(), 'macos-fix-rpath.sh'),
                 installPath,
