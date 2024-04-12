@@ -65,6 +65,12 @@ if 'KDECI_SKIP_ECM_ANDROID_TOOLCHAIN' in os.environ:
     skipECMAndroidToolchain = (os.environ['KDECI_SKIP_ECM_ANDROID_TOOLCHAIN'].lower() in ['true', '1', 't', 'y', 'yes'])
     print ('## Disable ECM\'s Android toolchain file: {}'.format(skipECMAndroidToolchain))
 
+removeInstallFoldersAfterBuild = False
+
+if 'KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD' in os.environ:
+    removeInstallFoldersAfterBuild = (os.environ['KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD'].lower() in ['true', '1', 't', 'y', 'yes'])
+    print ('## Enable "remove install folder after build": {}'.format(removeInstallFoldersAfterBuild))
+
 ####
 # Load the project configuration
 ####
@@ -678,6 +684,12 @@ if (gitlabToken is not None or arguments.publish_to_cache) and not arguments.ski
 
     # Cleanup the temporary archive file as it is no longer needed
     os.remove( archiveFile.name )
+
+if removeInstallFoldersAfterBuild:
+    print('## Removing install folder: {}'.format(installPath))
+    shutil.rmtree(installPath)
+    print('## Removing staging folder: {}'.format(installStagingPath))
+    shutil.rmtree(installStagingPath)
 
 # If this is a build only run then bail here
 if arguments.only_build:
