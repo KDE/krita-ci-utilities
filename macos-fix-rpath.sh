@@ -65,7 +65,7 @@ fix_rpath () {
                 echo "INSTALLPATH_LIB: ${installPath}/${libFile##*/}"
             fi
 
-            if [[ ${lib} = "${installPath}/${libFile##*/}" ]]; then
+            if [[ ${libFile} =~ ^.*${lib}$ ]]; then
                 ${SCRIPT_DEBUG} install_name_tool -id "@rpath/${lib##*lib/}" "${libFile}"
 
             elif [[ -n "$(grep '_install' <<< ${lib})" ]]; then
