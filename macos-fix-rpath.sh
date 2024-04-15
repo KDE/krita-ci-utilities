@@ -70,7 +70,7 @@ fix_rpath () {
                 echo "INSTALLPATH_LIB: ${libFile#${installStagingPath}}"
             fi
 
-            if [[ "${lib}" = "${libFile#${installStagingPath}}" ]]; then
+            if [[ $(basename "${lib}") = $(basename "${libFile}") ]]; then
                 ${SCRIPT_DEBUG} install_name_tool -id "@rpath/${lib##*lib/}" "${libFile}"
                 ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path "${libFile}" 2> /dev/null
 
