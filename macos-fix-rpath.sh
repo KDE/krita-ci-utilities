@@ -50,6 +50,10 @@ fix_rpath () {
             }
         } END {}'))
 
+        if [[ -n ${SCRIPT_DEBUG} ]]; then
+            echo "INSTALLPATH_LIB: ${libFile#${installStagingPath}}"
+        fi
+
         ${SCRIPT_DEBUG} install_name_tool -delete_rpath "${installPath}/lib" "${libFile}" 2> /dev/null
 
         if [[ -n "$(grep -E '(framework.*bin|MacOS)' <<< ${libFile})" ]]; then
@@ -67,7 +71,6 @@ fix_rpath () {
         for lib in ${SharedLibs[@]}; do
             if [[ -n ${SCRIPT_DEBUG} ]]; then
                 echo "LIB: ${lib}"
-                echo "INSTALLPATH_LIB: ${libFile#${installStagingPath}}"
             fi
 
             if [[ $(basename "${lib}") = $(basename "${libFile}") ]]; then
