@@ -67,7 +67,7 @@ fix_rpath () {
         for lib in ${SharedLibs[@]}; do
             if [[ -n ${SCRIPT_DEBUG} ]]; then
                 echo "LIB: ${lib}"
-                echo "INSTALLPATH_LIB: ${installPath}/${libFile##*/}"
+                echo "INSTALLPATH_LIB: ${libFile#${installStagingPath}}"
             fi
 
             if [[ "${lib}" = "${libFile#${installStagingPath}}" ]]; then
