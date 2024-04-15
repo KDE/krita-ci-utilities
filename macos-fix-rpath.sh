@@ -74,9 +74,8 @@ fix_rpath () {
                 ${SCRIPT_DEBUG} install_name_tool -id "@rpath/$(basename ${lib})" "${libFile}"
                 ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path "${libFile}" 2> /dev/null
 
-            elif [[ -n "$(grep '_install' <<< ${lib})" || -n "$(grep '_build' <<< ${lib})" ]]; then
-                ${SCRIPT_DEBUG} install_name_tool -change ${lib} "@rpath/$(basename ${lib})" "${libFile}"
-                ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path "${libFile}" 2> /dev/null
+            elif [[ -n "$(grep -E '(_install|_build)' <<< ${lib})" ]]; then
+                ${SCRIPT_DEBUG} install_name_tool -change ${lib} "@rpath/${lib##*lib/}" "${libFile}"
             fi
         done
 
