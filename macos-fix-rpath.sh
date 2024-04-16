@@ -67,7 +67,7 @@ fix_rpath () {
         } END {}'))
 
         if [[ -n ${SCRIPT_DEBUG} ]]; then
-            echo "INSTALLPATH_LIB: ${libFile#${installStagingPath}}"
+            echo "## INSTALLPATH_LIB: ${libFile#${installStagingPath}}"
         fi
 
         ${SCRIPT_DEBUG} install_name_tool -delete_rpath "${installPath}/lib" "${libFile}" 2> /dev/null
@@ -84,9 +84,11 @@ fix_rpath () {
             ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/../lib "${libFile}" 2> /dev/null
         fi
 
+
+
         for lib in ${SharedLibs[@]}; do
             if [[ -n ${SCRIPT_DEBUG} ]]; then
-                echo "LIB: ${lib}"
+                echo "## LIB: ${lib}"
             fi
 
             if [[ -n "$(grep -E '(_install|_build)' <<< ${lib})" ]]; then
