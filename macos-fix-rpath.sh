@@ -72,20 +72,19 @@ fix_rpath () {
         ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/${relativeToRPath} "${libFile}" 2> /dev/null
 
         installPrefixes=${installPath}
-
-        if [[ -d "${installPath}/../_build/bootstrap_prefix" ]]; then
-            installPrefixes=("${installPath}" "$(realpath ${installPath}../_build/bootstrap_prefix)")
-            echo "  installPrefixes: ${installPrefixes}"
-        fi
         
         for lib in ${SharedLibs[@]}; do
             depInstallPath=${lib#${installStagingPath}}
+            depInstallDir=$(dirname ${depInstallPath})
+            if [[ ${depInstallDir} =~ .*"_build/bootstrap_prefix" ]]; then
+                depInstallPath=${installPath}/${depInstallDir#*"_build/bootstrap_prefix/"}
+            fi
+
             depRelativeFromRPath=$(perl_abs2rel "${depInstallPath}" "${installPath}/lib")
             
-            depIsInPrefix=""
-            
+            local depIsInPrefix=""
             if [[ ${depInstallPath} =~ .*${installPath} ]]; then
-                depIsInPrefix="t"
+                local depIsInPrefix="t"
             fi
             
             if [[ -n ${SCRIPT_DEBUG} ]]; then
