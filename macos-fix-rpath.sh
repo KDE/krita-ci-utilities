@@ -37,22 +37,6 @@ fix_rpath () {
             continue
         fi
 
-        # NOTE: All libs are resolved relative to <prefi>/lib
-        #       framework relative id and loaded libraries must
-        #       contain the root of framework, unless they are
-        #       only used within the framework.
-        #       instead of: @rpath/<path-to-file>
-        #       must be: @rpath/Name.framework/<path-to-file>
-
-
-        # fix libary id.
-        echo "## FIXING RPATH: $(basename ${libFile})"
-        libID=$(otool -D ${libFile} | awk 'NR==2 {print $1}')
-        # this weird syntax is to also include framework locations.
-        ${SCRIPT_DEBUG} install_name_tool -id "@rpath/${libID##*lib/}" "${libFile}"
-        ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path "${libFile}" 2> /dev/null
-
-        # load all shared libraries used
         SharedLibs=($(otool -L "${libFile}" | awk 'BEGIN { arch = 0 } {    
             if ( !(pos = index($0,"architecture")) > 0 ) {
                 if ( (pos = index($1,"@") == 0) ) {
@@ -66,38 +50,60 @@ fix_rpath () {
             }
         } END {}'))
 
+        installLibraryPath=${libFile#${installStagingPath}}
+        installLibraryDir=$(dirname ${installLibraryPath})
+        relativeToRPath=$(perl_abs2rel "${installPath}/lib" "${installLibraryDir}")
+        relativeFromRPath=$(perl_abs2rel "${installLibraryPath}" "${installPath}/lib")
+        libraryId=$(objdump --macho --dylib-id ${libFile} | grep -v "${libFile}:")
         if [[ -n ${SCRIPT_DEBUG} ]]; then
-            echo "## INSTALLPATH_LIB: ${libFile#${installStagingPath}}"
+            echo "==="
+            echo "libFile: ${libFile}"
+            echo "installLibraryPath: ${installLibraryPath}"
+            echo "relativeToRPath: ${relativeToRPath}"
+            echo "relativeFromRPath: ${relativeFromRPath}"
+            echo "libraryId: ${libraryId}"
+        fi
+
+        if [[ -n ${libraryId} ]]; then
+            ${SCRIPT_DEBUG} install_name_tool -id "@rpath/${relativeFromRPath}" "${libFile}"
         fi
 
         ${SCRIPT_DEBUG} install_name_tool -delete_rpath "${installPath}/lib" "${libFile}" 2> /dev/null
+        ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/${relativeToRPath} "${libFile}" 2> /dev/null
 
-        if [[ -n "$(grep -E '(framework.*bin|MacOS)' <<< ${libFile})" ]]; then
-            rel2lib=$(perl_abs2rel "${libFile%/lib/*}" "${libFile%/*}")
-            ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/${rel2lib}/lib "${libFile}" 2> /dev/null
+        installPrefixes=${installPath}
 
-        elif [[ -n "$(grep -E '(framework.*lib)' <<< ${libFile})" ]]; then
-            rel2lib=$(perl_abs2rel "${libFile%%/lib/*}" "${libFile%/*}")
-            ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/${rel2lib}/lib "${libFile}" 2> /dev/null
-
-        elif [[ -n "$(grep 'bin/' <<< ${libFile})" ]]; then
-            ${SCRIPT_DEBUG} install_name_tool -add_rpath @loader_path/../lib "${libFile}" 2> /dev/null
+        if [[ -d "${installPath}/../_build/bootstrap_prefix" ]]; then
+            installPrefixes=("${installPath}" "$(realpath ${installPath}../_build/bootstrap_prefix)")
+            echo "  installPrefixes: ${installPrefixes}"
         fi
-
-
-
+        
         for lib in ${SharedLibs[@]}; do
+            depInstallPath=${lib#${installStagingPath}}
+            depRelativeFromRPath=$(perl_abs2rel "${depInstallPath}" "${installPath}/lib")
+            
+            depIsInPrefix=""
+            
+            if [[ ${depInstallPath} =~ .*${installPath} ]]; then
+                depIsInPrefix="t"
+            fi
+            
             if [[ -n ${SCRIPT_DEBUG} ]]; then
-                echo "## LIB: ${lib}"
+                echo "  lib: ${lib}"
+                echo "  depInstallPath: ${depInstallPath}"
+                echo "  depRelativeFromRPath: ${depRelativeFromRPath}"
+                echo "  depIsInPrefix: ${depIsInPrefix}"
+            fi
+            
+            if [[ -n ${depIsInPrefix} ]]; then
+                ${SCRIPT_DEBUG} install_name_tool -change ${lib} "@rpath/${depRelativeFromRPath}" "${libFile}"
             fi
 
-            if [[ -n "$(grep -E '(_install|_build)' <<< ${lib})" ]]; then
-                ${SCRIPT_DEBUG} install_name_tool -change ${lib} "@rpath/${lib##*lib/}" "${libFile}"
-            fi
         done
 
     done
 }
+
 
 script_print_help() {
     printf "USAGE: \n\t macos-fix-rpath.sh [d,--debug] --prefix <prefix> --destdir <destdir>\n"
