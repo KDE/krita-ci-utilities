@@ -77,11 +77,11 @@ fix_rpath () {
             depInstallPath=${lib#${installStagingPath}}
             depInstallDir=$(dirname ${depInstallPath})
             if [[ ${depInstallDir} =~ .*"_build/bootstrap_prefix" ]]; then
-                depInstallPath=${installPath}/${depInstallDir#*"_build/bootstrap_prefix/"}
+                depInstallPath=${installPath}/${depInstallDir#*"_build/bootstrap_prefix/"}/$(basename ${lib})
             fi
 
             depRelativeFromRPath=$(perl_abs2rel "${depInstallPath}" "${installPath}/lib")
-            
+
             local depIsInPrefix=""
             if [[ ${depInstallPath} =~ .*${installPath} ]]; then
                 local depIsInPrefix="t"
