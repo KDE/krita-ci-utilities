@@ -15,6 +15,37 @@ import time
 import datetime
 import json
 
+def ignoreFunction(dir, content, srcRoot, dstRoot):
+    shouldIgnore = []
+
+    for file in content:
+        srcPath = os.path.join(dir, file)
+        dstPath = os.path.join(dstRoot, os.path.relpath(srcPath, srcRoot))
+
+        # shutil.copytree cannot overwrite symlinks, so we should
+        # either manually ignore them or remove from the destination
+        if os.path.islink(srcPath) and os.path.islink(dstPath):
+            srcLink = os.readlink(srcPath)
+            dstLink = os.readlink(dstPath)
+
+            if srcLink == dstLink:
+                shouldIgnore.append(file)
+            else:
+                os.unlink(dstPath)
+
+    return shouldIgnore
+
+
+def makeIgnoreFunction(srcRoot, dstRoot):
+    return lambda dir, content: ignoreFunction(dir, content, srcRoot, dstRoot)
+
+def copyTreeWithSafeSymlinkOverride(srcRoot, dstRoot, **extraArgs):
+    shutil.copytree(srcRoot, dstRoot,
+            symlinks=True, dirs_exist_ok=True,
+            ignore = makeIgnoreFunction(srcRoot, dstRoot),
+            **extraArgs)
+
+
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
 parser.add_argument('--project', type=str, required=True)
@@ -199,8 +230,12 @@ if not arguments.skip_dependencies_fetch:
 
         # Open the archive file
         archive = tarfile.open( name=packageContents, mode='r' )
-        # Extract it's contents into the install directory
-        archive.extractall( path=installPath )
+
+        with tempfile.TemporaryDirectory() as tmpDir:
+            # Extract it's contents into a temporary directory
+            archive.extractall( path=tmpDir )
+            # Merge it into the install directory
+            copyTreeWithSafeSymlinkOverride(tmpDir, installPath, copy_function=shutil.move)
 
 if arguments.only_deps:
     sys.exit(0)
@@ -590,30 +625,6 @@ if useCcacheForBuilds:
 # Therefore we list everything in the install directory and add each of those to the archive, rather than adding the whole install directory
 filesToInclude = os.listdir( pathToArchive )
 
-def ignoreFunction(dir, content, srcRoot, dstRoot):
-    shouldIgnore = []
-
-    for file in content:
-        srcPath = os.path.join(dir, file)
-        dstPath = os.path.join(dstRoot, os.path.relpath(srcPath, srcRoot))
-
-        # shutil.copytree cannot overwrite symlinks, so we should
-        # either manually ignore them or remove from the destination
-        if os.path.islink(srcPath) and os.path.islink(dstPath):
-            srcLink = os.readlink(srcPath)
-            dstLink = os.readlink(dstPath)
-
-            if srcLink == dstLink:
-                shouldIgnore.append(file)
-            else:
-                os.unlink(dstPath)
-
-    return shouldIgnore
-
-
-def makeIgnoreFunction(srcRoot, dstRoot):
-    return lambda dir, content: ignoreFunction(dir, content, srcRoot, dstRoot)
-
 # Copy the files into the installation directory
 # This is so later tests can rely on the project having been installed
 # While we ran 'make install' just before this didn't install it as we diverted the installation to allow us to cleanly capture it
@@ -622,9 +633,7 @@ for filename in filesToInclude:
     print("Copying {} -> {}".format(fullPath, os.path.join(installPath, filename)))
     if os.path.isdir(fullPath):
         dstFullPath = os.path.join(installPath, filename)
-        shutil.copytree(fullPath, dstFullPath,
-            symlinks=True, dirs_exist_ok=True,
-            ignore = makeIgnoreFunction(fullPath, dstFullPath))
+        copyTreeWithSafeSymlinkOverride(fullPath, dstFullPath)
     else:
         shutil.copy2(fullPath, os.path.join(installPath, filename))
 
