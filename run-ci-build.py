@@ -7,44 +7,13 @@ import tempfile
 import argparse
 import subprocess
 import multiprocessing
-from components import CommonUtils, Package, EnvironmentHandler, TestHandler, PlatformFlavor, EnvFileUtils
+from components import CommonUtils, Package, EnvironmentHandler, TestHandler, PlatformFlavor, EnvFileUtils, MergeFolders
 from components.CiConfigurationUtils import *
 import shutil
 import copy
 import time
 import datetime
 import json
-
-def ignoreFunction(dir, content, srcRoot, dstRoot):
-    shouldIgnore = []
-
-    for file in content:
-        srcPath = os.path.join(dir, file)
-        dstPath = os.path.join(dstRoot, os.path.relpath(srcPath, srcRoot))
-
-        # shutil.copytree cannot overwrite symlinks, so we should
-        # either manually ignore them or remove from the destination
-        if os.path.islink(srcPath) and os.path.islink(dstPath):
-            srcLink = os.readlink(srcPath)
-            dstLink = os.readlink(dstPath)
-
-            if srcLink == dstLink:
-                shouldIgnore.append(file)
-            else:
-                os.unlink(dstPath)
-
-    return shouldIgnore
-
-
-def makeIgnoreFunction(srcRoot, dstRoot):
-    return lambda dir, content: ignoreFunction(dir, content, srcRoot, dstRoot)
-
-def copyTreeWithSafeSymlinkOverride(srcRoot, dstRoot, **extraArgs):
-    shutil.copytree(srcRoot, dstRoot,
-            symlinks=True, dirs_exist_ok=True,
-            ignore = makeIgnoreFunction(srcRoot, dstRoot),
-            **extraArgs)
-
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
@@ -235,7 +204,7 @@ if not arguments.skip_dependencies_fetch:
             # Extract it's contents into a temporary directory
             archive.extractall( path=tmpDir )
             # Merge it into the install directory
-            copyTreeWithSafeSymlinkOverride(tmpDir, installPath, copy_function=shutil.move)
+            MergeFolders.merge_folders(tmpDir, installPath, move_files=True)
 
 if arguments.only_deps:
     sys.exit(0)
@@ -633,7 +602,7 @@ for filename in filesToInclude:
     print("Copying {} -> {}".format(fullPath, os.path.join(installPath, filename)))
     if os.path.isdir(fullPath):
         dstFullPath = os.path.join(installPath, filename)
-        copyTreeWithSafeSymlinkOverride(fullPath, dstFullPath)
+        MergeFolders.merge_folders(fullPath, dstFullPath)
     else:
         shutil.copy2(fullPath, os.path.join(installPath, filename))
 
