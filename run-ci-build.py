@@ -185,15 +185,41 @@ if not arguments.skip_dependencies_fetch:
         if arguments.skip_deps is None \
         else [item for item in allDependencies if item[1]['identifier'] not in arguments.skip_deps]
 
-    # TODO: remove the ad-hoc reversion of the dependencies list;
-    #       we shouldn't really depend on the order in which the deps are listed
-    #       in the YAML file. Instead, the deps should be sorted in the order
-    #       of their internal dependencies.
-    # in general we want packages unpacked in dependency order
-    dependenciesToUnpack.reverse()
+    # sort the dependencies in the correct order
+
+    projectToDepMap = []
+
+    for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
+        projectId = packageMetadata['identifier']
+        deps = packageMetadata['dependencies']
+        projectToDepMap.append((projectId, list(deps.keys())))
+
+    # for project, deps in projectToDepMap:
+    #     print (f'{project}: {deps}')
+
+    providedDeps = []
+    installDepsOrder = []
+
+    if not arguments.skip_deps is None:
+        providedDeps.extend(arguments.skip_deps)
+
+    while projectToDepMap:
+        batchToInstall = []
+        for project, deps in projectToDepMap:
+            if all(dep in providedDeps for dep in deps):
+                batchToInstall.append(project)
+
+        projectToDepMap = [(project, dep)
+                        for project,dep in projectToDepMap
+                        if not project in batchToInstall]
+
+        installDepsOrder.extend(batchToInstall)
+        providedDeps.extend(batchToInstall)
 
     # And then unpack them
-    for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
+    for project in installDepsOrder:
+        packageContents, packageMetadata, cacheStatus = \
+            next((c,m,s) for c,m,s in dependenciesToUnpack if m['identifier'] == project)
 
         print('## Unpacking dependency: {} ({})'.format(packageMetadata['identifier'], cacheStatus.name))
 

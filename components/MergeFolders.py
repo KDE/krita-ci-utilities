@@ -79,9 +79,7 @@ def merge_folders(srcDir, dstDir, move_files = False):
                 srcLink = os.readlink(srcPath)
                 dstLink = os.readlink(dstPath)
 
-                if srcLink == dstLink:
-                    dirs.remove(dir)
-                else:
+                if srcLink != dstLink:
                     print("src path: {}".format(srcPath))
                     print("dst path: {}".format(dstPath))
                     raise("Couldn't override a symlink with a different path")
@@ -98,7 +96,8 @@ def merge_folders(srcDir, dstDir, move_files = False):
                 patternString = '|'.join(map(lambda x: f'({x})', ignoredPatterns))
                 pattern = re.compile(patternString)
 
-                if not fnmatch.fnmatch(file, '*.pyc') and \
+                if os.environ.get('KDECI_DEBUG_OVERWRITTEN_FILES', 'no').lower() in ['true', '1', 't', 'y', 'yes'] and \
+                   not fnmatch.fnmatch(file, '*.pyc') and \
                     not pattern.match(dstPath):
                     print ('WARNING: overwriting a file: {} -> {}'.format(srcPath, dstPath))
 

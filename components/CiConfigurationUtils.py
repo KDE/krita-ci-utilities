@@ -1,7 +1,7 @@
 import os
 import sys
 import yaml
-from components import CommonUtils, Dependencies
+from components import CommonUtils, Dependencies, Package
 
 
 ####
@@ -62,9 +62,8 @@ def lazyResolveProjectDeps(workingDirectory, projectId, projectBranch, dependenc
         gitlabInstance = os.environ['KDECI_GITLAB_SERVER']
         packageProject = os.environ['KDECI_PACKAGE_PROJECT']
 
-        if packageRegistry is None:
-            packageRegistry = Package.Registry( localCachePath, gitlabInstance, None, packageProject )
-        allDependencies = packageRegistry.retrieveDependencies( [projectId], onlyMetadata=True )
+        packageRegistry = Package.Registry( localCachePath, gitlabInstance, None, packageProject )
+        allDependencies = packageRegistry.retrieveDependencies( {projectId: projectBranch}, onlyMetadata=True )
 
         exisitingDeps.update([item[1]['identifier'] for item in allDependencies])
     else:
