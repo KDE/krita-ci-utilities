@@ -32,3 +32,4 @@ Options:
   gcovr-arguments: ''
   use-asan: True
   pkg-config-sanity-check: 'none' # 'none', 'warning', 'error'
+  macos-rpath-fix: False # automatically fix rpath for all Mach-O files found
