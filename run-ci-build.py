@@ -15,8 +15,42 @@ import time
 import datetime
 import json
 
+environmentManual='''
+Environment variables:
+
+KDECI_ONLY_BUILD=<bool>: forcefully enable --only-build option
+KDECI_SKIP_ECM_ANDROID_TOOLCHAIN=<bool>: don't activate ECM's android toolchain when
+    ANDROID_HOME is found, the project is expected to provide its own toolchain via
+    KDECI_EXTRA_CMAKE_ARGS environment variable
+KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD=<bool> remove _install and _build folders when the
+    build is finished. This option is useful when using seed-package-registry.py for
+    batch-building the packages. Removing the build and install folders prevents cross-links
+    between the libraries via absolute rpaths.
+KDECI_COMPRESS_PACKAGES_ON_DOWNLOAD=<bool>: use compression when downloading dependency packages;
+    the packages are stored as raw .tar files, so using gz compression for their downloads may
+    improve performance when running this script locally
+KDECI_WORKDIR_PATH=<path>: use external folder for _build, _staging and _install folders;
+    might be necessary for builds on Windows to overcome path limitation (just set it to
+    `C:\\_`)
+KDECI_SHARED_INSTALL_PATH=<path>: shared install folder for the packages **and** the project
+    itself. May be used for setting up build environment on the local developer's system.
+KDECI_BUILD_TYPE=<string>: overrides build type used for the project; when present, the option
+    from config.yml is ignored
+KDECI_BUILD_TARGET=<string>: overrides build target for the project (default: 'all')
+KDECI_INSTALL_TARGET=<string>: overrides build target for the project (default: 'install')
+KDECI_EXTRA_CMAKE_ARGS=<string>: appends arguments to the CMake configuration call for the project
+KDECI_POST_INSTALL_SCRIPTS_FILTER=<semicolon-separated-list-of-paths>: the list of scripts from
+    .kde-ci.yml that should be run for this project. The post-install scripts not present in this
+    list will not be executed
+
+where <bool> is either 'True' or 'False'
+'''
+
+
 # Capture our command line parameters
-parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.')
+parser = argparse.ArgumentParser(description='Utility to perform a CI run for a KDE project.',
+                                 formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 epilog=environmentManual)
 parser.add_argument('--project', type=str, required=True)
 parser.add_argument('--branch', type=str, required=True)
 parser.add_argument('--platform', type=str, required=True)
