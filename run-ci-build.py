@@ -18,6 +18,19 @@ import json
 environmentManual='''
 Environment variables:
 
+Required variables:
+
+KDECI_PACKAGE_PROJECT=<string>: gitlab project containing registry, where packages are downloaded
+    from and uploaded to; required, inless --skip-dependencies-fetch is passed
+KDECI_GITLAB_SERVER=<url>: gitlab server where KDECI_PACKAGE_PROJECT registry is 
+    located; required, inless --skip-dependencies-fetch is passed
+KDECI_CACHE_PATH=<path>: path to the cache folder for package downloads (required always)
+KDECI_CC_CACHE=<path>: path to ccache directory; if not present, ccache is disabled
+KDECI_GITLAB_TOKEN=<string>: gitlab token for uploading the package; if not present, 
+    package uploading step is skipped
+
+Optional variables:
+
 KDECI_ONLY_BUILD=<bool>: forcefully enable --only-build option
 KDECI_SKIP_ECM_ANDROID_TOOLCHAIN=<bool>: don't activate ECM's android toolchain when
     ANDROID_HOME is found, the project is expected to provide its own toolchain via
