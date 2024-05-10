@@ -49,10 +49,10 @@ KDECI_SHARED_INSTALL_PATH=<path>: shared install folder for the packages **and**
     itself. May be used for setting up build environment on the local developer's system.
 KDECI_BUILD_TYPE=<string>: overrides build type used for the project; when present, the option
     from config.yml is ignored
-KDECI_BUILD_TARGET=<string>: overrides build target for the project (default: 'all')
-    Config option 'force-build-target' has priority over the environment variable
-KDECI_INSTALL_TARGET=<string>: overrides build target for the project (default: 'install')
-    Config option 'force-install-target' has priority over the environment variable
+KDECI_BUILD_TARGET=<string>: overrides build target for the project
+    (default: 'force-build-target' config option or 'all' if option is empty)
+KDECI_INSTALL_TARGET=<string>: overrides build target for the project
+    (default: 'force-install-target' config option or 'install' is option is empty)
 KDECI_EXTRA_CMAKE_ARGS=<string>: appends arguments to the CMake configuration call for the project
 KDECI_POST_INSTALL_SCRIPTS_FILTER=<semicolon-separated-list-of-paths>: the list of scripts from
     .kde-ci.yml that should be run for this project. The post-install scripts not present in this
@@ -198,15 +198,15 @@ localCachePath = os.environ.pop('KDECI_CACHE_PATH')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
 buildType = os.environ.get('KDECI_BUILD_TYPE', defaultBuildType)
 
-if configuration['Options']['force-build-target']:
-    buildTarget = configuration['Options']['force-build-target']
-else:
-    buildTarget = os.environ.get('KDECI_BUILD_TARGET', 'all')
+defaultBuildTarget = configuration['Options']['force-build-target']
+if not defaultBuildTarget:
+    defaultBuildTarget = 'all'
+buildTarget = os.environ.get('KDECI_BUILD_TARGET', defaultBuildTarget)
 
-if configuration['Options']['force-install-target']:
-    installTarget = configuration['Options']['force-install-target']
-else:
-    installTarget = os.environ.get('KDECI_INSTALL_TARGET', 'install')
+defaultInstallTarget = configuration['Options']['force-install-target']
+if not defaultInstallTarget:
+    defaultInstallTarget = 'install'
+installTarget = os.environ.get('KDECI_INSTALL_TARGET', defaultInstallTarget)
 
 # We can skip all communication with invent if we're not fetching dependencies, testing or publishing
 if not (arguments.skip_dependencies_fetch and arguments.only_build):
