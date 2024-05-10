@@ -32,3 +32,11 @@ Options:
   gcovr-arguments: ''
   use-asan: True
   pkg-config-sanity-check: 'none' # 'none', 'warning', 'error'
+  # Override the 'build' target of the project. When empty, the build scripts will
+  # use KDECI_BUILD_TARGET environment variable or 'all' if environment variable is
+  # not defined
+  force-build-target: ''
+  # Override the 'install' target of the project. When empty, the build scripts will
+  # use KDECI_INSTALL_TARGET environment variable or 'install' if environment variable is
+  # not defined
+  force-install-target: ''

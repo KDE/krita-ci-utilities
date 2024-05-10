@@ -50,7 +50,9 @@ KDECI_SHARED_INSTALL_PATH=<path>: shared install folder for the packages **and**
 KDECI_BUILD_TYPE=<string>: overrides build type used for the project; when present, the option
     from config.yml is ignored
 KDECI_BUILD_TARGET=<string>: overrides build target for the project (default: 'all')
+    Config option 'force-build-target' has priority over the environment variable
 KDECI_INSTALL_TARGET=<string>: overrides build target for the project (default: 'install')
+    Config option 'force-install-target' has priority over the environment variable
 KDECI_EXTRA_CMAKE_ARGS=<string>: appends arguments to the CMake configuration call for the project
 KDECI_POST_INSTALL_SCRIPTS_FILTER=<semicolon-separated-list-of-paths>: the list of scripts from
     .kde-ci.yml that should be run for this project. The post-install scripts not present in this
@@ -195,8 +197,16 @@ if configuration['Options']['release-build'] or sys.platform == 'win32':
 localCachePath = os.environ.pop('KDECI_CACHE_PATH')
 gitlabToken    = os.environ.pop('KDECI_GITLAB_TOKEN', None)
 buildType = os.environ.get('KDECI_BUILD_TYPE', defaultBuildType)
-buildTarget = os.environ.get('KDECI_BUILD_TARGET', 'all')
-installTarget = os.environ.get('KDECI_INSTALL_TARGET', 'install')
+
+if configuration['Options']['force-build-target']:
+    buildTarget = configuration['Options']['force-build-target']
+else:
+    buildTarget = os.environ.get('KDECI_BUILD_TARGET', 'all')
+
+if configuration['Options']['force-install-target']:
+    installTarget = configuration['Options']['force-install-target']
+else:
+    installTarget = os.environ.get('KDECI_INSTALL_TARGET', 'install')
 
 # We can skip all communication with invent if we're not fetching dependencies, testing or publishing
 if not (arguments.skip_dependencies_fetch and arguments.only_build):
@@ -350,6 +360,9 @@ print("##")
 print("## Installing project to {0}".format(installPath))
 print("## Building project in {0}".format(buildPath))
 print("## Staging project directory {0}".format(installStagingPath))
+print("##")
+print("## Project build target: {0}".format(buildTarget))
+print("## Project install target: {0}".format(installTarget))
 print("##")
 print("## Project CI configuration as follows:")
 for key, value in configuration['Options'].items():

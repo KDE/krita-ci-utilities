@@ -12,18 +12,7 @@ def loadProjectConfiguration(projectRoot, projectName):
     # 0) Global configuration
     configuration = yaml.safe_load( open(os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', 'global.yml')) )
 
-    # 1) Project/branch specific configuration contained within the repository
-    localConfigFile = os.path.join( projectRoot, '.kde-ci.yml' )
-    if os.path.exists( localConfigFile ):
-        localConfig = yaml.safe_load( open(localConfigFile) )
-        CommonUtils.recursiveUpdate( configuration, localConfig )
-
-    # 2) Global overrides applied to the project configuration
-    projectConfigFile = os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', projectName + '.yml')
-    if os.path.exists( projectConfigFile ):
-        projectConfig = yaml.safe_load( open(projectConfigFile) )
-        CommonUtils.recursiveUpdate( configuration, projectConfig )
-
+    # 1) Global configuration from environment
     if 'KDECI_GLOBAL_CONFIG_OVERRIDE_PATH' in os.environ:
         overridePath = os.environ['KDECI_GLOBAL_CONFIG_OVERRIDE_PATH']
         if os.path.exists( overridePath ):
@@ -32,6 +21,18 @@ def loadProjectConfiguration(projectRoot, projectName):
         else:
             print('## Error: $KDECI_GLOBAL_CONFIG_OVERRIDE_PATH({}) is present, but the file doesn\'t exist'.format(overridePath))
             sys.exit(-1)
+
+    # 2) Project/branch specific configuration contained within the repository
+    localConfigFile = os.path.join( projectRoot, '.kde-ci.yml' )
+    if os.path.exists( localConfigFile ):
+        localConfig = yaml.safe_load( open(localConfigFile) )
+        CommonUtils.recursiveUpdate( configuration, localConfig )
+
+    # 3) Global overrides applied to the project configuration
+    projectConfigFile = os.path.join(CommonUtils.scriptsBaseDirectory(), 'config', projectName + '.yml')
+    if os.path.exists( projectConfigFile ):
+        projectConfig = yaml.safe_load( open(projectConfigFile) )
+        CommonUtils.recursiveUpdate( configuration, projectConfig )
 
     return configuration
 
