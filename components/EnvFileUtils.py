@@ -48,6 +48,9 @@ def writeEnvFile(directory, fileBaseName, environmentUpdate, environmentAppend =
     if environmentAppend:
         varsToSave.extend(environmentAppend.keys())
 
+    varsToSave.append('KDECI_ENV_ACTIVATION_SCRIPT')
+    varsToSave.append('KDECI_ENV_DEACTIVATION_SCRIPT')
+
     saveLines = []
     restoreLines = []
 
@@ -56,11 +59,17 @@ def writeEnvFile(directory, fileBaseName, environmentUpdate, environmentAppend =
         saveLines.append(save)
         restoreLines.append(restore)
 
-    with open(os.path.join(directory, fileBaseName + fileSuffix), 'w') as envFile:
+    activationScript = os.path.abspath(os.path.join(directory, fileBaseName + fileSuffix))
+    deactivationScript = os.path.abspath(os.path.join(directory, fileBaseName + '_deactivate' + fileSuffix))
+
+    with open(activationScript, 'w') as envFile:
         if platform.system() == "Windows":
             envFile.write('@echo off\n')
         
         envFile.writelines(saveLines)
+
+        envFile.write(getVarSetterLine('KDECI_ENV_ACTIVATION_SCRIPT', activationScript))
+        envFile.write(getVarSetterLine('KDECI_ENV_DEACTIVATION_SCRIPT', deactivationScript))
 
         for var, value in environmentUpdate.items():
             envFile.write(getVarSetterLine(var, value))
@@ -69,7 +78,7 @@ def writeEnvFile(directory, fileBaseName, environmentUpdate, environmentAppend =
         for script in extraActivationScripts:
             envFile.write(getScriptLine(os.path.abspath(script)))
 
-    with open(os.path.join(directory, fileBaseName + '_deactivate' + fileSuffix), 'w') as envFile:
+    with open(deactivationScript, 'w') as envFile:
         if platform.system() == "Windows":
             envFile.write('@echo off\n')
 
