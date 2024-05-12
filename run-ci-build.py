@@ -239,7 +239,7 @@ if not arguments.skip_dependencies_fetch:
         else dict(item for item in projectBuildDependencies.items() if item[0] not in arguments.skip_deps)
 
     # Now we can retrieve the build time dependencies
-    allDependencies = packageRegistry.retrieveDependencies( dependenciesToRetrieve )
+    allDependencies = packageRegistry.retrieveDependencies( dependenciesToRetrieve, userFeedback=True )
 
     dependenciesToUnpack = \
         allDependencies \
@@ -768,7 +768,7 @@ if arguments.only_build:
 ####
 
 # Now we can retrieve the build time dependencies
-dependenciesToUnpack = packageRegistry.retrieveDependencies( projectRuntimeDependencies, runtime=True )
+dependenciesToUnpack = packageRegistry.retrieveDependencies( projectRuntimeDependencies, runtime=True, userFeedback=True )
 # And then unpack them
 for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
     # Open the archive file

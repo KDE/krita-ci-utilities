@@ -91,7 +91,7 @@ class Registry(object):
             
     # Retrieve a package matching the supplied parameters
     # Returns a tuple containing a handle to the package archive and a dictionary of metadata surrounding the package
-    def retrieve(self, identifier, branch, onlyMetadata = False):
+    def retrieve(self, identifier, branch, onlyMetadata = False, userFeedback = False):
         # Get ready to search
         remotePackage = None
         cachedPackage = None
@@ -138,6 +138,9 @@ class Registry(object):
             # Return the contents file and the corresponding metadata
             return ( localContentsPath, cachedPackage, CacheStatus.FromCache )
 
+        if userFeedback:
+            print (f'Downloading package: {packageName}')
+
         # Let's retrieve the file if we need to now...
         # First we need to formulate the original version string
         # Download the metadata first...
@@ -183,7 +186,7 @@ class Registry(object):
 
     # Takes a dict of projects (with values being the branches), and fetches them and any dependencies they have
     # Returns the complete list for further processing
-    def retrieveDependencies(self, dependenciesToFetch, runtime=False, onlyMetadata = False):
+    def retrieveDependencies(self, dependenciesToFetch, runtime=False, onlyMetadata = False, userFeedback = False):
         # Prepare a list of the details we need to keep
         fetchedPackages = {}
         packageBranches = {}
@@ -204,7 +207,7 @@ class Registry(object):
 
             # Given we have not previously fetched this dependency, we should do so...
             try:
-                fetchedPackages[ identifier ] = self.retrieve( identifier, branch, onlyMetadata=onlyMetadata )
+                fetchedPackages[ identifier ] = self.retrieve( identifier, branch, onlyMetadata=onlyMetadata, userFeedback = userFeedback)
             except Exception:
                 raise Exception("Unable to locate requested dependency in the registry: {} (branch: {})".format( identifier, branch ))
 
