@@ -56,7 +56,8 @@ def generateFor( installPrefix ):
         # Join them
         newEntry = splitChar.join( variableEntries )
         # If the variable already exists in the system environment, we prefix ourselves on
-        if variableName in clonedEnv:
+        # (also make sure that we don't try to concatenate to an empty variable)
+        if variableName in clonedEnv and clonedEnv[variableName]:
             newEntry = '%s%s%s' % (newEntry, splitChar, clonedEnv[variableName])
         # Set the variable into our cloned environment
         clonedEnv[variableName] = newEntry
