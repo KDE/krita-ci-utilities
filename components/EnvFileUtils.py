@@ -41,7 +41,23 @@ def getScriptLine(script):
 def writeEnvFile(directory, fileBaseName, environmentUpdate, environmentAppend = {}, extraActivationScripts = [], extraDeactivationScripts = []):
     if platform.system() == "Windows" and fileBaseName.endswith('.bat'):
         raise("Env file base name must not include the OS-specific suffix: {}".format(fileBaseName))
-    
+
+    if platform.system() != "Windows":
+        promptModificationScript="""
+NEW_PROMPT="({environmentName}) "
+
+if [[ -n $VIRTUAL_ENV_PROMPT ]] && grep $VIRTUAL_ENV_PROMPT <<< $PS1 > /dev/null; then
+    NEW_PS1=$(sed -e "s/$VIRTUAL_ENV_PROMPT/$NEW_PROMPT/" <<< $PS1)
+    export VIRTUAL_ENV_PROMPT=$NEW_PROMPT
+    export PS1=$NEW_PS1
+else
+    export VIRTUAL_ENV_PROMPT=$NEW_PROMPT
+    export PS1="$NEW_PROMPT$PS1"
+fi
+        """
+        promptModificationScript = promptModificationScript.format(
+            environmentName = os.path.basename(directory))
+
     fileSuffix = '.bat' if platform.system() == "Windows" else ''
 
     varsToSave = list(environmentUpdate.keys())
@@ -50,6 +66,12 @@ def writeEnvFile(directory, fileBaseName, environmentUpdate, environmentAppend =
 
     varsToSave.append('KDECI_ENV_ACTIVATION_SCRIPT')
     varsToSave.append('KDECI_ENV_DEACTIVATION_SCRIPT')
+
+    if platform.system() != "Windows":
+        if not 'VIRTUAL_ENV_PROMPT' in varsToSave:
+            varsToSave.append('VIRTUAL_ENV_PROMPT')
+        if not 'PS1' in varsToSave:
+            varsToSave.append('PS1')
 
     saveLines = []
     restoreLines = []
@@ -77,6 +99,9 @@ def writeEnvFile(directory, fileBaseName, environmentUpdate, environmentAppend =
             envFile.write(getVarUpdaterLine(var, value))
         for script in extraActivationScripts:
             envFile.write(getScriptLine(os.path.abspath(script)))
+
+        if platform.system() != "Windows":
+            envFile.write(promptModificationScript)
 
     with open(deactivationScript, 'w') as envFile:
         if platform.system() == "Windows":
