@@ -382,7 +382,7 @@ if arguments.skip_deps:
         print("##     {}".format(depId))
 print("##")
 print("## Building with the following environment variables:")
-for variable, contents in buildEnvironment.items():
+for variable, contents in sorted(buildEnvironment.items()):
     print("##    {0}={1}".format(variable, contents))
 print("##")
 
