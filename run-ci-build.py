@@ -229,6 +229,8 @@ if 'KDECI_PACKAGE_ALIASES_YAML' in os.environ:
         print("## Failed to parse KDECI_PACKAGE_ALIASES_YAML environment variable: {}".format(aliases))
         sys.exit(1)
 
+def lazyAliasPackage(package):
+    return package if not package in packageAliases else packageAliases[package]
 
 # We can skip all communication with invent if we're not fetching dependencies, testing or publishing
 if not (arguments.skip_dependencies_fetch and arguments.only_build):
@@ -272,7 +274,7 @@ if not arguments.skip_dependencies_fetch:
     for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
         projectId = packageMetadata['identifier']
         deps = packageMetadata['dependencies']
-        projectToDepMap.append((projectId, list(deps.keys())))
+        projectToDepMap.append((projectId, list(map(lazyAliasPackage, deps.keys()))))
 
     # for project, deps in projectToDepMap:
     #     print (f'{project}: {deps}')
@@ -288,6 +290,10 @@ if not arguments.skip_dependencies_fetch:
         for project, deps in projectToDepMap:
             if all(dep in providedDeps for dep in deps):
                 batchToInstall.append(project)
+
+        if not batchToInstall:
+            print ("## ERROR: infinite loop while sorting the deps")
+            sys.exit(1)
 
         projectToDepMap = [(project, dep)
                         for project,dep in projectToDepMap
