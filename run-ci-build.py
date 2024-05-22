@@ -32,6 +32,7 @@ KDECI_GITLAB_TOKEN=<string>: gitlab token for uploading the package; if not pres
 Optional variables:
 
 KDECI_ONLY_BUILD=<bool>: forcefully enable --only-build option
+KDECI_PUBLISH_TO_CACHE=<bool>: forcefully enable --publish-to-cache option
 KDECI_SKIP_ECM_ANDROID_TOOLCHAIN=<bool>: don't activate ECM's android toolchain when
     ANDROID_HOME is found, the project is expected to provide its own toolchain via
     KDECI_EXTRA_CMAKE_ARGS environment variable
@@ -109,6 +110,10 @@ if arguments.only_env:
 if 'KDECI_ONLY_BUILD' in os.environ:
     arguments.only_build = (os.environ['KDECI_ONLY_BUILD'].lower() in ['true', '1', 't', 'y', 'yes'])
     print ('## Overriding --only-build from environment: {}'.format(arguments.only_build))
+
+if 'KDECI_PUBLISH_TO_CACHE' in os.environ:
+    arguments.publish_to_cache = (os.environ['KDECI_PUBLISH_TO_CACHE'].lower() in ['true', '1', 't', 'y', 'yes'])
+    print ('## Overriding --publish-to-cache from environment: {}'.format(arguments.publish_to_cache))
 
 skipECMAndroidToolchain = False
 
