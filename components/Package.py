@@ -15,13 +15,14 @@ class CacheStatus(Enum):
 class Registry(object):
 
     # Record all the details we need for later use
-    def __init__(self, localCachePath, gitlabInstance, gitlabToken, gitlabPackageProject):
+    def __init__(self, localCachePath, gitlabInstance, gitlabToken, gitlabPackageProject, packageAliases = {}):
         # Store all the details we have been given for later use
         self.localCachePath = localCachePath
 
         # First prepare to gather details from both the cache and the remote registry
         self.cachedPackages = []
         self.remotePackages = []
+        self.packageAliases = packageAliases
 
         # Make sure the local cache path exists
         if not os.path.exists( self.localCachePath ):
@@ -95,6 +96,9 @@ class Registry(object):
         # Get ready to search
         remotePackage = None
         cachedPackage = None
+
+        if identifier in self.packageAliases:
+            identifier = self.packageAliases[identifier]
 
         # Prepare a normalised branch name
         normalisedBranch = self._normaliseBranchName( branch )
@@ -209,7 +213,8 @@ class Registry(object):
             try:
                 fetchedPackages[ identifier ] = self.retrieve( identifier, branch, onlyMetadata=onlyMetadata, userFeedback = userFeedback)
             except Exception:
-                raise Exception("Unable to locate requested dependency in the registry: {} (branch: {})".format( identifier, branch ))
+                aliasString = ', alias: {}'.format(self.packageAliases[identifier]) if identifier in self.packageAliases else ''
+                raise Exception("Unable to locate requested dependency in the registry: {} (branch: {}{})".format( identifier, branch, aliasString ))
 
             # We should also register the branch we have fetched
             packageBranches[ identifier ] = branch
@@ -220,7 +225,8 @@ class Registry(object):
             # Make sure we have received a usable package
             # Otherwise throw an exception and bail
             if packageMetadata is None:
-                raise Exception("Unable to locate requested dependency in the registry: {} (branch: {})".format( identifier, branch ))
+                aliasString = ', alias: {}'.format(self.packageAliases[identifier]) if identifier in self.packageAliases else ''
+                raise Exception("Unable to locate requested dependency in the registry: {} (branch: {}{})".format( identifier, branch, aliasString ))
 
             # Go over all the dependencies this package has and build a list to examine
             # If we have been asked to include runtime dependencies, we need to capture them as well

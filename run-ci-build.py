@@ -57,6 +57,8 @@ KDECI_EXTRA_CMAKE_ARGS=<string>: appends arguments to the CMake configuration ca
 KDECI_POST_INSTALL_SCRIPTS_FILTER=<semicolon-separated-list-of-paths>: the list of scripts from
     .kde-ci.yml that should be run for this project. The post-install scripts not present in this
     list will not be executed
+KDECI_PACKAGE_ALIASES_YAML=<dictionary in yaml format>: a dictionary of aliases used for fetching
+    packages; may be used for switching a library to a debug or asan version
 
 where <bool> is either 'True' or 'False'
 '''
@@ -212,13 +214,25 @@ if not defaultInstallTarget:
     defaultInstallTarget = 'install'
 installTarget = os.environ.get('KDECI_INSTALL_TARGET', defaultInstallTarget)
 
+packageAliases = {}
+if 'KDECI_PACKAGE_ALIASES_YAML' in os.environ:
+    aliases = str(os.environ['KDECI_PACKAGE_ALIASES_YAML'])
+    packageAliases = yaml.safe_load(aliases)
+    print(f'type: {type(packageAliases)}')
+    print(f'aliases: {packageAliases}')
+    if not isinstance(packageAliases, dict):
+        print("## Failed to parse KDECI_PACKAGE_ALIASES_YAML environment variable: {}".format(aliases))
+        sys.exit(1)
+
+
 # We can skip all communication with invent if we're not fetching dependencies, testing or publishing
 if not (arguments.skip_dependencies_fetch and arguments.only_build):
     packageProject = os.environ.pop('KDECI_PACKAGE_PROJECT')
     gitlabInstance = os.environ.pop('KDECI_GITLAB_SERVER')
 
     # Bring the package archive up
-    packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken, packageProject )
+    packageRegistry = Package.Registry( localCachePath, gitlabInstance, gitlabToken,
+                                        packageProject, packageAliases=packageAliases)
 
     ####
     # Now resolve both build and runtime dependencies, then fetch the build dependencies!
@@ -373,6 +387,11 @@ for key, value in configuration['Options'].items():
     print("##    {0}: {1}".format(key, value))
 print("##")
 print("## Providing the following dependencies:")
+if packageAliases:
+    print("##    Using package aliases:")
+    for package, alias in packageAliases.items():
+        print("##    {0} -> {1}".format(package, alias))
+    print("##")
 for packageContents, packageMetadata, cacheStatus in dependenciesToUnpack:
     print("##    {0} - {1} ({2})".format(packageMetadata['identifier'], packageMetadata['branch'], packageMetadata['gitRevision']))
 print("##")
