@@ -34,7 +34,7 @@ def getVarUpdaterLine(var, values):
 
 def getScriptLine(script):
     if platform.system() == "Windows":
-        return '{}\n'.format(os.path.abspath(script))
+        return 'call {}\n'.format(os.path.abspath(script))
     else:
         return '. {}\n'.format(os.path.abspath(script))
 
@@ -55,8 +55,33 @@ else
     export PS1="$NEW_PROMPT$PS1"
 fi
         """
-        promptModificationScript = promptModificationScript.format(
-            environmentName = os.path.basename(directory))
+    else:
+        promptModificationScript="""
+@echo off
+setlocal enableextensions enabledelayedexpansion
+
+set "NEW_PROMPT_PREFIX=({environmentName}) "
+
+if %NEW_PROMPT_PREFIX% == %VIRTUAL_ENV_PROMPT% (
+    exit /b 0
+)
+
+if not "%VIRTUAL_ENV_PROMPT%" == "" (
+    set "NEW_PROMPT=!PROMPT:%VIRTUAL_ENV_PROMPT%=%NEW_PROMPT_PREFIX%!"
+
+    if not !NEW_PROMPT! == !PROMPT! (
+        @rem do nothing
+    ) else (
+        set "NEW_PROMPT=%NEW_PROMPT_PREFIX%%PROMPT%"
+    )
+) else (
+    set "NEW_PROMPT=%NEW_PROMPT_PREFIX%%PROMPT%"
+)
+
+endlocal & SET "PROMPT=%NEW_PROMPT%" & set "VIRTUAL_ENV_PROMPT=%NEW_PROMPT_PREFIX%"
+        """
+    promptModificationScript = promptModificationScript.format(
+        environmentName = os.path.basename(directory))
 
     fileSuffix = '.bat' if platform.system() == "Windows" else ''
 
@@ -67,10 +92,13 @@ fi
     varsToSave.append('KDECI_ENV_ACTIVATION_SCRIPT')
     varsToSave.append('KDECI_ENV_DEACTIVATION_SCRIPT')
 
+    if not 'VIRTUAL_ENV_PROMPT' in varsToSave:
+        varsToSave.append('VIRTUAL_ENV_PROMPT')
     if platform.system() != "Windows":
-        if not 'VIRTUAL_ENV_PROMPT' in varsToSave:
-            varsToSave.append('VIRTUAL_ENV_PROMPT')
         if not 'PS1' in varsToSave:
+            varsToSave.append('PS1')
+    else:
+        if not 'PROMPT' in varsToSave:
             varsToSave.append('PS1')
 
     saveLines = []
@@ -100,8 +128,7 @@ fi
         for script in extraActivationScripts:
             envFile.write(getScriptLine(os.path.abspath(script)))
 
-        if platform.system() != "Windows":
-            envFile.write(promptModificationScript)
+        envFile.write(promptModificationScript)
 
     with open(deactivationScript, 'w') as envFile:
         if platform.system() == "Windows":
