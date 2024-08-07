@@ -59,7 +59,8 @@ KDECI_POST_INSTALL_SCRIPTS_FILTER=<semicolon-separated-list-of-paths>: the list 
     .kde-ci.yml that should be run for this project. The post-install scripts not present in this
     list will not be executed
 KDECI_PACKAGE_ALIASES_YAML=<dictionary in yaml format>: a dictionary of aliases used for fetching
-    packages; may be used for switching a library to a debug or asan version
+    packages; may be used for switching a library to a debug or asan version. The valies from the
+    environment variable will override the values from PackageAliases section of .kde-ci.yml.
 
 where <bool> is either 'True' or 'False'
 '''
@@ -228,6 +229,9 @@ if 'KDECI_PACKAGE_ALIASES_YAML' in os.environ:
     if not isinstance(packageAliases, dict):
         print("## Failed to parse KDECI_PACKAGE_ALIASES_YAML environment variable: {}".format(aliases))
         sys.exit(1)
+
+if 'PackageAliases' in configuration:
+    CommonUtils.recursiveUpdate(configuration['PackageAliases'], packageAliases)
 
 def lazyAliasPackage(package):
     return package if not package in packageAliases else packageAliases[package]
