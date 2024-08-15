@@ -4,6 +4,7 @@ import sys
 import copy
 import yaml
 import argparse
+import shutil
 import subprocess
 from components import CommonUtils, Dependencies, PlatformFlavor, Package
 from components.CiConfigurationUtils import *
@@ -60,6 +61,7 @@ projectBuildDependencies = {}
 for identifier, branch in projectsToBuild.items():
     # Retrieve the full details from the Dependencies project database
     project = dependencyResolver.projectsByIdentifier[ identifier ]
+    projectFolder = os.path.join(workingDirectory, identifier)
 
     if project['hasrepo']:
         # Construct the URL to clone
@@ -68,12 +70,42 @@ for identifier, branch in projectsToBuild.items():
         # Clone it!
         commandToRun = "git clone {0} --branch={1} {2}/".format( gitUrl, branch, identifier )
         subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=workingDirectory )
+    elif 'reuse-directory' in project:
+        if os.path.isdir(projectFolder):
+            for item in os.listdir(projectFolder):
+                print (f'Trying to remove {item}')
+                if item != '.kde-ci-override.yml':
+                    print (f'    removing... {item}')
+                    itemPath = os.path.join(projectFolder, item)
+                    if os.path.isdir(itemPath):
+                        shutil.rmtree()
+                    else:
+                        os.remove(itemPath)
+                    pass
 
-    configuration = loadProjectConfiguration(os.path.join(workingDirectory, identifier), identifier)
+        shutil.copytree(os.path.join(workingDirectory, project['reuse-directory']), projectFolder, dirs_exist_ok = True)
+
+        projectConfigFile = os.path.join(projectFolder, '.kde-ci.yml')
+        overrideFile = os.path.join(projectFolder, '.kde-ci-override.yml')
+        if os.path.isfile(overrideFile):
+            if not os.path.isfile(projectConfigFile):
+                shutil.copy2(overrideFile, projectConfigFile)
+            else:
+                with open(projectConfigFile, 'r') as f:
+                    localConfig = yaml.safe_load(f)
+                with open(overrideFile, 'r') as f:
+                    overrideConfig = yaml.safe_load(f)
+
+                CommonUtils.recursiveUpdate( localConfig, overrideConfig )
+
+                with open(projectConfigFile, 'w') as f:
+                    yaml.dump(localConfig, f, indent = 2)
+
+    configuration = loadProjectConfiguration(projectFolder, identifier)
 
     # The Dependency Resolver requires the current working directory to be in the project it is resolving (due to @same)
     # Therefore we need to switch there first
-    os.chdir( os.path.join( workingDirectory, identifier ) )
+    os.chdir( projectFolder )
     # Resolve the dependencies for this project now
     dependencies = dependencyResolver.resolve( configuration['Dependencies'], branch )
     # And save them to our list...
