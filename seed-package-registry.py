@@ -6,7 +6,7 @@ import yaml
 import argparse
 import shutil
 import subprocess
-from components import CommonUtils, Dependencies, PlatformFlavor, Package
+from components import CommonUtils, Dependencies, PlatformFlavor, Package, MergeFolders
 from components.CiConfigurationUtils import *
 
 
@@ -74,7 +74,7 @@ for identifier, branch in projectsToBuild.items():
         if os.path.isdir(projectFolder):
             for item in os.listdir(projectFolder):
                 print (f'Trying to remove {item}')
-                if item != '.kde-ci-override.yml':
+                if not item in ['.kde-ci-override.yml', '.gitignore']:
                     print (f'    removing... {item}')
                     itemPath = os.path.join(projectFolder, item)
                     if os.path.isdir(itemPath):
@@ -83,7 +83,7 @@ for identifier, branch in projectsToBuild.items():
                         os.remove(itemPath)
                     pass
 
-        shutil.copytree(os.path.join(workingDirectory, project['reuse-directory']), projectFolder, dirs_exist_ok = True)
+        MergeFolders.merge_folders(os.path.join(workingDirectory, project['reuse-directory']), projectFolder)
 
         projectConfigFile = os.path.join(projectFolder, '.kde-ci.yml')
         overrideFile = os.path.join(projectFolder, '.kde-ci-override.yml')
