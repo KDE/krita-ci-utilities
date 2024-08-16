@@ -128,7 +128,7 @@ if 'KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD' in os.environ:
     removeInstallFoldersAfterBuild = (os.environ['KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD'].lower() in ['true', '1', 't', 'y', 'yes'])
     print ('## Enable "remove install folder after build": {}'.format(removeInstallFoldersAfterBuild))
 
-    if 'KDECI_SHARED_INSTALL_PATH' in os.environ:
+    if removeInstallFoldersAfterBuild and 'KDECI_SHARED_INSTALL_PATH' in os.environ:
         print ('## ERROR: conflicting environment variables are set: KDECI_SHARED_INSTALL_PATH and KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD')
         sys.exit(1)
 
