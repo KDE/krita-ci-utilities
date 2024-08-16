@@ -142,8 +142,9 @@ while len(projectsToBuild) != 0:
 
         localCachePath = os.environ.get('KDECI_CACHE_PATH', None)
         if not localCachePath is None and arguments.publish_to_cache and arguments.missing_only:
-            if os.path.exists(os.path.join(localCachePath, '{}-{}.json'.format(identifier, branch))):
-                print('## Skipping build of {} since a package exists in the cache'.format(identifier))
+            normalisedBranch = Package.Registry._normaliseBranchName( branch )
+            if os.path.exists(os.path.join(localCachePath, '{}-{}.json'.format(identifier, normalisedBranch))):
+                print('## Skipping build of {} ({}) since a package exists in the cache'.format(identifier, normalisedBranch))
                 continue
 
         # Then start the build process - find where the sources are...

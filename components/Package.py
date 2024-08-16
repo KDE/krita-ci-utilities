@@ -71,7 +71,8 @@ class Registry(object):
             self.remotePackages.append( packageMetadata )
 
     # Convert a branch name into a standardised form
-    def _normaliseBranchName( self, branch ):
+    @staticmethod
+    def _normaliseBranchName( branch ):
         # Cleanup a Git branch name for use in our Package Registry
         return branch.replace('/', '-')
 
