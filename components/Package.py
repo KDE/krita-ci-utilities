@@ -107,7 +107,9 @@ class Registry(object):
         for entry in self.remotePackages + self.cachedPackages:
             # If the identifier and branch don't match then skip over to the next one
             # We have to use the normalised branch name when doing the comparison, as the entries returned from Gitlab's API will be normalised
-            if entry['identifier'] != identifier or entry['branch'] != normalisedBranch:
+            # But the entries in self.cachedPackages use non-normalized branch name
+            if entry['identifier'] != identifier or \
+                (entry['branch'] != normalisedBranch and entry['branch'] != branch):
                 continue
 
             # Do we have an existing match?
@@ -124,7 +126,7 @@ class Registry(object):
             return ( None, None, None )
 
         # Determine the name we use for the files in the cache as well as the path to the files
-        packageName = "{0}-{1}".format( remotePackage['identifier'], remotePackage['branch'] )
+        packageName = "{0}-{1}".format( remotePackage['identifier'], normalisedBranch )
         localContentsPath = os.path.join( self.localCachePath, packageName + ".tar" )
         localMetadataPath = os.path.join( self.localCachePath, packageName + ".json" )
 

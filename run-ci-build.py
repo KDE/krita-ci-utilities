@@ -764,10 +764,10 @@ if (gitlabToken is not None or arguments.publish_to_cache) and not arguments.ski
         packageRegistry.upload(archiveFile.name, arguments.project, arguments.branch, gitRevision, packageMetadata)
 
     if arguments.publish_to_cache:
-        packageNameFile = '{}-{}.tar'.format(arguments.project, arguments.branch)
-        packageMetadataFile = '{}-{}.json'.format(arguments.project, arguments.branch)
-
         normalisedBranch = packageRegistry._normaliseBranchName(arguments.branch)
+
+        packageNameFile = '{}-{}.tar'.format(arguments.project, normalisedBranch)
+        packageMetadataFile = '{}-{}.json'.format(arguments.project, normalisedBranch)
 
         packageTimestamp = int( os.path.getmtime(archiveFile.name) )
         versionForGitlab = "{0}-{1}".format(normalisedBranch, packageTimestamp)
