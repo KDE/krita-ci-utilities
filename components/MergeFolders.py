@@ -6,7 +6,7 @@ import os
 import fnmatch
 import re
 
-def merge_folders(srcDir, dstDir, move_files = False):
+def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
 
     copy_function = shutil.move \
         if move_files \
@@ -20,8 +20,11 @@ def merge_folders(srcDir, dstDir, move_files = False):
         
         for dir in dirs:
             srcPath = os.path.join(root, dir)
-            dstPath = os.path.join(dstDir, os.path.relpath(srcPath, srcDir))
-            
+            relativePath = os.path.relpath(srcPath, srcDir)
+            if relativePath in skip_paths:
+                continue
+            dstPath = os.path.join(dstDir, relativePath)
+
             # print("src: {}".format(srcPath))
             # print("dst: {}".format(dstPath))
 
@@ -63,7 +66,10 @@ def merge_folders(srcDir, dstDir, move_files = False):
         
         for file in files:
             srcPath = os.path.join(root, file)
-            dstPath = os.path.join(dstDir, os.path.relpath(srcPath, srcDir))
+            relativePath = os.path.relpath(srcPath, srcDir)
+            if relativePath in skip_paths:
+                continue
+            dstPath = os.path.join(dstDir, relativePath)
 
             if not os.path.exists(dstPath):
                 # just copy normally if destination doesn't exist

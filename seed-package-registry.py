@@ -83,7 +83,9 @@ for identifier, branch in projectsToBuild.items():
                         os.remove(itemPath)
                     pass
 
-        MergeFolders.merge_folders(os.path.join(workingDirectory, project['reuse-directory']), projectFolder)
+        MergeFolders.merge_folders(os.path.join(workingDirectory, project['reuse-directory']), 
+                                   projectFolder,
+                                   skip_paths=['_build', '_install', '_staging'])
 
         projectConfigFile = os.path.join(projectFolder, '.kde-ci.yml')
         overrideFile = os.path.join(projectFolder, '.kde-ci-override.yml')
