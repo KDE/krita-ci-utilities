@@ -90,6 +90,9 @@ class TestUtil:
             self._writeSimpleFile(srcDir / "patches/patch2", "patch2")
 
             (srcDir / "_build").mkdir()
+            # the skipped directory should be non-empty, otherwise it
+            # may be not skipped
+            (srcDir / "_build" / "ext_foobar").mkdir()
             (srcDir / "_staging").mkdir()
             (srcDir / "patches/non-needed-dir").mkdir()
             (srcDir / "patches/needed-dir").mkdir()
