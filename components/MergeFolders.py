@@ -15,15 +15,16 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
     if not os.path.exists(dstDir):
         os.makedirs(dstDir)
 
+    normedSkipPath = [os.path.normpath(os.path.join(srcDir, path)) for path in skip_paths]
+
     for root, dirs, files in os.walk(srcDir):
         #print('{} {} {}'.format(root, dirs, files))
         
         for dir in dirs:
             srcPath = os.path.join(root, dir)
-            relativePath = os.path.relpath(srcPath, srcDir)
-            if relativePath in skip_paths:
+            if os.path.normpath(srcPath) in normedSkipPath:
                 continue
-            dstPath = os.path.join(dstDir, relativePath)
+            dstPath = os.path.join(dstDir, os.path.relpath(srcPath, srcDir))
 
             # print("src: {}".format(srcPath))
             # print("dst: {}".format(dstPath))
@@ -66,10 +67,9 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
         
         for file in files:
             srcPath = os.path.join(root, file)
-            relativePath = os.path.relpath(srcPath, srcDir)
-            if relativePath in skip_paths:
+            if os.path.normpath(srcPath) in normedSkipPath:
                 continue
-            dstPath = os.path.join(dstDir, relativePath)
+            dstPath = os.path.join(dstDir, os.path.relpath(srcPath, srcDir))
 
             if not os.path.exists(dstPath):
                 # just copy normally if destination doesn't exist
@@ -79,20 +79,21 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
             elif not os.path.isfile(dstPath):
                 print("src path: {}".format(srcPath))
                 print("dst path: {}".format(dstPath))
-                raise("Couldn't override not-a-file with a file")
+                raise FileExistsError("Couldn't override not-a-file with a file")
 
             elif os.path.islink(srcPath) and os.path.islink(dstPath):
                 srcLink = os.readlink(srcPath)
                 dstLink = os.readlink(dstPath)
 
                 if srcLink != dstLink:
+                    print("ERROR: cannot overwrite a symlink with a symlink pointing to a different path")
                     print("src path: {}".format(srcPath))
                     print("dst path: {}".format(dstPath))
-                    raise("Couldn't override a symlink with a different path")
+                    raise FileExistsError("Couldn't override a symlink with a different path")
 
             else:
                 ignoredPatterns = [
-                    '.*/_vendor/.*\.py',
+                    r'.*/_vendor/.*\.py',
                     '.*/site-packages/setuptools/.*',
                     '/__pycache__/',
                     '.*site-packages/.*distutils.*',
