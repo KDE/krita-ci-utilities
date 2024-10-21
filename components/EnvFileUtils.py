@@ -62,7 +62,7 @@ setlocal enableextensions enabledelayedexpansion
 
 set "NEW_PROMPT_PREFIX=({environmentName}) "
 
-if %NEW_PROMPT_PREFIX% == %VIRTUAL_ENV_PROMPT% (
+if "%NEW_PROMPT_PREFIX%" == "%VIRTUAL_ENV_PROMPT%" (
     exit /b 0
 )
 
