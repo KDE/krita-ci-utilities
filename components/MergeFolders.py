@@ -16,9 +16,9 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
         os.makedirs(dstDir)
 
     normedSkipPath = [os.path.normpath(os.path.join(srcDir, path)) for path in skip_paths]
-    print("Merging paths: {} -> {}".format(srcDir, dstDir))
-    print("    ignored paths: {}".format(skip_paths))
-    print("    ignored paths (resolved): {}".format(normedSkipPath))
+    # print("Merging paths: {} -> {}".format(srcDir, dstDir))
+    # print("    ignored paths: {}".format(skip_paths))
+    # print("    ignored paths (resolved): {}".format(normedSkipPath))
 
     for root, dirs, files in os.walk(srcDir):
         #print('{} {} {}'.format(root, dirs, files))
@@ -26,7 +26,7 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
         for dir in list(dirs):
             srcPath = os.path.join(root, dir)
             if os.path.normpath(srcPath) in normedSkipPath:
-                print("INFO: skipping ignored directory: {}".format(srcPath))
+                # print("INFO: skipping ignored directory: {}".format(srcPath))
                 dirs.remove(dir)
                 continue
             dstPath = os.path.join(dstDir, os.path.relpath(srcPath, srcDir))
@@ -73,7 +73,7 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
         for file in files:
             srcPath = os.path.join(root, file)
             if os.path.normpath(srcPath) in normedSkipPath:
-                print("INFO: skipping ignored file: {}".format(srcPath))
+                # print("INFO: skipping ignored file: {}".format(srcPath))
                 continue
             dstPath = os.path.join(dstDir, os.path.relpath(srcPath, srcDir))
 
