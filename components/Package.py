@@ -182,6 +182,14 @@ class Registry(object):
         latestContent.write( response )
         latestContent.close()
 
+        # Remove the old versions first (Windows is odd sometimes)
+        # On Windows virtiofs behaves weirdly and doesn't support
+        # overwriting existing files
+        if os.path.exists( localMetadataPath ):
+            os.remove( localMetadataPath )
+        if os.path.exists( localContentsPath ):
+            os.remove( localContentsPath )
+
         # Move both to the cache for future use
         shutil.move( latestContent.name, localContentsPath )
         shutil.move( latestMetadata.name, localMetadataPath )
