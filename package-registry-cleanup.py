@@ -1,10 +1,9 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import os
 import sys
 import time
-import gitlab
 import argparse
-import subprocess
+import gitlab
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to cleanup a Gitlab Package Registry.')
@@ -27,28 +26,21 @@ remoteRegistry = gitlabServer.projects.get( packageProject )
 knownPackages = {}
 packagesToRemove = []
 
+# Configuration - list of branches to always purge
+branchesToRemove = [
+    'transition.now/android-35', # has been merged into master 2025-08-26
+]
+
 # Configuration - list of Qt 5 package projects...
 packageProjectsForQt5 = [
-    'teams/ci-artifacts/suse-qt5.15',
-    'teams/ci-artifacts/suse-qt5.15-static',
-    'teams/ci-artifacts/freebsd-qt5.15',
-    'teams/ci-artifacts/android-qt5.15',
-    'teams/ci-artifacts/windows-qt5.15',
-    'teams/ci-artifacts/windows-qt5.15-static',
+]
+
+# Configuration - list of Qt 6 package projects...
+packageProjectsForQt6 = [
 ]
 
 # Configuration - list of projects whose master is Qt 6 only now
 projectsWithQt6OnlyMaster = [
-    # Frameworks
-    'attica', 'baloo', 'bluez-qt', 'breeze-icons', 'extra-cmake-modules', 'frameworkintegration', 'kactivities', 'kactivities-stats',
-    'kapidox', 'karchive', 'kauth', 'kbookmarks', 'kcalendarcore', 'kcmutils', 'kcodecs', 'kcompletion', 'kconfig', 'kconfigwidgets', 
-    'kcontacts', 'kcoreaddons', 'kcrash', 'kdav', 'kdbusaddons', 'kdeclarative', 'kded', 'kdelibs4support', 'kdesignerplugin', 'kdesu',
-    'kdewebkit', 'kdnssd', 'kdoctools', 'kemoticons', 'kfilemetadata', 'kglobalaccel', 'kguiaddons', 'kholidays', 'khtml', 'ki18n',
-    'kiconthemes', 'kidletime', 'kimageformats', 'kinit', 'kio', 'kirigami', 'kitemmodels', 'kitemviews', 'kjobwidgets', 'kjs', 'kjsembed',
-    'kmediaplayer', 'knewstuff', 'knotifications', 'knotifyconfig', 'kpackage', 'kparts', 'kpeople', 'kplotting', 'kpty', 'kquickcharts',
-    'kross', 'krunner', 'kservice', 'ktexteditor', 'ktextwidgets', 'kunitconversion', 'kwallet', 'kwayland', 'kwidgetsaddons', 'kwindowsystem',
-    'kxmlgui', 'kxmlrpcclient', 'modemmanager-qt', 'networkmanager-qt', 'oxygen-icons5', 'plasma-framework', 'prison', 'purpose', 'qqc2-desktop-style',
-    'solid', 'sonnet', 'syndication', 'syntax-highlighting', 'threadweaver',
 ]
 
 # Configuration - list of projects to always remove
@@ -81,14 +73,20 @@ for package in remoteRegistry.packages.list( iterator=True ):
         continue
 
     # Is this a stale branch we can let go of?
-    if branch in ['release-21.08', 'release-21.12', 'release-22.04', 'release-22.08', 'release-22.12', 'Plasma-5.24', 'Plasma-5.25', 'Plasma-5.26']:
+    if branch in branchesToRemove:
         # Then mark it for removal
         packagesToRemove.append( packageData['package'] )
         continue
 
-    # Is this a 'master' Framework package in a Qt 5 repository
+    # Is this a 'master' package in a Qt 5 repository?
     if arguments.project in packageProjectsForQt5 and package.name in projectsWithQt6OnlyMaster and branch == "master":
         # Then remove it too!
+        packagesToRemove.append( packageData['package'] )
+        continue
+
+    # Is this a 'kf5' package in a Qt 6 repository?
+    if arguments.project in packageProjectsForQt6 and branch == "kf5":
+        # Perform the removal
         packagesToRemove.append( packageData['package'] )
         continue
 
