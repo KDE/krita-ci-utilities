@@ -4,6 +4,7 @@ import sys
 import time
 import argparse
 import gitlab
+from components import Package
 
 # Capture our command line parameters
 parser = argparse.ArgumentParser(description='Utility to cleanup a Gitlab Package Registry.')
@@ -48,7 +49,9 @@ projectsToAlwaysRemove = [
     # QtWebKit is no longer supported
     'kdewebkit',
 ]
-        
+
+normalizedBranchesToRemove = [ Package.Registry._normaliseBranchName(branch) for branch in branchesToRemove ]
+
 # Now that we have that setup, let's find out what packages our Gitlab package project knows about
 for package in remoteRegistry.packages.list( iterator=True ):
     # Grab the version (branch+timestamp) and break it out into the corresponding components
@@ -73,7 +76,7 @@ for package in remoteRegistry.packages.list( iterator=True ):
         continue
 
     # Is this a stale branch we can let go of?
-    if branch in branchesToRemove:
+    if branch in normalizedBranchesToRemove:
         # Then mark it for removal
         packagesToRemove.append( packageData['package'] )
         continue
