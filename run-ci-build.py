@@ -61,6 +61,7 @@ KDECI_POST_INSTALL_SCRIPTS_FILTER=<semicolon-separated-list-of-paths>: the list 
 KDECI_PACKAGE_ALIASES_YAML=<dictionary in yaml format>: a dictionary of aliases used for fetching
     packages; may be used for switching a library to a debug or asan version. The valies from the
     environment variable will override the values from PackageAliases section of .kde-ci.yml.
+KRITACI_DRY_RUN=<bool>: enables dry run, no actual build actions will be performed. Also enables --skip-dependencies-fetch.
 
 where <bool> is either 'True' or 'False'
 '''
@@ -83,8 +84,15 @@ parser.add_argument('--publish-to-cache', default=False, action='store_true')
 parser.add_argument('--skip-dependencies-fetch', default=False, action='store_true')
 parser.add_argument('--fail-on-leaked-stage-files', default=False, action='store_true')
 parser.add_argument('-s','--skip-deps', nargs='+', help='A space-separated list of dependencies to skip fetching', required=False)
+parser.add_argument('--dry-run', default=False, action='store_true')
 arguments = parser.parse_args()
 platform = PlatformFlavor.PlatformFlavor(arguments.platform)
+
+if 'KRITACI_DRY_RUN' in os.environ:
+    arguments.dry_run = (os.environ['KRITACI_DRY_RUN'].lower() in ['true', '1', 't', 'y', 'yes'])
+
+if arguments.dry_run:
+    arguments.skip_dependencies_fetch = True
 
 if arguments.only_deps:
     if arguments.only_build:
@@ -131,6 +139,7 @@ if 'KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD' in os.environ:
     if removeInstallFoldersAfterBuild and 'KDECI_SHARED_INSTALL_PATH' in os.environ:
         print ('## ERROR: conflicting environment variables are set: KDECI_SHARED_INSTALL_PATH and KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD')
         sys.exit(1)
+
 
 ####
 # Load the project configuration
@@ -436,6 +445,10 @@ if not arguments.env is None or arguments.only_env:
     if arguments.only_env:
         print("## env file generated, exiting...")
         sys.exit(0)
+
+if arguments.dry_run:
+    print("WARNING: dry run action {0} considered built successfully".format(arguments.project))
+    sys.exit(0)
 
 print("## Starting build process...")
 
