@@ -103,7 +103,7 @@ class Resolver(object):
         # This is done by asking Git to print a list of all refs it knows of, prefixed by the negate operator (^)
         # We then reduce that to just mainline branches prior to passing it to git rev-list
         # Finally, we run git rev-list in reverse mode so it puts the oldest commit at the top (whose parent commit will be on a release branch)
-        command = 'git for-each-ref --format="^%(refname)" | grep -E "refs/heads/master|refs/heads/kf[56]|refs/heads/.*[0-9]\.[0-9]+" | git rev-list --stdin --reverse HEAD | head -n1'
+        command = r'git for-each-ref --format="^%(refname)" | grep -E "refs/heads/master|refs/heads/kf[56]|refs/heads/.*[0-9]\.[0-9]+" | git rev-list --stdin --reverse HEAD | head -n1'
         process = subprocess.Popen(command, shell=True, env=commandEnvironment, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         firstBranchCommit = process.stdout.readline().strip().decode('utf-8')
 
@@ -116,7 +116,7 @@ class Resolver(object):
         # With the first branch commit now being known, we can do the second phase of this
         # This involves asking Git to print a list of all references that contain the given commit
         # Once again, we also filter this to only leave behind release branches - as that is what we are trying to resolve to
-        command = 'git for-each-ref --contains {0}^ --format="%(refname)" | grep -E "refs/heads/master|refs/heads/kf[56]|refs/heads/.*[0-9]\.[0-9]+" | sort -r -n'.format( firstBranchCommit )
+        command = r'git for-each-ref --contains {0}^ --format="%(refname)" | grep -E "refs/heads/master|refs/heads/kf[56]|refs/heads/.*[0-9]\.[0-9]+" | sort -r -n'.format( firstBranchCommit )
         process = subprocess.Popen(command, shell=True, env=commandEnvironment, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         rawPotentialBranches = process.stdout.readlines()
 
