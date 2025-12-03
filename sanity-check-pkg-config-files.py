@@ -40,7 +40,7 @@ else:
 
 haveFailingFiles = False
 errorPrefix = 'ERROR' if arguments.fail_on_error else 'WARNING'
-prefixMatcher = re.compile('^\s*prefix\s*=\s*(.+)')
+prefixMatcher = re.compile(r'^\s*prefix\s*=\s*(.+)')
 
 for path in pkgConfigPaths:
     # print('# Checking relocatability in folder: {}'.format(path))
