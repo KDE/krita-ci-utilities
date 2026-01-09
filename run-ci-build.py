@@ -62,6 +62,7 @@ KDECI_PACKAGE_ALIASES_YAML=<dictionary in yaml format>: a dictionary of aliases 
     packages; may be used for switching a library to a debug or asan version. The valies from the
     environment variable will override the values from PackageAliases section of .kde-ci.yml.
 KRITACI_DRY_RUN=<bool>: enables dry run, no actual build actions will be performed. Also enables --skip-dependencies-fetch.
+KRITACI_PARALLEL_JOBS=<integer>: the number of parallel jobs to use during the build
 
 where <bool> is either 'True' or 'False'
 '''
@@ -140,6 +141,12 @@ if 'KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD' in os.environ:
         print ('## ERROR: conflicting environment variables are set: KDECI_SHARED_INSTALL_PATH and KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD')
         sys.exit(1)
 
+
+# Determine the appropriate number of CPU cores we should use when running builds
+cpuCount = int(multiprocessing.cpu_count())
+
+if 'KRITACI_PARALLEL_JOBS' in os.environ:
+    cpuCount = max(1, int(os.environ['KRITACI_PARALLEL_JOBS']))
 
 ####
 # Load the project configuration
@@ -567,13 +574,10 @@ except Exception:
 
 beforeInstallTimestamp = datetime.datetime.now().timestamp()
 
-# Determine the appropriate number of CPU cores we should use when running builds
-cpuCount = int(multiprocessing.cpu_count())
-
 makeCommand = "cmake --build . --parallel {cpuCount} --target {customTarget}"
 
 # Finalise the command we will be running
-commandToRun = makeCommand.format( cpuCount=cpuCount, maximumLoad=cpuCount+1, customTarget = buildTarget )
+commandToRun = makeCommand.format( cpuCount=cpuCount, customTarget = buildTarget )
 
 # Compile the project
 try:
