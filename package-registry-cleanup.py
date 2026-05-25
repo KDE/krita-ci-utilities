@@ -33,6 +33,7 @@ branchesToRemove = [
     'transition.now/python-313-qt5', # has been merged into master in December 2025
     'transition.now/python-313-qt6', # has been merged into master in December 2025
     'transition.now/win-clang21', # has been merged into master on 2026-04-21
+    'transition.now/update-qt-to-6.10.3', # we are switched to 6.11.0 by 2025-05-25
 ]
 
 # Configuration - list of Qt 5 package projects...
