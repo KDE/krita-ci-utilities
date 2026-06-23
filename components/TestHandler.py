@@ -172,9 +172,13 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     if projectConfig['Options']['tests-run-in-parallel']:
         cpuCount = int(multiprocessing.cpu_count())
 
+    # JUnit output file that gitlab uses for displaying test results
+    junitFilename = os.path.join( sourcesPath, 'JUnitTestResults.xml' )
+
     # Now it's time to invoke CTest! Build up the command...
-    commandToRun = "ctest -T Test --output-on-failure --no-compress-output --test-output-size-passed 1048576 --test-output-size-failed 1048576 -j {cpuCount} --timeout {timeLimit} {additionalCTestArguments}"
+    commandToRun = "ctest -T Test --output-on-failure --no-compress-output --test-output-size-passed 1048576 --test-output-size-failed 1048576 --output-junit {junitFilename} -j {cpuCount} --timeout {timeLimit} {additionalCTestArguments}"
     commandToRun = commandToRun.format(
+        junitFilename=junitFilename,
         cpuCount=cpuCount,
         timeLimit=projectConfig['Options']['per-test-timeout'],
         additionalCTestArguments=projectConfig['Options']['ctest-arguments']
@@ -184,12 +188,6 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     print( "## RUNNING: " + commandToRun )
     ctestProcess = subprocess.Popen( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=buildPath, env=buildEnvironment )
     ctestProcess.wait()
-
-    # Now that CTest is done, we convert it's output to JUnit format
-    junitOutput = convertCTestResultsToJUnit( buildPath )
-    junitFilename = os.path.join( sourcesPath, 'JUnitTestResults.xml' )
-    with open(junitFilename, 'w', encoding='UTF-8') as junitFile:
-        junitFile.write( str(junitOutput) )
 
     # To ensure we don't hang, cleanup the Window Manager and X server if needed
     if projectConfig['Options']['setup-x-environment'] and ( sys.platform != 'win32' and sys.platform != 'darwin' ):
@@ -214,27 +212,3 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
 
     # All done!
     return ctestProcess.returncode == 0
-
-def convertCTestResultsToJUnit( buildDirectory ):
-    # Where is the base prefix for all test data for this project located?
-    testDataDirectory = os.path.join( buildDirectory, 'Testing' )
-
-    # Determine where we will find the test run data for the latest run
-    filename = os.path.join( testDataDirectory, 'TAG' )
-    with open(filename, 'r') as tagFile:
-        testDirectoryName = tagFile.readline().strip()
-
-    # Open the test result XML and load it
-    filename = os.path.join( testDataDirectory, testDirectoryName, 'Test.xml' )
-    with open(filename , 'r', encoding='UTF-8') as xmlFile:
-        xmlDocument = etree.parse( xmlFile )
-
-    # Load the XSLT file
-    filename = os.path.join( CommonUtils.scriptsBaseDirectory(), 'resources', 'ctesttojunit.xsl' )
-    with open(filename, 'r') as xslFile:
-        xslContent = xslFile.read()
-        xsltRoot = etree.XML(xslContent)
-
-    # Transform the CTest XML into JUnit XML
-    transform = etree.XSLT(xsltRoot)
-    return transform(xmlDocument)
