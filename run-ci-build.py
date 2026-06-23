@@ -633,7 +633,17 @@ scriptsAllowed = None
 if 'KDECI_POST_INSTALL_SCRIPTS_FILTER' in os.environ:
     scriptsAllowed = os.environ['KDECI_POST_INSTALL_SCRIPTS_FILTER'].split(';')
 
-for name, script in configuration['PostInstallScripts'].items():
+def iterateThroughPostInstallScripts():
+    if isinstance(configuration['PostInstallScripts'], dict):
+        for name, script in configuration['PostInstallScripts'].items():
+            yield (name, script)
+    elif isinstance(configuration['PostInstallScripts'], list):
+        for item in configuration['PostInstallScripts']:
+            if platform.matches(item['on']):
+                for name, script in item['require'].items():
+                    yield (name, script)
+
+for name, script in iterateThroughPostInstallScripts():
 
     if not scriptsAllowed is None and not name in scriptsAllowed:
         print('## Skipping script \"{}\" due to the filter active'.format(name))
@@ -644,6 +654,7 @@ for name, script in configuration['PostInstallScripts'].items():
     scriptEnvironment['KDECI_BUILD_TYPE'] = buildType
     scriptEnvironment['KDECI_INTERNAL_USE_CCACHE'] = str(useCcacheForBuilds)
     scriptEnvironment['KDECI_SOURCES_DIR'] = sourcesPath
+    scriptEnvironment['KDECI_TARGET_PLATFORM'] = str(platform)
 
     scriptEnvironment = EnvironmentHandler.addEnvironmentPrefix(pathToArchive, scriptEnvironment)
 
