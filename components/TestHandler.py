@@ -168,7 +168,7 @@ def run( projectConfig, sourcesPath, buildPath, installPath, buildEnvironment ):
     junitFilename = os.path.join( sourcesPath, 'JUnitTestResults.xml' )
 
     # Now it's time to invoke CTest! Build up the command...
-    commandToRun = "ctest -T Test --output-on-failure --no-compress-output --test-output-size-passed 1048576 --test-output-size-failed 1048576 --output-junit {junitFilename} -j {cpuCount} --timeout {timeLimit} {additionalCTestArguments}"
+    commandToRun = "ctest -T Test --output-on-failure --no-compress-output --test-output-size-passed 1 --test-output-size-failed 1048576 --output-junit {junitFilename} -j {cpuCount} --timeout {timeLimit} {additionalCTestArguments}"
     commandToRun = commandToRun.format(
         junitFilename=junitFilename,
         cpuCount=cpuCount,
