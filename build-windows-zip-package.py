@@ -623,12 +623,13 @@ if os.path.exists(f"{pkg_root}\\lib\\site-packages"):
         os.remove(f)
 
 if not CommonUtils.boolFromEnv(os.environ.get('KRITACI_SKIP_SPLIT_DEBUG', '0')):
-    from . import split_debug_info
-    from components import PlatformFlavor
-    split_debug_info.split_debug_in_folder(pkg_root,
-                                           PlatformFlavor.PlatformFlavor('Windows'),
-                                           logger,
-                                           OBJDUMP)
+    run_subprocess_checked(
+            [sys.executable,
+             "-u",
+             os.path.join(os.path.dirname(__file__), "split-debug-info.py"),
+             "-p", "Windows",
+             pkg_root
+             ])
 
 if args.pre_zip_hook:
     logger.info("Running pre-zip hook...")
