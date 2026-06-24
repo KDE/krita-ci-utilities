@@ -59,7 +59,7 @@ def split_debug(rootDir, relativeFileName, logger, objdumpBinary):
     # FIXME: "warning: section .gnu_debuglink not found in xxx.debug"
     # FIXME: I tried adding a link to itself but this kills drmingw :(
     commandToRun = ["objcopy",
-                    f"--add-gnu-debuglink={os.path.join('.debug', os.path.basename(fileName))}.debug",
+                    f"--add-gnu-debuglink={os.path.join(debugDir, os.path.basename(fileName))}.debug",
                     fileName]
     logger.debug(f"Running {' '.join(commandToRun)}")
     subprocess.check_call(commandToRun)
