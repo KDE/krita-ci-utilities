@@ -3,6 +3,9 @@ import sys
 import shutil
 import hashlib
 import collections
+import subprocess
+import logging
+from components import PlatformFlavor
 
 # Returns the absolute path to the base directory of the CI Tooling checkout we are running from
 def scriptsBaseDirectory():
@@ -107,3 +110,48 @@ def recursiveUpdate(d, u):
 
     # Return the merged values
     return d
+
+def detectObjdump():
+    for arg in ("objdump", "llvm-objdump"):
+        commandToRun = f"{arg} --version"
+        ret = subprocess.call(commandToRun, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        if ret != 1:
+            return arg
+    return None
+
+def boolFromEnv(value : str) -> bool:
+    return value.lower() in ['true', '1', 't', 'y', 'yes']
+
+def useVerbosePackagingLog() -> bool:
+    return boolFromEnv(os.environ.get('KRITACI_VERBOSE_PACKAGING', '0'))
+
+def createLogger(logFileName : str):
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    fileFormatter = logging.Formatter("## %(asctime)s %(levelname)s: %(message)s")
+
+    fileHandler = logging.FileHandler(logFileName, mode='w')
+    fileHandler.setLevel(logging.DEBUG)
+    fileHandler.setFormatter(fileFormatter)
+
+    stdoutFormatter = logging.Formatter("## %(levelname)s: %(message)s")
+
+    stdoutHandler = logging.StreamHandler(sys.stdout)
+    stdoutHandler.setLevel(logging.DEBUG if useVerbosePackagingLog() else logging.INFO)
+    stdoutHandler.setFormatter(stdoutFormatter)
+
+    logger.addHandler(fileHandler)
+    logger.addHandler(stdoutHandler)
+
+    return logger
+
+def globPatternsForBinaries(platform : PlatformFlavor) -> tuple:
+    if platform.matches(['Windows']):
+        return ('*.exe', '*.com', '*.dll', '*.pyd')
+    elif platform.matches(['Linux']):
+        return ('*.so', '*.so.[0-9]*', 'krita', 'kritarunner', 'ffmpeg', 'ffprobe')
+    elif platform.matches(['MacOS', 'Android']):
+        raise Exception(f"Platform '{platform}' is currently not supported for debug splitting")
+    else:
+        raise Exception(f"Unknown platform '{platform}'")

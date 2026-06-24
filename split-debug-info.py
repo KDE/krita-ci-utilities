@@ -3,21 +3,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import subprocess
-import logging
-import sys
 import os
 import shutil
 import argparse
 import fnmatch
-from components import PlatformFlavor
-
-def detect_objdump():
-    for arg in ("objdump", "llvm-objdump"):
-        commandToRun = f"{arg} --version"
-        ret = subprocess.call(commandToRun, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        if ret != 1:
-            return arg
-    return None
+from components import PlatformFlavor, CommonUtils
 
 def has_debug_section(objdumpOutput):
     for line in objdumpOutput.splitlines():
@@ -75,15 +65,7 @@ def split_debug(rootDir, relativeFileName, logger, objdumpBinary):
     subprocess.check_call(commandToRun)
 
 def split_debug_in_folder(rootDir, platform, logger, objdumpBinary):
-    patterns = ()
-    if platform.matches(['Windows']):
-        patterns = ('*.exe', '*.com', '*.dll', '*.pyd')
-    elif platform.matches(['Linux']):
-        patterns = ('*.so', '*.so.[0-9]*', 'krita', 'kritarunner', 'ffmpeg', 'ffprobe')
-    elif platform.matches(['MacOS', 'Android']):
-        raise Exception(f"Platform '{platform}' is currently not supported for debug splitting")
-    else:
-        raise Exception(f"Unknown platform '{platform}'")
+    patterns = CommonUtils.globPatternsForBinaries(platform)
 
     for currentRoot, dirs, files in os.walk(rootDir):
         if ".debug" in dirs:
@@ -99,32 +81,11 @@ def split_debug_in_folder(rootDir, platform, logger, objdumpBinary):
 
 if __name__ == "__main__":
 
-    useVerbosePackagingLog = (os.environ.get('KRITACI_VERBOSE_PACKAGING', '0').lower() in ['true', '1', 't', 'y', 'yes'])
+    logger = CommonUtils.createLogger(f"{os.path.basename(__file__)}.log")
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-
-    fileFormatter = logging.Formatter("## %(asctime)s %(levelname)s: %(message)s")
-
-    fileHandler = logging.FileHandler(f"{os.path.basename(__file__)}.log", mode='w')
-    fileHandler.setLevel(logging.DEBUG)
-    fileHandler.setFormatter(fileFormatter)
-
-    stdoutFormatter = logging.Formatter("## %(levelname)s: %(message)s")
-
-    stdoutHandler = logging.StreamHandler(sys.stdout)
-    stdoutHandler.setLevel(logging.DEBUG if useVerbosePackagingLog else logging.INFO)
-    stdoutHandler.setFormatter(stdoutFormatter)
-
-    logger.addHandler(fileHandler)
-    logger.addHandler(stdoutHandler)
-
-
-    OBJDUMP = detect_objdump()
-
-    if not OBJDUMP:
-        logger.error("objdump is not working.")
-        sys.exit(1)
+    objdumpBinary = CommonUtils.detectObjdump()
+    if not objdumpBinary:
+        raise Exception("objdump is not found")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("pkg_root", nargs="?", default=None, help="Specify the package root (will use INSTALL_ROOT if missing)")
@@ -144,4 +105,4 @@ if __name__ == "__main__":
 
     platform = PlatformFlavor.PlatformFlavor(args.platform)
 
-    split_debug_in_folder(pkg_root, platform, logger, OBJDUMP)
+    split_debug_in_folder(pkg_root, platform, logger, objdumpBinary)

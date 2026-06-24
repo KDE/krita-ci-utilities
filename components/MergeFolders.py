@@ -5,6 +5,8 @@ import glob
 import os
 import fnmatch
 import re
+from components import CommonUtils
+
 
 def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
 
@@ -109,7 +111,7 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
                 patternString = '|'.join(map(lambda x: f'({x})', ignoredPatterns))
                 pattern = re.compile(patternString)
 
-                if os.environ.get('KDECI_DEBUG_OVERWRITTEN_FILES', 'no').lower() in ['true', '1', 't', 'y', 'yes'] and \
+                if CommonUtils.boolFromEnv(os.environ.get('KDECI_DEBUG_OVERWRITTEN_FILES', 'no')) and \
                    not fnmatch.fnmatch(file, '*.pyc') and \
                     not pattern.match(dstPath):
                     print ('WARNING: overwriting a file: {} -> {}'.format(srcPath, dstPath))

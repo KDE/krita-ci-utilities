@@ -118,23 +118,23 @@ if arguments.only_env:
         print ("WARNING: argument --fail-on-leaked-stage-files is ignored, since --only-env is preset")
 
 if 'KDECI_ONLY_BUILD' in os.environ:
-    arguments.only_build = (os.environ['KDECI_ONLY_BUILD'].lower() in ['true', '1', 't', 'y', 'yes'])
+    arguments.only_build = CommonUtils.boolFromEnv(os.environ['KDECI_ONLY_BUILD'])
     print ('## Overriding --only-build from environment: {}'.format(arguments.only_build))
 
 if 'KDECI_PUBLISH_TO_CACHE' in os.environ:
-    arguments.publish_to_cache = (os.environ['KDECI_PUBLISH_TO_CACHE'].lower() in ['true', '1', 't', 'y', 'yes'])
+    arguments.publish_to_cache = CommonUtils.boolFromEnv(os.environ['KDECI_PUBLISH_TO_CACHE'])
     print ('## Overriding --publish-to-cache from environment: {}'.format(arguments.publish_to_cache))
 
 skipECMAndroidToolchain = False
 
 if 'KDECI_SKIP_ECM_ANDROID_TOOLCHAIN' in os.environ:
-    skipECMAndroidToolchain = (os.environ['KDECI_SKIP_ECM_ANDROID_TOOLCHAIN'].lower() in ['true', '1', 't', 'y', 'yes'])
+    skipECMAndroidToolchain = CommonUtils.boolFromEnv(os.environ['KDECI_SKIP_ECM_ANDROID_TOOLCHAIN'])
     print ('## Disable ECM\'s Android toolchain file: {}'.format(skipECMAndroidToolchain))
 
 removeInstallFoldersAfterBuild = False
 
 if 'KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD' in os.environ:
-    removeInstallFoldersAfterBuild = (os.environ['KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD'].lower() in ['true', '1', 't', 'y', 'yes'])
+    removeInstallFoldersAfterBuild = CommonUtils.boolFromEnv(os.environ['KDECI_REMOVE_INSTALL_FOLDERS_AFTER_BUILD'])
     print ('## Enable "remove install folder after build": {}'.format(removeInstallFoldersAfterBuild))
 
     if removeInstallFoldersAfterBuild and 'KDECI_SHARED_INSTALL_PATH' in os.environ:

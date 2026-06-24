@@ -7,7 +7,8 @@ import os
 import subprocess
 import warnings
 import sys
-from components import PlatformFlavor
+import fnmatch
+from components import PlatformFlavor, CommonUtils
 
 has_pefile = False
 
@@ -39,7 +40,7 @@ if args.platform is None:
 
 if has_pefile and args.signature is None:
     if "KDECI_SIGN_BINARIES" in os.environ:
-        args.signature = os.environ["KDECI_SIGN_BINARIES"].lower() in ['true', '1', 't', 'y', 'yes']
+        args.signature = CommonUtils.boolFromEnv(os.environ["KDECI_SIGN_BINARIES"])
         print(f"INFO: signature verification is set by KDECI_SIGN_BINARIES: {args.signature}")
     else:
         args.signature = False
@@ -49,22 +50,15 @@ platform = PlatformFlavor.PlatformFlavor(args.platform)
 if has_pefile and args.signature and not platform.matches(['Windows']):
     warnings.warn(f"WARNING: signature verification for a non-Windows platform is not supported")
 
-glob_patterns = ()
-if platform.matches(['Windows']):
-    glob_patterns = ('*.exe', '*.com', '*.dll', '*.pyd')
-elif platform.matches(['Linux']):
-    glob_patterns = ('*.so', '*.so.[0-9]*', 'krita', 'kritarunner', 'ffmpeg', 'ffprobe')
-elif platform.matches(['MacOS', 'Android']):
-    raise Exception(f"Platform '{platform}' is currently not supported for debug splitting")
-else:
-    raise Exception(f"Unknown platform '{platform}'")
+glob_patterns = CommonUtils.globPatternsForBinaries(platform)
 
 def find_files(directory):
-    for root, _, files in os.walk(directory):
-        for pattern in glob_patterns:
-            for fname in files:
-                if fname.lower().endswith(pattern[1:]):
-                    yield os.path.join(root, fname)
+    for root, dirs, files in os.walk(directory):
+        if ".debug" in dirs:
+            dirs.remove(".debug")
+        for fname in files:
+            if any(fnmatch.fnmatch(fname, p) for p in glob_patterns):
+                yield os.path.join(root, fname)
 
 def has_debug_section(objdumpOutput):
     for line in objdumpOutput.splitlines():
@@ -79,15 +73,7 @@ def has_certificate_entry(filePath):
     address = pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_SECURITY"]
     return pe.OPTIONAL_HEADER.DATA_DIRECTORY[address].Size > 0
 
-OBJDUMP = False
-for arg in ("objdump", "llvm-objdump"):
-    try:
-        ret = subprocess.call([arg, "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if ret != 1:
-            OBJDUMP = arg
-    except FileNotFoundError:
-        pass
-
+OBJDUMP = CommonUtils.detectObjdump()
 if not OBJDUMP:
     warnings.warn("ERROR: objdump is not working.")
     sys.exit(1)

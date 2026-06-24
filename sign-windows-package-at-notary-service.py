@@ -3,6 +3,7 @@ import os.path
 from os import environ
 import subprocess
 import sys
+from components import CommonUtils
 
 # command-line args parsing
 parser = argparse.ArgumentParser()
@@ -11,7 +12,7 @@ args = parser.parse_args()
 pkg_root = args.pkg_root
 
 if "KDECI_SIGN_BINARIES" in os.environ:
-    shouldSign = os.environ['KDECI_SIGN_BINARIES'].lower() in ['true', '1', 't', 'y', 'yes']
+    shouldSign = CommonUtils.boolFromEnv(os.environ['KDECI_SIGN_BINARIES'])
     if not shouldSign:
         print(f"INFO: KDECI_SIGN_BINARIES is set to false, signing is skipped...")
         sys.exit(0)
@@ -25,7 +26,7 @@ if pkg_root is None:
 
 release_package_naming = False
 if 'KRITACI_RELEASE_PACKAGE_NAMING' in os.environ:
-    release_package_naming = (os.environ['KRITACI_RELEASE_PACKAGE_NAMING'].lower() in ['true', '1', 't', 'y', 'yes'])
+    release_package_naming = CommonUtils.boolFromEnv(os.environ['KRITACI_RELEASE_PACKAGE_NAMING'])
 
 print(f"Signing binaries in {pkg_root}")
 if not os.path.isdir(pkg_root):
