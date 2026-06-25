@@ -49,6 +49,7 @@ if not os.path.isfile(KRITACI_WINDOWS_SIGN_CONFIG):
     print(f"ERROR: No signing config file found: {KRITACI_WINDOWS_SIGN_CONFIG}")
     sys.exit(1)
 
+hasSomethingToSign = False
 with open("files-to-sign.txt", 'w') as toSign:
     for rootPath, dirs, files in os.walk(pkg_root):
         for fileName in files:
@@ -58,14 +59,18 @@ with open("files-to-sign.txt", 'w') as toSign:
                     print(f"INFO: skip signing for {filePath} (already signed!)")
                 else:
                     print(filePath, file=toSign)
+                    hasSomethingToSign = True
 
-commandToRun = [sys.executable,
-                "-u",
-                os.path.join(os.path.dirname(__file__), "..", "ci-notary-service", "signwindowsbinaries.py"),
-                "--config", KRITACI_WINDOWS_SIGN_CONFIG,
-                "--files-from", "files-to-sign.txt"
-                ]
-subprocess.check_call(commandToRun)
+if hasSomethingToSign:
+    commandToRun = [sys.executable,
+                    "-u",
+                    os.path.join(os.path.dirname(__file__), "..", "ci-notary-service", "signwindowsbinaries.py"),
+                    "--config", KRITACI_WINDOWS_SIGN_CONFIG,
+                    "--files-from", "files-to-sign.txt"
+                    ]
+    subprocess.check_call(commandToRun)
+else:
+    print(f"INFO: nothing to sign, skip requesting notary service...")
 
 if release_package_naming:
     print(f"Verify that all executables have a signature in {pkg_root}")
