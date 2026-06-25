@@ -62,9 +62,13 @@ with open("files-to-sign.txt", 'w') as toSign:
                     hasSomethingToSign = True
 
 if hasSomethingToSign:
+    signWindowsBinariesScript = os.path.join(os.path.dirname(__file__), "..", "ci-notary-service", "signwindowsbinaries.py")
+    if not os.path.exists(signWindowsBinariesScript):
+        signWindowsBinariesScript = os.path.join(os.path.dirname(__file__), "..", "..", "ci-notary-service", "signwindowsbinaries.py")
+
     commandToRun = [sys.executable,
                     "-u",
-                    os.path.join(os.path.dirname(__file__), "..", "ci-notary-service", "signwindowsbinaries.py"),
+                    signWindowsBinariesScript,
                     "--config", KRITACI_WINDOWS_SIGN_CONFIG,
                     "--files-from", "files-to-sign.txt"
                     ]
