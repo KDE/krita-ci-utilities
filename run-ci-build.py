@@ -266,9 +266,14 @@ if not (arguments.skip_dependencies_fetch and arguments.only_build):
     ####
 
     # Resolve the dependencies of this project
-    projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], arguments.branch )
+    projectPublicDependencies = dependencyResolver.resolve( configuration['Dependencies'], arguments.branch )
     # As well as the runtime dependencies
     projectRuntimeDependencies = dependencyResolver.resolve( configuration['RuntimeDependencies'], arguments.branch )
+    # As well as the build-only dependencies
+    projectPrivateDependencies = dependencyResolver.resolve( configuration['BuildDependencies'], arguments.branch )
+
+    # Calculate the actual set of dependencies required for the build stage
+    projectBuildDependencies = projectPublicDependencies | projectPrivateDependencies
 
 dependenciesToUnpack = []
 
@@ -776,7 +781,7 @@ if (gitlabToken is not None or arguments.publish_to_cache) and not arguments.ski
 
     # With the archive being generated, we can now prepare some metadata...
     packageMetadata = {
-        'dependencies': projectBuildDependencies,
+        'dependencies': projectPublicDependencies,
         'runtime-dependencies': projectRuntimeDependencies
     }
 

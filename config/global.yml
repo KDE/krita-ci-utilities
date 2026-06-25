@@ -1,6 +1,17 @@
+# Dependencies which are needed by the library all the time,
+# both, when building and when using. In CMake terminology,
+# such dependencies are PUBLIC
 Dependencies: {}
 
+# Dependencies which are needed only when the library is used,
+# they are not needed when building the project. In CMake
+# terminology, such dependencies are INTERFACE
 RuntimeDependencies: {}
+
+# Dependencies which are used for the build stage only,
+# they are not needed when the library is used. In CMake
+# terminology, such dependencies are PRIVATE
+BuildDependencies: {}
 
 Environment:
   KDECI_BUILD: "TRUE"
