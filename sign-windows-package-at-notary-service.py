@@ -1,9 +1,17 @@
 import argparse
 import os.path
 from os import environ
+import pefile
 import subprocess
 import sys
 from components import CommonUtils
+
+def has_certificate_entry(filePath):
+    # NOTE: we do **not** verify the signature itself here,
+    # we just check if the entry is present in the PE-structure
+    pe = pefile.PE(filePath, fast_load=True)
+    address = pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_SECURITY"]
+    return pe.OPTIONAL_HEADER.DATA_DIRECTORY[address].Size > 0
 
 # command-line args parsing
 parser = argparse.ArgumentParser()
@@ -46,7 +54,10 @@ with open("files-to-sign.txt", 'w') as toSign:
         for fileName in files:
             if fileName.endswith(('.exe', '.com', '.dll', '.pyd')):
                 filePath = os.path.join(rootPath, fileName)
-                print(filePath, file=toSign)
+                if (has_certificate_entry(filePath)):
+                    print(f"INFO: skip signing for {filePath} (already signed!)")
+                else:
+                    print(filePath, file=toSign)
 
 commandToRun = [sys.executable,
                 "-u",
