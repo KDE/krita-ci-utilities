@@ -91,11 +91,12 @@ else:
 
 if release_package_naming:
     print(f"Verify that all executables have a signature in {pkg_root}")
-    # The `-s` argument will be passed via `KDECI_SIGN_BINARIES` environment
+    # The `-v` argument will be passed via `KDECI_SIGN_BINARIES` environment
     # variable, which is guaranteed to be set at this point
     commandToRun = [sys.executable,
                     "-u",
                     os.path.join(os.path.dirname(__file__), "verify-release-binaries.py"),
+                    "--platform", "Windows",
                     "-d", pkg_root
                     ]
     subprocess.check_call(commandToRun)
