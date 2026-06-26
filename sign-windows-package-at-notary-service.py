@@ -28,6 +28,11 @@ else:
     print(f"INFO: KDECI_SIGN_BINARIES is missign, signing is skipped...")
     sys.exit(0)
 
+shouldForceReSign = False
+if "KDECI_FORCE_RESIGN_BINARIES" in os.environ:
+    shouldForceReSign = CommonUtils.boolFromEnv(os.environ.get('KDECI_FORCE_RESIGN_BINARIES', 'False'))
+    print(f"INFO: KDECI_FORCE_RESIGN_BINARIES is present, set to: {shouldForceReSign}")
+
 if pkg_root is None:
     pkg_root = os.environ["INSTALL_ROOT"]
     print(f"INFO: Using package location from INSTALL_ROOT env: {pkg_root}")
@@ -55,9 +60,17 @@ with open("files-to-sign.txt", 'w') as toSign:
         for fileName in files:
             if fileName.endswith(('.exe', '.com', '.dll', '.pyd')):
                 filePath = os.path.join(rootPath, fileName)
-                if (has_certificate_entry(filePath)):
-                    print(f"INFO: skip signing for {filePath} (already signed!)")
-                else:
+
+                shouldSignThisFile = True
+
+                if has_certificate_entry(filePath):
+                    if not shouldForceReSign:
+                        print(f"INFO: skip signing for {filePath} (already signed!)")
+                        shouldSignThisFile = False
+                    else:
+                        print(f"INFO: force resigning {filePath} (even though already signed!)")
+
+                if shouldSignThisFile:
                     print(filePath, file=toSign)
                     hasSomethingToSign = True
 
