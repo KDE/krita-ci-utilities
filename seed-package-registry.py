@@ -109,7 +109,7 @@ for identifier, branch in projectsToBuild.items():
     # Therefore we need to switch there first
     os.chdir( projectFolder )
     # Resolve the dependencies for this project now
-    dependencies = dependencyResolver.resolve( configuration['Dependencies'], branch )
+    dependencies = dependencyResolver.resolve( allBuildDependencies(configuration), branch )
     # And save them to our list...
     projectBuildDependencies[ identifier ] = dependencies
     # Now that we are done we can change back
@@ -120,6 +120,7 @@ for identifier, branch in projectsToBuild.items():
 ####
 
 builtProjects = {}
+allPresentProjectsInSharedInstall = set()
 
 while len(projectsToBuild) != 0:
     # Make a copy to work on...
@@ -179,25 +180,25 @@ while len(projectsToBuild) != 0:
             commandToRun += ' ' + ' '.join(['--extra-cmake-args=' + arg for arg in flat_args])
 
         if 'KDECI_SHARED_INSTALL_PATH' in os.environ:
-            existingProjects = {}
-            for id, branch in projectBuildDependencies[identifier].items():
-                if id in builtProjects:
-                    existingProjects[id] = branch
+            requiredBuildDepsSet = set()
+            for dep, depBranch in projectBuildDependencies[identifier].items():
+                requiredBuildDepsSet.update(
+                    lazyResolveProjectDeps(workingDirectory,
+                                           dep, depBranch,
+                                           builtProjects.keys(),
+                                           dependencyResolver))
 
-            if existingProjects:
-                exisitingDeps = set()
+            depsToExclude = requiredBuildDepsSet.intersection(allPresentProjectsInSharedInstall)
 
-                for projectId in existingProjects.keys():
-                    exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, projectId, existingProjects[projectId], dependencyResolver))
-                    exisitingDeps.add(projectId)
-
-                commandToRun += ' --skip-deps ' + ' '.join(exisitingDeps)
+            if depsToExclude:
+                commandToRun += ' --skip-deps ' + ' '.join(depsToExclude)
 
         print('## Run project build: {}'.format(commandToRun))
 
         # Then run it!
         try:
             subprocess.check_call( commandToRun, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=projectSources )
+            pass
         except:
             print('## Failed building a project: {}'.format(identifier))
             print('## Projects built: \"{}\"'.format((' '.join(builtProjects.keys()))))
@@ -206,6 +207,12 @@ while len(projectsToBuild) != 0:
 
         # Add it to the list of projects we've built
         builtProjects[ identifier ] = branch
+        if 'KDECI_SHARED_INSTALL_PATH' in os.environ:
+            allPresentProjectsInSharedInstall.update(
+                lazyResolveProjectDeps(workingDirectory,
+                                       identifier, branch,
+                                       builtProjects.keys(),
+                                       dependencyResolver))
 
 
 ####

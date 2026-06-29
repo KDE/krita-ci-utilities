@@ -36,6 +36,13 @@ def loadProjectConfiguration(projectRoot, projectName):
 
     return configuration
 
+def allBuildDependencies(configuration):
+    result = []
+    if configuration['Dependencies']:
+        result.extend(configuration['Dependencies'])
+    if configuration['BuildDependencies']:
+        result.extend(configuration['BuildDependencies'])
+    return result
 ####
 # Prepare to resolve and fetch our project dependencies
 ####
@@ -54,11 +61,11 @@ def prepareDependenciesResolver(platform):
 # from the package registry
 ####
 packageRegistry = None
-def lazyResolveProjectDeps(workingDirectory, projectId, projectBranch, dependencyResolver):
+def lazyResolveProjectDeps(workingDirectory, projectId, projectBranch, locallyBuiltProjectIds, dependencyResolver):
     exisitingDeps = set()
     projectDirectory = os.path.join(workingDirectory, projectId)
 
-    if not os.path.exists(projectDirectory):
+    if not projectId in locallyBuiltProjectIds:
         localCachePath = os.environ['KDECI_CACHE_PATH']
         gitlabInstance = os.environ['KDECI_GITLAB_SERVER']
         packageProject = os.environ['KDECI_PACKAGE_PROJECT']
@@ -69,11 +76,12 @@ def lazyResolveProjectDeps(workingDirectory, projectId, projectBranch, dependenc
         exisitingDeps.update([item[1]['identifier'] for item in allDependencies])
     else:
         configuration = loadProjectConfiguration(projectDirectory, projectId)
-        projectBuildDependencies = dependencyResolver.resolve( configuration['Dependencies'], projectBranch )
+        projectBuildDependencies = dependencyResolver.resolve( allBuildDependencies(configuration), projectBranch )
 
+        exisitingDeps.add(projectId)
         for childDep, childBranch in projectBuildDependencies.items():
             exisitingDeps.add(childDep)
-            exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, childDep, childBranch, dependencyResolver))
+            exisitingDeps.update(lazyResolveProjectDeps(workingDirectory, childDep, childBranch, locallyBuiltProjectIds, dependencyResolver))
 
     return exisitingDeps
 
@@ -108,7 +116,7 @@ def genReverseDeps(workingDirectory, dependencyResolver, branch, debug = False, 
 
         if os.path.exists(os.path.join(subdir, 'CMakeLists.txt')):
             configuration = loadProjectConfiguration(subdir, projectName)
-            projectBuildDependencies = list(dependencyResolver.resolve( configuration['Dependencies'], branch ).keys())
+            projectBuildDependencies = list(dependencyResolver.resolve( allBuildDependencies(configuration), branch ).keys()) # all build
             projectBuildDependencies = list(filter(checkAllowed, projectBuildDependencies))
 
             if debug:
