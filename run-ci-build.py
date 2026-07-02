@@ -635,8 +635,8 @@ except Exception:
 
 scriptsAllowed = None
 
-if 'KDECI_POST_INSTALL_SCRIPTS_FILTER' in os.environ:
-    scriptsAllowed = os.environ['KDECI_POST_INSTALL_SCRIPTS_FILTER'].split(';')
+if 'KDECI_POST_INSTALL_SCRIPTS_FILTER' in buildEnvironment:
+    scriptsAllowed = buildEnvironment['KDECI_POST_INSTALL_SCRIPTS_FILTER'].split(';')
 
 def iterateThroughPostInstallScripts():
     if isinstance(configuration['PostInstallScripts'], dict):
