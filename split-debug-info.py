@@ -35,11 +35,7 @@ def split_debug(rootDir, relativeFileName, logger, objdumpBinary):
 
     commandToRun = ["objcopy", "--only-keep-debug", fileName, f"{fileName}.debug"]
     logger.debug(f"Running {' '.join(commandToRun)}")
-    try:
-        subprocess.check_call(commandToRun)
-    except Exception as e:
-        logger.warning(f"Failed to split debug info for {relativeFileName}: {e}")
-        return
+    subprocess.check_call(commandToRun)
 
     # If the debug file is small enough then consider there being no debug info.
     # Discard these files since they somehow make gdb crash.
