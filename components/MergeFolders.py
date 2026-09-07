@@ -96,7 +96,9 @@ def merge_folders(srcDir, dstDir, move_files = False, skip_paths = []):
                 if srcLink != dstLink:
                     print("ERROR: cannot overwrite a symlink with a symlink pointing to a different path")
                     print("src path: {}".format(srcPath))
+                    print("src link-to: {}".format(srcLink))
                     print("dst path: {}".format(dstPath))
+                    print("dst link-to: {}".format(dstLink))
                     raise FileExistsError("Couldn't override a symlink with a different path")
 
             else:
