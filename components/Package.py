@@ -119,22 +119,34 @@ class Registry(object):
         # Prepare a normalised branch name
         normalisedBranch = self._normaliseBranchName( branch )
 
+        def searchNewestPackage(packagesList, newestPackage):
+            resultPackage = newestPackage
+
+            for entry in packagesList:
+                # If the identifier and branch don't match then skip over to the next one
+                # We have to use the normalised branch name when doing the comparison, as the entries returned from Gitlab's API will be normalised
+                # But the entries in self.cachedPackages use non-normalized branch name
+                if entry['identifier'] != identifier or \
+                    (entry['branch'] != normalisedBranch and entry['branch'] != branch):
+                    continue
+
+                # Do we have an existing match?
+                if resultPackage is None:
+                    resultPackage = entry
+
+                # Is this match newer than our previous match?
+                if entry['timestamp'] > resultPackage['timestamp']:
+                    resultPackage = entry
+
+            return resultPackage
+
         # We start this process by searching through our remote details
-        for entry in self.remotePackages + self.cachedPackages:
-            # If the identifier and branch don't match then skip over to the next one
-            # We have to use the normalised branch name when doing the comparison, as the entries returned from Gitlab's API will be normalised
-            # But the entries in self.cachedPackages use non-normalized branch name
-            if entry['identifier'] != identifier or \
-                (entry['branch'] != normalisedBranch and entry['branch'] != branch):
-                continue
+        remotePackage = searchNewestPackage(self.remotePackages, None)
 
-            # Do we have an existing match?
-            if remotePackage is None:
-                remotePackage = entry
-
-            # Is this match newer than our previous match?
-            if entry['timestamp'] > remotePackage['timestamp']:
-                remotePackage = entry
+        # if requested explicitly, allow local cache to override the
+        # packages in the registry
+        if os.environ.get('KDECI_ALLOW_PACKAGE_OVERRIDE_BY_CACHE', '0') in ['1', 'True', 'true']:
+            remotePackage = searchNewestPackage(self.cachedPackages, remotePackage)
 
         # Before we continue, did we find something?
         # If we found nothing, bow out gracefully here...
