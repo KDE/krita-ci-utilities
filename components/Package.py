@@ -87,9 +87,20 @@ class Registry(object):
     # Convert a branch name into a standardised form
     @staticmethod
     def _calcPackageSha256Sum( archivePath ):
-        with open(archivePath, "rb") as f:
-            packageArchiveDigest = hashlib.file_digest(f, "sha256")
-        return packageArchiveDigest.hexdigest()
+        if hasattr(hashlib, "file_digest"):
+            # Python 3.11+ version
+            with open(archivePath, "rb") as f:
+                packageArchiveDigest = hashlib.file_digest(f, "sha256")
+            return packageArchiveDigest.hexdigest()
+
+        else:
+            # Python 3.10 version
+            hashObj = hashlib.new("sha256")
+            # Read in 64KB chunks and hash them
+            with open(archivePath, "rb") as f:
+                for chunk in iter(lambda: f.read(65536), b""):
+                    hashObj.update(chunk)
+            return hashObj.hexdigest()
 
     # Choose between two branches to determine which one is "newer"
     def _selectNewerBranch( self, firstBranch, secondBranch ):
