@@ -1,6 +1,7 @@
 import os
 import sys
 import copy
+import hashlib
 import json
 import gitlab
 import shutil
@@ -38,6 +39,10 @@ class Registry(object):
             # Construct the full path to the file, then load it's contents
             fullPath = os.path.join( self.localCachePath, filename )
             packageMetadata = json.load( open(fullPath) )
+            # TODO: remove the check after all the registries and workers
+            # transition to the packages with sha256sum embedded
+            if not 'sha256sum' in packageMetadata:
+                packageMetadata['sha256sum'] = None
             
             # Determine which package we have here and add it to our list of known packages
             self.cachedPackages.append( packageMetadata )
@@ -65,6 +70,9 @@ class Registry(object):
                 'version': package.version,
                 'branch': branch,
                 'timestamp': int(timestamp),
+                # TODO: remove the check after all the registries and workers
+                # transition to the packages with sha256sum embedded
+                'sha256sum': package.sha256sum if hasattr(package, 'sha256sum') else None
             }
 
             # Save it to the list and move on to the next one
@@ -75,6 +83,13 @@ class Registry(object):
     def _normaliseBranchName( branch ):
         # Cleanup a Git branch name for use in our Package Registry
         return branch.replace('/', '-')
+
+    # Convert a branch name into a standardised form
+    @staticmethod
+    def _calcPackageSha256Sum( archivePath ):
+        with open(archivePath, "rb") as f:
+            packageArchiveDigest = hashlib.file_digest(f, "sha256")
+        return packageArchiveDigest.hexdigest()
 
     # Choose between two branches to determine which one is "newer"
     def _selectNewerBranch( self, firstBranch, secondBranch ):
@@ -137,8 +152,25 @@ class Registry(object):
             # Make sure the identifier, branch and timestamp all agree
             # If they do, then we have found the package in the cache
             # (By definition the package cannot be newer as we have the latest remote version - if it is then something is seriously wrong)
-            if entry['identifier'] == identifier and entry['branch'] == branch and entry['timestamp'] == remotePackage['timestamp']:
-                cachedPackage = entry
+            if entry['identifier'] == identifier and \
+                entry['branch'] == branch and \
+                entry['timestamp'] == remotePackage['timestamp']:
+
+                if remotePackage['sha256sum'] is not None and \
+                    entry['sha256sum'] is not None and \
+                    entry['sha256sum'] == remotePackage['sha256sum'] and \
+                    remotePackage['sha256sum'] == self._calcPackageSha256Sum(localContentsPath):
+                        cachedPackage = entry
+                else:
+                    print ( 'WARNING: the cached package has the same timestamp, but a inconsistent sha256sum,')
+                    print ( '         skipping the cached package...')
+                    print (f'    package name: {packageName}')
+                    print (f'    remote sha256sum metadata: {remotePackage['sha256sum']}')
+                    print (f'    cached sha256sum metadata: {entry['sha256sum']}')
+                    print (f'    actual package sha256sum: {self._calcPackageSha256Sum(localContentsPath)}')
+
+                break
+
 
         # If we have a cachedPackage entry then we can assume we have a cache hit and we should use that
         if cachedPackage:
@@ -281,6 +313,7 @@ class Registry(object):
 
         # With the branch name normalised, we can now generate the version string to provide to Gitlab's package registry
         packageTimestamp = int( os.path.getmtime( archivePath ) )
+        packageSha256Sum = self._calcPackageSha256Sum(archivePath)
         versionForGitlab = "{0}-{1}".format( normalisedBranch, packageTimestamp )
 
         # Prepare the metadata, ensuring that the minimum bits of information are being included
@@ -288,6 +321,7 @@ class Registry(object):
             'identifier': identifier,
             'branch': branch,
             'version': versionForGitlab,
+            'sha256sum': packageSha256Sum,
             'timestamp': packageTimestamp,
             'gitRevision': gitRevision,
             'dependencies': {},
