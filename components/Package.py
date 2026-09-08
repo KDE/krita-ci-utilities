@@ -177,8 +177,8 @@ class Registry(object):
                     print ( 'WARNING: the cached package has the same timestamp, but a inconsistent sha256sum,')
                     print ( '         skipping the cached package...')
                     print (f'    package name: {packageName}')
-                    print (f'    remote sha256sum metadata: {remotePackage['sha256sum']}')
-                    print (f'    cached sha256sum metadata: {entry['sha256sum']}')
+                    print (f'    remote sha256sum metadata: {remotePackage["sha256sum"]}')
+                    print (f'    cached sha256sum metadata: {entry["sha256sum"]}')
                     print (f'    actual package sha256sum: {self._calcPackageSha256Sum(localContentsPath)}')
 
                 break
