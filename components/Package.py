@@ -84,7 +84,7 @@ class Registry(object):
         # Cleanup a Git branch name for use in our Package Registry
         return branch.replace('/', '-')
 
-    # Convert a branch name into a standardised form
+    # Calculate sha256sum of a file on the filesystem
     @staticmethod
     def _calcPackageSha256Sum( archivePath ):
         if hasattr(hashlib, "file_digest"):
