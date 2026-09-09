@@ -150,7 +150,8 @@ class Registry(object):
 
         # if requested explicitly, allow local cache to override the
         # packages in the registry
-        if os.environ.get('KDECI_ALLOW_PACKAGE_OVERRIDE_BY_CACHE', '0') in ['1', 'True', 'true']:
+        allowPackageOverrideByCache = os.environ.get('KDECI_ALLOW_PACKAGE_OVERRIDE_BY_CACHE', '0') in ['1', 'True', 'true']
+        if allowPackageOverrideByCache:
             remotePackage = searchNewestPackage(self.cachedPackages, remotePackage)
 
         # Before we continue, did we find something?
@@ -173,7 +174,17 @@ class Registry(object):
                 cachedPackage = entry
                 break
 
-        if cachedPackage:
+        shouldCheckSha256Sum = (
+            # if package override is disallowed, we should compare against remote
+            # package unconditionally, not looking at the presence of remote id;
+            # if id is missing, it is a bug in this script
+            not allowPackageOverrideByCache or
+            # if package override is allowed, we should compare only in case the
+            # package is really a remote package, i.e. it has an id
+            'id' in remotePackage
+        )
+
+        if cachedPackage and shouldCheckSha256Sum:
             remotePkgObject = self.remoteRegistry.packages.get(remotePackage['id'])
             packageSha256Sum = ""
             for file in remotePkgObject.package_files.list(iterator=True):
