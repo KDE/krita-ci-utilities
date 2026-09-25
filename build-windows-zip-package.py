@@ -561,6 +561,8 @@ if useQt6Build:
         ["windeployqt.exe", *QMLDIR_ARGS,
         "-gui", "-core", "-core5compat", "-openglwidgets", "-svgwidgets", "-opengl",
         "-concurrent", "-network", "-printsupport", "-svg",
+        # don't ship Windows Vista and Windows 11 styles if they happen to be present
+        "--skip-plugin-types", "styles",
         "-xml", "-sql", "-qml", "-quick", "-quickwidgets", *verboseOption,
         f"{pkg_root}\\bin\\krita.exe", f"{pkg_root}\\bin\\krita.dll"])
 else:
@@ -569,6 +571,19 @@ else:
         ["windeployqt.exe", *QMLDIR_ARGS, "--release", "-gui", "-core", "-concurrent", "-network", "-printsupport", "-svg",
         "-xml", "-sql", "-qml", "-quick", "-quickwidgets", *verboseOption,
         f"{pkg_root}\\bin\\krita.exe", f"{pkg_root}\\bin\\krita.dll"])
+
+    # Qt5 version of windeployqt.exe cannot skip plugin types, so we
+    # should remove this style manually
+    if os.path.exists(fr"{pkg_root}\bin\styles\qwindowsvistastyle.dll"):
+        os.remove(fr"{pkg_root}\bin\styles\qwindowsvistastyle.dll")
+
+# verify that broken Windows Vista and Windows11 styles are **not** deployed!
+deployedStyles = glob.glob(fr"{pkg_root}\bin\styles\*")
+if deployedStyles:
+    logger.error("Some custom style plugins have been deployed! Not supported by Krita!")
+    for style in deployedStyles:
+        logger.error(fr"    {style}")
+    exit(104)
 
 # ffmpeg
 if os.path.exists(f"{DEPS_INSTALL_DIR}\\bin\\ffmpeg.exe"):
