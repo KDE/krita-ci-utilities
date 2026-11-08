@@ -15,9 +15,9 @@ certvalidator==0.11.1 \
     --hash=sha256:77520b269f516d4fb0902998d5bd0eb3727fe153b659aa1cb828dcf12ea6b8de \
     --hash=sha256:922d141c94393ab285ca34338e18dd4093e3ae330b1f278e96c837cb62cffaad
     # via signify
-mscerts==2026.4.30 \
-    --hash=sha256:1bf3fdda7284e6cddfa6bcc30c079b664849e2191b24253a95b7e69fe73de6d3 \
-    --hash=sha256:a4ed14721f18e3e899e0ad0217e396fcd3e42435b5045382b5a8bc7275e9a885
+mscerts==2026.10.27 \
+    --hash=sha256:7152052d6b23bbfe23bf26844dc9c2da00299dfb1f48c62889743b6396bcfaab \
+    --hash=sha256:7a5465ae3043798fa1defdafc4d6be51fd64593523970bfe989427641eca8a1e
     # via signify
 oscrypto==1.3.0 \
     --hash=sha256:2b2f1d2d42ec152ca90ccb5682f3e051fb55986e1b170ebde472b133713e7085 \
@@ -29,9 +29,9 @@ pefile==2024.8.26 \
     --hash=sha256:3ff6c5d8b43e8c37bb6e6dd5085658d658a7a0bdcd20b6a07b1fcfc1c4e9d632 \
     --hash=sha256:76f8b485dcd3b1bb8166f1128d395fa3d87af26360c2358fb75b80019b957c6f
     # via -r requirements-windows.txt.in
-signify==0.9.2 \
-    --hash=sha256:9bbe43a2198dc8f21ae6c3c41227b695b4c3b7c242e2d2b19c3af7af4f29d2c5 \
-    --hash=sha256:e504d26184b4df3802104d1bdd9c5074c030246c9febf184acd694822d610287
+signify==0.9.3 \
+    --hash=sha256:0310558c26c1425f904b21b4cba3477443e233128eea4117fd97fe1808227db0 \
+    --hash=sha256:c67f327e34e480e18ff7c4d56f48703dc40e12bd77a4cccfebc0fd0e1fd4e3da
     # via -r requirements-windows.txt.in
 typing-extensions==4.15.0 \
     --hash=sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466 \
